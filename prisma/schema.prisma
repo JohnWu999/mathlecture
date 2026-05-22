@@ -1,0 +1,224 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 用户表：家长/孩子共用账户，通过 role 区分
+model User {
+  id            String    @id @default(cuid())
+  email         String?   @unique
+  name          String?
+  avatar        String?   // 头像URL
+  role          UserRole  @default(STUDENT)
+  grade         Int?      // 年级 1或2
+  region        String?   // 地域
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // 关联
+  questions     Question[]    // 提出的问题
+  answers       Answer[]      // 讲题视频
+  groupMembers  GroupMember[] // 所在小组
+  messages      Message[]     // 发送的消息
+  registrations ProjectRegistration[]
+  pointTransactions PointTransaction[]
+  userBadges    UserBadge[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  STUDENT   // 学生/家庭账户
+  TEACHER   // 老师
+  ADMIN     // 管理员
+}
+
+// 问题表：你问我答
+model Question {
+  id          String   @id @default(cuid())
+  title       String   // 问题标题
+  content     String   // 问题内容
+  imageUrl    String?  // 题目照片
+  isAnonymous Boolean  @default(false) // 匿名提问
+  grade       Int?     // 年级
+  topic       String?  // 主题
+  status      QuestionStatus @default(OPEN)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+  answers     Answer[]
+
+  @@map("questions")
+}
+
+enum QuestionStatus {
+  OPEN       // 待认领
+  CLAIMED    // 已被认领
+  ANSWERED   // 已解答
+  RESOLVED   // 已解决
+  NEED_HELP  // 需要增援
+}
+
+// 回答/讲题视频表
+model Answer {
+  id          String   @id @default(cuid())
+  videoUrl    String   // 视频地址
+  description String?  // 讲题说明
+  status      AnswerStatus @default(PENDING)
+  mathTip     String?  // 老师的数学小贴士（有错误时不驳回，发贴士）
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  questionId  String
+  question    Question @relation(fields: [questionId], references: [id])
+  lecturerId  String
+  lecturer    User     @relation(fields: [lecturerId], references: [id])
+
+  @@map("answers")
+}
+
+enum AnswerStatus {
+  PENDING    // 待审核
+  APPROVED   // 已通过
+  REJECTED   // 驳回修改（仅用于语言不文明/内容违规）
+}
+
+// PBL项目表
+model Project {
+  id          String   @id @default(cuid())
+  title       String   // 项目标题
+  description String   // 项目介绍
+  price       Int      @default(9900) // 分为单位，默认99元
+  durationDays Int     @default(5)    // 核心天数
+  coverImage  String?  // 封面图
+  status      ProjectStatus @default(DRAFT)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  registrations ProjectRegistration[]
+  groups      Group[]
+
+  @@map("projects")
+}
+
+enum ProjectStatus {
+  DRAFT      // 草稿
+  PUBLISHED  // 已发布
+  CLOSED     // 已结束
+}
+
+// 项目报名表
+model ProjectRegistration {
+  id        String   @id @default(cuid())
+  status    RegistrationStatus @default(PENDING)
+  paidAt    DateTime?
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+
+  @@unique([userId, projectId])
+  @@map("project_registrations")
+}
+
+enum RegistrationStatus {
+  PENDING    // 待支付
+  CONFIRMED  // 已确认
+  CANCELLED  // 已取消
+}
+
+// 小组表
+model Group {
+  id          String   @id @default(cuid())
+  name        String   // 小组名
+  dayProgress Int      @default(1) // 当前Day 1-5
+  createdAt   DateTime @default(now())
+
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  members     GroupMember[]
+  messages    Message[]
+
+  @@map("groups")
+}
+
+// 小组成员表
+model GroupMember {
+  id        String   @id @default(cuid())
+  joinedAt  DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  groupId   String
+  group     Group    @relation(fields: [groupId], references: [id])
+
+  @@unique([userId, groupId])
+  @@map("group_members")
+}
+
+// 小组消息表
+model Message {
+  id        String   @id @default(cuid())
+  content   String   // 文字内容
+  audioUrl  String?  // 语音URL
+  createdAt DateTime @default(now())
+
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  groupId   String
+  group     Group    @relation(fields: [groupId], references: [id])
+
+  @@map("messages")
+}
+
+// 积分交易表
+model PointTransaction {
+  id          String   @id @default(cuid())
+  amount      Int      // 正负，正为获得
+  reason      String   // 原因
+  description String?  // 备注
+  createdAt   DateTime @default(now())
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("point_transactions")
+}
+
+// 徽章定义表
+model Badge {
+  id          String   @id @default(cuid())
+  name        String   // 徽章名
+  description String   // 描述
+  iconUrl     String?  // 图标
+  createdAt   DateTime @default(now())
+
+  userBadges  UserBadge[]
+
+  @@map("badges")
+}
+
+// 用户徽章表
+model UserBadge {
+  id        String   @id @default(cuid())
+  awardedAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  badgeId   String
+  badge     Badge    @relation(fields: [badgeId], references: [id])
+
+  @@unique([userId, badgeId])
+  @@map("user_badges")
+}

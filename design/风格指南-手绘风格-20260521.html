@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数学小讲师联盟 — 手绘风格指南</title>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* ========== 基础重置 ========== */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: #FFFEF7;
+    color: #3D3D3D;
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+
+  /* ========== 方格纸背景（选项A） ========== */
+  .grid-paper {
+    background-color: #FFFEF7;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(180, 200, 180, 0.15) 39px, rgba(180, 200, 180, 0.15) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(180, 200, 180, 0.15) 39px, rgba(180, 200, 180, 0.15) 40px);
+  }
+
+  /* ========== 字体系统 ========== */
+  .font-title { font-family: 'ZCOOL QingKe HuangYou', cursive; }
+  .font-subtitle { font-family: 'Ma Shan Zheng', cursive; }
+  .font-label { font-family: 'ZCOOL KuaiLe', cursive; }
+  .font-body { font-family: 'Noto Sans SC', sans-serif; }
+
+  /* ========== 手绘边框（选项C：SVG不规则边框） ========== */
+  .hand-drawn-border {
+    position: relative;
+    background: white;
+    border: none;
+  }
+  .hand-drawn-border::before {
+    content: '';
+    position: absolute;
+    top: -4px; left: -4px; right: -4px; bottom: -4px;
+    border: 3px solid #5D4E37;
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* ========== 按钮 ========== */
+  .btn-hand {
+    display: inline-block;
+    padding: 16px 40px;
+    font-family: 'ZCOOL KuaiLe', cursive;
+    font-size: 20px;
+    color: #5D4E37;
+    background: #FFE066;
+    border: 3px solid #5D4E37;
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    box-shadow: 4px 4px 0 rgba(93, 78, 55, 0.2);
+    text-decoration: none;
+  }
+  .btn-hand:hover {
+    transform: rotate(-1deg) scale(1.02);
+  }
+  .btn-hand:active {
+    transform: rotate(0deg) scale(0.98);
+    box-shadow: 2px 2px 0 rgba(93, 78, 55, 0.2);
+  }
+
+  .btn-green {
+    background: #A8E6CF;
+  }
+  .btn-blue {
+    background: #A2D2FF;
+  }
+
+  /* ========== 便利贴 ========== */
+  .sticky-note {
+    padding: 20px;
+    box-shadow: 3px 4px 10px rgba(0,0,0,0.12);
+    position: relative;
+    display: inline-block;
+    max-width: 300px;
+  }
+  .sticky-note::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 20px;
+    background: rgba(255,255,255,0.6);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  .note-yellow {
+    background: #FFF9C4;
+    transform: rotate(-1.5deg);
+  }
+  .note-green {
+    background: #DCEDC8;
+    transform: rotate(1deg);
+  }
+  .note-blue {
+    background: #BBDEFB;
+    transform: rotate(-0.5deg);
+  }
+  .note-pink {
+    background: #F8BBD0;
+    transform: rotate(2deg);
+  }
+
+  /* ========== 手绘对话框 ========== */
+  .chat-bubble {
+    position: relative;
+    padding: 16px 20px;
+    border-radius: 20px;
+    max-width: 400px;
+    margin-bottom: 20px;
+  }
+  .chat-bubble-left {
+    background: #E8F5E9;
+    border: 2px solid #4CAF50;
+    border-radius: 20px 20px 20px 4px;
+    margin-right: auto;
+  }
+  .chat-bubble-left::after {
+    content: '';
+    position: absolute;
+    left: -10px;
+    bottom: 10px;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    border-right-color: #4CAF50;
+    border-left: 0;
+    border-bottom: 0;
+    transform: rotate(-15deg);
+  }
+  .chat-bubble-right {
+    background: #E3F2FD;
+    border: 2px solid #2196F3;
+    border-radius: 20px 20px 4px 20px;
+    margin-left: auto;
+  }
+  .chat-bubble-right::after {
+    content: '';
+    position: absolute;
+    right: -10px;
+    bottom: 10px;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    border-left-color: #2196F3;
+    border-right: 0;
+    border-bottom: 0;
+    transform: rotate(15deg);
+  }
+
+  /* ========== 项目卡片（手绘海报感） ========== */
+  .project-card {
+    background: white;
+    padding: 24px;
+    position: relative;
+    border: 3px solid #5D4E37;
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    box-shadow: 6px 6px 0 rgba(93, 78, 55, 0.15);
+    max-width: 360px;
+  }
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    right: 30px;
+    width: 40px;
+    height: 40px;
+    background: #FF6B6B;
+    border-radius: 50%;
+    opacity: 0.3;
+    transform: rotate(15deg);
+  }
+
+  /* ========== 标签/徽章 ========== */
+  .badge-hand {
+    display: inline-block;
+    padding: 6px 16px;
+    font-family: 'ZCOOL KuaiLe', cursive;
+    font-size: 14px;
+    color: white;
+    background: #FF8A80;
+    border-radius: 20px 5px 20px 5px;
+    transform: rotate(-2deg);
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+  }
+
+  /* ========== 头像 ========== */
+  .avatar-hand {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid #5D4E37;
+    box-shadow: 3px 3px 0 rgba(93, 78, 55, 0.2);
+    object-fit: cover;
+    background: #FFE0B2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+    font-size: 24px;
+    color: #5D4E37;
+  }
+
+  /* ========== 布局辅助 ========== */
+  .section {
+    margin-bottom: 60px;
+    padding: 30px;
+    border-radius: 20px;
+  }
+  .section-title {
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+    font-size: 32px;
+    color: #5D4E37;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-title::before {
+    content: '🎨';
+    font-size: 28px;
+  }
+  .flex-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .flex-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ========== 手绘装饰元素 ========== */
+  .doodle-star {
+    display: inline-block;
+    color: #FFD54F;
+    font-size: 24px;
+    transform: rotate(15deg);
+  }
+  .doodle-line {
+    height: 3px;
+    background: #5D4E37;
+    border-radius: 2px;
+    opacity: 0.3;
+    margin: 20px 0;
+    transform: rotate(-0.5deg);
+  }
+
+  /* ========== 颜色板展示 ========== */
+  .color-swatch {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    border: 2px solid #5D4E37;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: #5D4E37;
+    box-shadow: 3px 3px 0 rgba(93, 78, 55, 0.15);
+  }
+
+  /* ========== 任务清单（黑板字感） ========== */
+  .task-list {
+    background: #F5F5DC;
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px dashed #8D6E63;
+  }
+  .task-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 18px;
+    color: #3D3D3D;
+  }
+  .task-check {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #4CAF50;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+  .task-done .task-check::after {
+    content: '✓';
+    color: #4CAF50;
+    font-weight: bold;
+  }
+
+  /* ========== 首页轮播便利贴 ========== */
+  .carousel-notes {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 20px 10px;
+  }
+  .carousel-note {
+    min-width: 260px;
+    padding: 20px;
+    position: relative;
+  }
+  .carousel-note .note-title {
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+  .carousel-note .note-meta {
+    font-size: 13px;
+    color: #666;
+    margin-top: 12px;
+  }
+
+</style>
+</head>
+<body class="grid-paper">
+
+<!-- ========== 标题区 ========== -->
+<div style="text-align: center; margin-bottom: 50px;">
+  <h1 class="font-title" style="font-size: 48px; color: #5D4E37; margin-bottom: 8px;">
+    🎨 数学小讲师联盟
+  </h1>
+  <p class="font-subtitle" style="font-size: 24px; color: #8D6E63;">
+    手绘风格指南 · 像孩子的作业本
+  </p>
+  <div class="doodle-line" style="max-width: 400px; margin: 20px auto;"></div>
+</div>
+
+<!-- ========== 颜色板 ========== -->
+<div class="section" style="background: rgba(255,255,255,0.7);">
+  <h2 class="section-title">蜡笔颜色板</h2>
+  <div class="flex-row" style="justify-content: center;">
+    <div class="color-swatch" style="background: #FFE066;">暖黄</div>
+    <div class="color-swatch" style="background: #A8E6CF;">草绿</div>
+    <div class="color-swatch" style="background: #A2D2FF;">天蓝</div>
+    <div class="color-swatch" style="background: #FFB7B2;">粉红</div>
+    <div class="color-swatch" style="background: #FFF9C4;">浅黄</div>
+    <div class="color-swatch" style="background: #E8F5E9;">浅绿</div>
+    <div class="color-swatch" style="background: #E3F2FD;">浅蓝</div>
+    <div class="color-swatch" style="background: #5D4E37; color: white;">棕褐</div>
+  </div>
+</div>
+
+<!-- ========== 字体系统 ========== -->
+<div class="section" style="background: rgba(255,255,255,0.7);">
+  <h2 class="section-title">字体系统</h2>
+  <div class="flex-col">
+    <div>
+      <span style="color: #999; font-size: 14px;">标题字体</span>
+      <p class="font-title" style="font-size: 36px; color: #5D4E37;">站酷庆科黄油体 · 像孩子认真写的字</p>
+    </div>
+    <div>
+      <span style="color: #999; font-size: 14px;">副标题</span>
+      <p class="font-subtitle" style="font-size: 28px; color: #5D4E37;">马善政体 · 有温度的毛笔字</p>
+    </div>
+    <div>
+      <span style="color: #999; font-size: 14px;">标签/按钮</span>
+      <p class="font-label" style="font-size: 24px; color: #5D4E37;">站酷快乐体 · 活泼跳跃</p>
+    </div>
+    <div>
+      <span style="color: #999; font-size: 14px;">正文</span>
+      <p class="font-body" style="font-size: 16px;">Noto Sans SC · 清晰可读，像作业本上的印刷字</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 按钮 ========== -->
+<div class="section" style="background: rgba(255,255,255,0.7);">
+  <h2 class="section-title">手绘按钮</h2>
+  <div class="flex-row">
+    <a href="#" class="btn-hand">免费加入</a>
+    <a href="#" class="btn-hand btn-green">我要讲题</a>
+    <a href="#" class="btn-hand btn-blue">项目报名</a>
+  </div>
+  <p style="margin-top: 16px; color: #888; font-size: 14px;">
+    特点：不规则圆角边框 + 蜡笔色背景 + 轻微旋转 + 阴影
+  </p>
+</div>
+
+<!-- ========== 便利贴 ========== -->
+<div class="section" style="background: rgba(255,255,255,0.7);">
+  <h2 class="section-title">便利贴卡片</h2>
+  <div class="flex-row">
+    <div class="sticky-note note-yellow">
+      <p class="font-title" style="font-size: 22px; margin-bottom: 8px;">📝 今日发现</p>
+      <p class="font-body">我家茶几有15张A4纸那么大！</p>
+      <p style="font-size: 12px; color: #888; margin-top: 12px;">— 小明，广州</p>
+    </div>
+    <div class="sticky-note note-green">
+      <p class="font-title" style="font-size: 22px; margin-bottom: 8px;">✅ 任务完成</p>
+      <p class="font-body">测量了书桌，要20张纸！</p>
+      <p style="font-size: 12px; color: #888; margin-top: 12px;">— 小红，上海</p>
+    </div>
+    <div class="sticky-note note-blue">
+      <p class="font-title" style="font-size: 22px; margin-bottom: 8px;">💡 新想法</p>
+      <p class="font-body">边缘有空隙，可以剪开纸补！</p>
+      <p style="font-size: 12px; color: #888; margin-top: 12px;">— 小刚，北京</p>
+    </div>
+    <div class="sticky-note note-pink">
+      <p class="font-title" style="font-size: 22px; margin-bottom: 8px;">🎯 挑战</p>
+      <p class="font-body">谁能找到家里最大的1平米？</p>
+      <p style="font-size: 12px; color: #888; margin-top: 12px;">— 项目任务</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 对话框 ========== -->
+<div class="section" style="background: rgba(255,255,255,0.7);">
+  <h2 class="section-title">手绘对话框</h2>
+  <div class="flex-col" style="max-width: 500px; margin: 0 auto;">
+    <div class="chat-bubble chat-bubble-left">
+      <p class="font-body" style="font-weight: 500;">小明（北京）</p>
+      <p class="font-body">"12个苹果怎么分给3个小朋友？"</p>
+      <span class="badge-hand" style="background: #A2D2FF; color: #5D4E37; margin-top: 8px;">等待回答</span>
+    </div>
+    <div class="chat-bubble chat-bubble-right">
+      <p class="font-body" style="font-weight: 500;">小刚（广州）</p>
+      <p class="font-body">"可以先6个6个放，然后再分剩下的！" <span class="doodle-star">⭐</span></p>
+      <span class="badge-hand" style="background: #A8E6CF; color: #5D4E37; margin-top: 8px;">已采纳 +5分</span>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 项目卡片 ========== -->
+<div class="section" style="background: rgba(255,255,255,0.7);">
+  <h2 class="section-title">项目卡片（海报感）</h2>
+  <div class="flex-row">
+    <div class="project-card">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+        <div class="avatar-hand">📐</div>
+        <div>
+          <h3 class="font-title" style="font-size: 24px;">我家有一平米</h3>
+          <p style="font-size: 13px; color: #888;">测量 · 估算 · 协作</p>
+        </div>
+      </div>
+      <div class="doodle-line"></div>
+      <p class="font-body" style="margin-bottom: 16px;">
+        和队友一起测量家里的1平方米，用A4纸铺满，发现原来1平米这么大！
+      </p>
+      <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+        <span class="badge-hand">⭐ 难度2</span>
+        <span class="badge-hand" style="background: #FFE066; color: #5D4E37;">5天项目</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span class="font-label" style="font-size: 20px; color: #E53935;">¥199</span>
+        <a href="#" class="btn-hand" style="padding: 10px 24px; font-size: 16px;">我要报名</a>
+      </div>
+      <p style="font-size: 12px; color: #999; margin-top: 12px;">⚠️ 仅剩 8 个名额</p>
+    </div>
+
+    <div class="project-card" style="transform: rotate(1deg);">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+        <div class="avatar-hand" style="background: #F8BBD0;">🏪</div>
+        <div>
+          <h3 class="font-title" style="font-size: 24px;">班级小掌柜</h3>
+          <p style="font-size: 13px; color: #888;">应用题 · 财商 · 表达</p>
+        </div>
+      </div>
+      <div class="doodle-line"></div>
+      <p class="font-body" style="margin-bottom: 16px;">
+        50元预算给班级买3样东西，怎么分配最合理？和队友一起当小掌柜！
+      </p>
+      <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+        <span class="badge-hand">⭐⭐ 难度3</span>
+        <span class="badge-hand" style="background: #FFE066; color: #5D4E37;">5天项目</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span class="font-label" style="font-size: 20px; color: #E53935;">¥299</span>
+        <a href="#" class="btn-hand" style="padding: 10px 24px; font-size: 16px;">我要报名</a>
+      </div>
+      <p style="font-size: 12px; color: #999; margin-top: 12px;">🔒 需完成1个基础项目解锁</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 首页轮播便利贴 ========== -->
+<div class="section" style="background: rgba(255,255,255,0.7);">
+  <h2 class="section-title">首页轮播（便利贴墙）</h2>
+  <div class="carousel-notes">
+    <div class="carousel-note note-yellow">
+      <p class="note-title">📐 我家有一平米</p>
+      <p class="font-body">"原来1平方米就是我家茶几这么大！"</p>
+      <p class="note-meta">小明+小红+小刚 | 北京+上海+广州</p>
+    </div>
+    <div class="carousel-note note-green">
+      <p class="note-title">🏪 班级小掌柜</p>
+      <p class="font-body">"50元买了彩笔、橡皮和贴纸，还剩3块！"</p>
+      <p class="note-meta">小丽+小强+小美 | 成都+深圳+杭州</p>
+    </div>
+    <div class="carousel-note note-blue">
+      <p class="note-title">📏 脚步测量家</p>
+      <p class="font-body">"从家到学校要走1200步，大概600米！"</p>
+      <p class="note-meta">小华+小芳+小军 | 武汉+南京+西安</p>
+    </div>
+    <div class="carousel-note note-pink">
+      <p class="note-title">🔢 数字侦探</p>
+      <p class="font-body">"电梯按钮里有等差数列：1,3,5,7,9..."</p>
+      <p class="note-meta">小杰+小敏+小波 | 重庆+天津+苏州</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 任务清单（黑板字感） ========== -->
+<div class="section" style="background: rgba(255,255,255,0.7);">
+  <h2 class="section-title">今日任务（黑板字感）</h2>
+  <div class="task-list" style="max-width: 400px;">
+    <p class="font-title" style="font-size: 22px; margin-bottom: 16px; color: #5D4E37;">📝 Day3 · 测量实践</p>
+    <div class="task-item task-done">
+      <div class="task-check"></div>
+      <span>找到家里长方形的地方</span>
+    </div>
+    <div class="task-item task-done">
+      <div class="task-check"></div>
+      <span>用A4纸铺满，数了几张</span>
+    </div>
+    <div class="task-item">
+      <div class="task-check"></div>
+      <span>拍照上传到小组空间 ← 现在做！</span>
+    </div>
+    <div class="task-item">
+      <div class="task-check"></div>
+      <span>和队友讨论：结果一样吗？</span>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 头像 ========== -->
+<div class="section" style="background: rgba(255,255,255,0.7);">
+  <h2 class="section-title">手绘头像</h2>
+  <div class="flex-row">
+    <div class="avatar-hand">小明</div>
+    <div class="avatar-hand" style="background: #F8BBD0;">小红</div>
+    <div class="avatar-hand" style="background: #A2D2FF;">小刚</div>
+    <div class="avatar-hand" style="background: #A8E6CF;">小丽</div>
+  </div>
+  <p style="margin-top: 16px; color: #888; font-size: 14px;">
+    实际使用：可替换为孩子自己画的简笔画或上传的真实照片
+  </p>
+</div>
+
+<!-- ========== 页脚 ========== -->
+<div style="text-align: center; margin-top: 60px; padding: 30px; color: #999;">
+  <div class="doodle-line" style="max-width: 200px; margin: 0 auto 20px;"></div>
+  <p class="font-body" style="font-size: 14px;">
+    数学小讲师联盟 · 手绘风格指南 · 2025
+  </p>
+  <p style="font-size: 12px; margin-top: 8px;">
+    背景：CSS方格纸纹理 · 边框：不规则圆角 · 字体：Google Fonts手绘体
+  </p>
+</div>
+
+</body>
+</html>
