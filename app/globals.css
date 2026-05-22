@@ -8,23 +8,22 @@
   --ink-color: #5C4B37;
   --ink-light: #8A7B6D;
 
-  /* 蜡笔色系（带灰，像水彩笔涂的） */
+  /* 蜡笔色系（带灰） */
   --crayon-yellow: #F5E6C8;
   --crayon-green: #A8D5A2;
   --crayon-blue: #A2C4E0;
   --crayon-pink: #E8B4B8;
   --crayon-orange: #E8C9A8;
 
-  /* 手绘边框多层阴影（模拟粗细不均+颜色不均） */
+  /* 手绘边框阴影 - 6层不同偏移+颜色模拟粗细不均 */
   --hand-border:
-    0 2.5px 0 0 #5C4B37,
-    2px 0 0 0 #7A6B5D,
-    0 -2px 0 0 #6B5B45,
-    -2px 0 0 0 #4A3F35,
     2px 2px 0 0 #5C4B37,
-    -1px 2px 0 0 #7A6B5D;
+    3.5px 3px 0 0 #7A6B5D,
+    -1px 2.5px 0 0 #5C4B37,
+    2px -1.5px 0 0 #6B5B45,
+    -2px -1px 0 0 #4A3F35,
+    4px 1px 0 0 #5C4B37;
 
-  /* 按钮用小层数（像孩子只画了几笔） */
   --hand-border-btn:
     2px 2px 0 0 #5C4B37,
     3px 3px 0 0 #5C4B37,
@@ -46,85 +45,185 @@ body {
 
 /* ==========================
    便利贴卡片系统
-   不规则圆角 + 多层box-shadow模拟手绘边框 + 轻微旋转
+   每个颜色有不同的不规则圆角+旋转角度
    ========================== */
 .sticker {
   padding: 20px;
   position: relative;
   z-index: 1;
-  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3);
-  transform: rotate(-0.5deg);
   transition: transform 0.2s ease;
 }
 
+/* 每个卡片独特的手绘边框 */
+.sticker::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* 第二层边框 - 不完全重合，制造抖动/手绘感 */
 .sticker::after {
   content: '';
   position: absolute;
-  inset: -10px;
-  z-index: -1;
+  z-index: -2;
   pointer-events: none;
-  border-radius: inherit;
-  filter: blur(20px);
-  opacity: 0.5;
+  filter: blur(18px);
+  opacity: 0.6;
 }
 
-.sticker:hover {
+/* 黄色卡片 - 左上圆右上尖 */
+.sticker-yellow {
+  background-color: var(--crayon-yellow);
+  border-radius: 70% 25% 55% 45% / 45% 55% 35% 65%;
+  box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3), 0 0 40px 10px rgba(245, 230, 200, 0.25);
+  transform: rotate(-0.8deg);
+}
+.sticker-yellow::before {
+  inset: -1px;
+  border-radius: 72% 23% 58% 42% / 48% 52% 32% 68%;
+  border: 2.5px solid #5C4B37;
+  border-bottom-width: 3.5px;
+  border-right-color: #7A6B5D;
+  border-left-width: 2px;
+  transform: rotate(0.3deg);
+}
+.sticker-yellow::after {
+  inset: -12px;
+  border-radius: 65% 30% 50% 50%;
+  background: radial-gradient(ellipse at 40% 40%, rgba(255, 220, 80, 0.5) 0%, transparent 65%);
+}
+.sticker-yellow:hover {
+  transform: rotate(0.5deg) scale(1.01);
+}
+
+/* 绿色卡片 - 右上圆左下尖 */
+.sticker-green {
+  background-color: var(--crayon-green);
+  border-radius: 30% 70% 45% 55% / 60% 40% 60% 40%;
+  box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3), 0 0 40px 10px rgba(120, 220, 120, 0.25);
+  transform: rotate(0.6deg);
+}
+.sticker-green::before {
+  inset: -1px;
+  border-radius: 32% 68% 48% 52% / 58% 42% 58% 42%;
+  border: 2.5px solid #5C4B37;
+  border-top-width: 2px;
+  border-left-width: 3.5px;
+  border-bottom-color: #7A6B5D;
+  transform: rotate(-0.2deg);
+}
+.sticker-green::after {
+  inset: -12px;
+  border-radius: 50% 60% 40% 50%;
+  background: radial-gradient(ellipse at 40% 40%, rgba(120, 240, 120, 0.45) 0%, transparent 65%);
+}
+.sticker-green:hover {
+  transform: rotate(-0.4deg) scale(1.01);
+}
+
+/* 蓝色卡片 - 右下圆左上尖 */
+.sticker-blue {
+  background-color: var(--crayon-blue);
+  border-radius: 55% 45% 70% 30% / 35% 65% 40% 60%;
+  box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3), 0 0 40px 10px rgba(100, 180, 220, 0.25);
+  transform: rotate(-0.5deg);
+}
+.sticker-blue::before {
+  inset: -1px;
+  border-radius: 58% 42% 68% 32% / 38% 62% 38% 62%;
+  border: 2.5px solid #5C4B37;
+  border-right-width: 3px;
+  border-top-color: #7A6B5D;
+  border-left-width: 2px;
+  transform: rotate(0.4deg);
+}
+.sticker-blue::after {
+  inset: -12px;
+  border-radius: 60% 40% 65% 35%;
+  background: radial-gradient(ellipse at 40% 40%, rgba(100, 200, 240, 0.45) 0%, transparent 65%);
+}
+.sticker-blue:hover {
   transform: rotate(0.3deg) scale(1.01);
 }
 
-/* 卡片颜色 + 水彩洇开 */
-.sticker-yellow {
-  background-color: var(--crayon-yellow);
-  box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3), 0 0 40px 10px rgba(245, 230, 200, 0.25);
-}
-.sticker-yellow::after {
-  background: radial-gradient(ellipse at 40% 40%, rgba(255, 220, 80, 0.6) 0%, transparent 65%);
-}
-
-.sticker-green {
-  background-color: var(--crayon-green);
-  box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3), 0 0 40px 10px rgba(120, 220, 120, 0.25);
-}
-.sticker-green::after {
-  background: radial-gradient(ellipse at 40% 40%, rgba(120, 240, 120, 0.55) 0%, transparent 65%);
-}
-
-.sticker-blue {
-  background-color: var(--crayon-blue);
-  box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3), 0 0 40px 10px rgba(100, 180, 220, 0.25);
-}
-.sticker-blue::after {
-  background: radial-gradient(ellipse at 40% 40%, rgba(100, 200, 240, 0.55) 0%, transparent 65%);
-}
-
+/* 粉色卡片 - 左下圆右上尖 */
 .sticker-pink {
   background-color: var(--crayon-pink);
+  border-radius: 45% 55% 30% 70% / 65% 35% 55% 45%;
   box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3), 0 0 40px 10px rgba(255, 150, 170, 0.25);
+  transform: rotate(0.7deg);
+}
+.sticker-pink::before {
+  inset: -1px;
+  border-radius: 48% 52% 28% 72% / 62% 38% 52% 48%;
+  border: 2.5px solid #5C4B37;
+  border-bottom-width: 2px;
+  border-right-width: 3.5px;
+  border-left-color: #7A6B5D;
+  transform: rotate(-0.3deg);
 }
 .sticker-pink::after {
-  background: radial-gradient(ellipse at 40% 40%, rgba(255, 160, 180, 0.55) 0%, transparent 65%);
+  inset: -12px;
+  border-radius: 50% 50% 30% 70%;
+  background: radial-gradient(ellipse at 40% 40%, rgba(255, 160, 180, 0.45) 0%, transparent 65%);
+}
+.sticker-pink:hover {
+  transform: rotate(-0.5deg) scale(1.01);
 }
 
+/* 白色卡片 */
 .sticker-white {
   background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 60% 40% 50% 50% / 50% 50% 40% 60%;
   box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3), 0 0 40px 10px rgba(0, 0, 0, 0.08);
+  transform: rotate(-0.4deg);
+}
+.sticker-white::before {
+  inset: -1px;
+  border-radius: 58% 42% 52% 48% / 48% 52% 42% 58%;
+  border: 2.5px solid #5C4B37;
+  border-top-width: 3px;
+  border-bottom-color: #7A6B5D;
+  transform: rotate(0.2deg);
 }
 .sticker-white::after {
-  background: radial-gradient(ellipse at 40% 40%, rgba(200, 200, 200, 0.35) 0%, transparent 65%);
+  inset: -12px;
+  border-radius: 55% 45% 45% 55%;
+  background: radial-gradient(ellipse at 40% 40%, rgba(200, 200, 200, 0.3) 0%, transparent 65%);
+}
+.sticker-white:hover {
+  transform: rotate(0.3deg) scale(1.01);
 }
 
+/* 橙色卡片 */
 .sticker-orange {
   background-color: var(--crayon-orange);
+  border-radius: 50% 50% 60% 40% / 40% 60% 50% 50%;
   box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3), 0 0 40px 10px rgba(255, 180, 120, 0.25);
+  transform: rotate(0.4deg);
+}
+.sticker-orange::before {
+  inset: -1px;
+  border-radius: 52% 48% 58% 42% / 42% 58% 48% 52%;
+  border: 2.5px solid #5C4B37;
+  border-left-width: 3.5px;
+  border-top-color: #7A6B5D;
+  transform: rotate(-0.4deg);
 }
 .sticker-orange::after {
-  background: radial-gradient(ellipse at 40% 40%, rgba(255, 190, 140, 0.55) 0%, transparent 65%);
+  inset: -12px;
+  border-radius: 45% 55% 55% 45%;
+  background: radial-gradient(ellipse at 40% 40%, rgba(255, 190, 140, 0.45) 0%, transparent 65%);
+}
+.sticker-orange:hover {
+  transform: rotate(-0.6deg) scale(1.01);
 }
 
 /* ==========================
    按钮系统
-   不规则圆角 + 3层box-shadow + 轻微旋转
+   每个按钮不同的不规则圆角+旋转
    ========================== */
 .hand-btn {
   display: inline-flex;
@@ -134,58 +233,72 @@ body {
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;
-  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  box-shadow: var(--hand-border-btn), inset 0 0 10px rgba(255,255,255,0.3);
-  transform: rotate(0.3deg);
   transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.hand-btn:hover {
-  transform: translate(-2px, -2px) scale(1.02) rotate(-0.3deg);
+/* 绿色按钮 */
+.hand-btn-green {
+  background-color: var(--crayon-green);
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  box-shadow: var(--hand-border-btn), inset 0 0 10px rgba(255,255,255,0.3), 0 0 16px rgba(100, 220, 100, 0.2);
+  transform: rotate(0.3deg);
 }
-
-.hand-btn:active {
+.hand-btn-green:hover {
+  transform: translate(-2px, -2px) scale(1.02) rotate(-0.5deg);
+  box-shadow: 2px 2px 0 0 #5C4B37, 3px 3px 0 0 #7A6B5D, -1px 2px 0 0 #5C4B37, inset 0 0 10px rgba(255,255,255,0.3), 0 0 22px rgba(100, 220, 100, 0.35);
+}
+.hand-btn-green:active {
   transform: translate(2px, 2px) scale(0.98) rotate(0.3deg);
 }
 
-/* 按钮颜色 */
-.hand-btn-green {
-  background-color: var(--crayon-green);
-  box-shadow: var(--hand-border-btn), inset 0 0 10px rgba(255,255,255,0.3), 0 0 16px rgba(100, 220, 100, 0.2);
-}
-.hand-btn-green:hover {
-  box-shadow: 2px 2px 0 0 #5C4B37, 3px 3px 0 0 #7A6B5D, -1px 2px 0 0 #5C4B37, inset 0 0 10px rgba(255,255,255,0.3), 0 0 22px rgba(100, 220, 100, 0.35);
-}
-
+/* 蓝色按钮 */
 .hand-btn-blue {
   background-color: var(--crayon-blue);
+  border-radius: 40% 60% 70% 30% / 50% 40% 60% 50%;
   box-shadow: var(--hand-border-btn), inset 0 0 10px rgba(255,255,255,0.3), 0 0 16px rgba(100, 180, 220, 0.2);
+  transform: rotate(-0.4deg);
 }
 .hand-btn-blue:hover {
+  transform: translate(-2px, -2px) scale(1.02) rotate(0.3deg);
   box-shadow: 2px 2px 0 0 #5C4B37, 3px 3px 0 0 #7A6B5D, -1px 2px 0 0 #5C4B37, inset 0 0 10px rgba(255,255,255,0.3), 0 0 22px rgba(100, 180, 220, 0.35);
 }
+.hand-btn-blue:active {
+  transform: translate(2px, 2px) scale(0.98) rotate(-0.4deg);
+}
 
+/* 黄色按钮 */
 .hand-btn-yellow {
   background-color: var(--crayon-yellow);
+  border-radius: 50% 50% 40% 60% / 60% 40% 50% 50%;
   box-shadow: var(--hand-border-btn), inset 0 0 10px rgba(255,255,255,0.3), 0 0 16px rgba(255, 200, 50, 0.2);
+  transform: rotate(0.5deg);
 }
 .hand-btn-yellow:hover {
+  transform: translate(-2px, -2px) scale(1.02) rotate(-0.3deg);
   box-shadow: 2px 2px 0 0 #5C4B37, 3px 3px 0 0 #7A6B5D, -1px 2px 0 0 #5C4B37, inset 0 0 10px rgba(255,255,255,0.3), 0 0 22px rgba(255, 200, 50, 0.35);
 }
 
+/* 粉色按钮 */
 .hand-btn-pink {
   background-color: var(--crayon-pink);
+  border-radius: 70% 30% 50% 50% / 40% 60% 40% 60%;
   box-shadow: var(--hand-border-btn), inset 0 0 10px rgba(255,255,255,0.3), 0 0 16px rgba(255, 150, 170, 0.2);
+  transform: rotate(-0.3deg);
 }
 .hand-btn-pink:hover {
+  transform: translate(-2px, -2px) scale(1.02) rotate(0.4deg);
   box-shadow: 2px 2px 0 0 #5C4B37, 3px 3px 0 0 #7A6B5D, -1px 2px 0 0 #5C4B37, inset 0 0 10px rgba(255,255,255,0.3), 0 0 22px rgba(255, 150, 170, 0.35);
 }
 
+/* 白色按钮 */
 .hand-btn-white {
   background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 45% 55% 60% 40% / 50% 50% 40% 60%;
   box-shadow: var(--hand-border-btn), inset 0 0 10px rgba(255,255,255,0.3), 0 0 16px rgba(0, 0, 0, 0.04);
+  transform: rotate(0.2deg);
 }
 .hand-btn-white:hover {
+  transform: translate(-2px, -2px) scale(1.02) rotate(-0.4deg);
   box-shadow: 2px 2px 0 0 #5C4B37, 3px 3px 0 0 #7A6B5D, -1px 2px 0 0 #5C4B37, inset 0 0 10px rgba(255,255,255,0.3), 0 0 22px rgba(0, 0, 0, 0.1);
 }
 
@@ -200,9 +313,9 @@ body {
   transform: rotate(0.3deg);
 }
 
-/* 手绘输入框（固定像素圆角，保持可输入性） */
+/* 手绘输入框 */
 .hand-input {
-  border-radius: 12px 8px 14px 10px / 10px 14px 8px 12px;
+  border-radius: 14px 10px 16px 12px / 12px 16px 10px 14px;
   padding: 12px 16px;
   font-size: 16px;
   color: var(--ink-color);
@@ -213,11 +326,9 @@ body {
   border: none;
   outline: none;
 }
-
 .hand-input:focus {
   box-shadow: 2px 2px 0 0 #5C4B37, 3px 3px 0 0 #7A6B5D, -1px 2px 0 0 #5C4B37, inset 0 0 12px rgba(255,255,255,0.5), 0 0 12px rgba(92, 75, 55, 0.15);
 }
-
 .hand-input::placeholder {
   color: var(--ink-light);
 }
@@ -231,7 +342,6 @@ body {
   box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3);
   transform: rotate(0.3deg);
 }
-
 .speech-bubble::after {
   content: '';
   position: absolute;
@@ -244,14 +354,14 @@ body {
   border-top: 10px solid #5C4B37;
 }
 
-/* 手绘标题样式 */
+/* 手写字体标题 */
 .handwritten-title {
   font-family: 'ZCOOL KuaiLe', 'Noto Sans SC', cursive;
   color: var(--ink-color);
   letter-spacing: 0.05em;
 }
 
-/* 手绘分隔线 - 虚线 */
+/* 手绘分割线 - 虚线 */
 .hand-divider {
   height: 3px;
   background: repeating-linear-gradient(
@@ -265,7 +375,7 @@ body {
   border-radius: 2px;
 }
 
-/* 波浪分隔线 */
+/* 波浪分割线 */
 .wavy-divider {
   height: 12px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 C150,120 350,0 600,60 C850,120 1050,0 1200,60 L1200,120 L0,120 Z' fill='%235C4B37' fill-opacity='0.12'/%3E%3C/svg%3E");
@@ -273,42 +383,52 @@ body {
   border: none;
 }
 
-/* 徽章样式 */
+/* 手绘徽章 */
 .hand-badge {
   display: inline-block;
   padding: 6px 14px;
-  border-radius: 40% 60% 50% 50% / 50% 40% 60% 50%;
   font-size: 14px;
   font-weight: 500;
   box-shadow: var(--hand-border-btn), inset 0 0 10px rgba(255,255,255,0.3);
-  transform: rotate(0.2deg);
 }
 
 .hand-badge-yellow {
   background-color: var(--crayon-yellow);
+  border-radius: 40% 60% 50% 50% / 50% 40% 60% 50%;
+  transform: rotate(0.2deg);
 }
 
 .hand-badge-green {
   background-color: var(--crayon-green);
+  border-radius: 60% 40% 50% 50% / 40% 60% 40% 60%;
+  transform: rotate(-0.3deg);
 }
 
 .hand-badge-blue {
   background-color: var(--crayon-blue);
+  border-radius: 50% 50% 60% 40% / 50% 50% 40% 60%;
+  transform: rotate(0.3deg);
 }
 
 .hand-badge-pink {
   background-color: var(--crayon-pink);
+  border-radius: 45% 55% 45% 55% / 55% 45% 55% 45%;
+  transform: rotate(-0.2deg);
 }
 
 .hand-badge-white {
   background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 55% 45% 55% 45% / 45% 55% 45% 55%;
+  transform: rotate(0.15deg);
 }
 
 .hand-badge-orange {
   background-color: var(--crayon-orange);
+  border-radius: 50% 50% 40% 60% / 40% 60% 50% 50%;
+  transform: rotate(-0.25deg);
 }
 
-/* 手绘图标（导航栏 Logo 用） */
+/* 手绘图标 */
 .hand-icon {
   width: 40px;
   height: 40px;
@@ -325,11 +445,9 @@ body {
 ::-webkit-scrollbar {
   width: 10px;
 }
-
 ::-webkit-scrollbar-track {
   background: var(--paper-color);
 }
-
 ::-webkit-scrollbar-thumb {
   background: var(--crayon-green);
   border-radius: 5px;
@@ -341,7 +459,6 @@ body {
   0%, 100% { transform: rotate(-2deg); }
   50% { transform: rotate(2deg); }
 }
-
 .animate-wiggle {
   animation: wiggle 2s ease-in-out infinite;
 }
