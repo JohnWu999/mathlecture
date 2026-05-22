@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "数学小讲师联盟 — 会思考，爱数学",
@@ -20,7 +21,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen paper-grid">
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

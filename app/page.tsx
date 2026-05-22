@@ -1,22 +1,11 @@
 import Link from "next/link";
+import Navbar from "@/components/navbar";
 
 export default function HomePage() {
   return (
     <main className="min-h-screen">
       {/* 顶部导航 */}
-      <nav className="px-6 py-4 flex items-center justify-between max-w-6xl mx-auto">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-crayon-green rounded-full flex items-center justify-center text-xl">
-            📐
-          </div>
-          <span className="font-bold text-lg text-ink">数学小讲师联盟</span>
-        </div>
-        <div className="flex gap-4 text-sm text-ink-light">
-          <Link href="/qa" className="hover:text-ink transition-colors">你问我答</Link>
-          <Link href="/projects" className="hover:text-ink transition-colors">项目营</Link>
-          <Link href="/login" className="hover:text-ink transition-colors">登录</Link>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero 区域 */}
       <section className="px-6 pt-12 pb-16 max-w-6xl mx-auto">
