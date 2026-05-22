@@ -30,24 +30,27 @@ export default function ProjectsPage() {
   return (
     <main className="min-h-screen">
       <Navbar />
-      <section className="px-6 pt-8 pb-16 max-w-6xl mx-auto">
+      <section className="px-6 pt-8 pb-16 max-w-6xl mx-auto relative z-10">
         <div className="text-center mb-10">
           <div className="inline-block sticker sticker-yellow mb-3">
             <span className="text-3xl">🎯</span>
           </div>
-          <h1 className="text-3xl font-bold text-ink handwritten-title">PBL 项目营</h1>
-          <p className="text-ink-light mt-2 max-w-lg mx-auto">
+          <h1 className="text-3xl font-bold handwritten-title infinity-title" style={{ color: "#3E2723" }}>PBL 项目营</h1>
+          <p className="mt-2 max-w-lg mx-auto" style={{ color: "#5D4E44" }}>
             以真实问题为驱动，小伙伴们一起探索、合作、解决问题！
           </p>
         </div>
 
+        {/* ∞ 分隔线 */}
+        <hr className="infinity-divider mb-8" />
+
         {loading ? (
-          <div className="text-center py-12 text-ink-light">加载中...</div>
+          <div className="text-center py-12" style={{ color: "#8D7E72" }}>加载中...</div>
         ) : projects.length === 0 ? (
           <div className="sticker sticker-white text-center py-12">
             <div className="text-4xl mb-3">🛣️</div>
-            <p className="text-ink font-medium">暂时没有开放的项目</p>
-            <p className="text-ink-light text-sm mt-1">敬请期待第一期项目上线！</p>
+            <p className="font-medium" style={{ color: "#3E2723" }}>暂时没有开放的项目</p>
+            <p className="text-sm mt-1" style={{ color: "#8D7E72" }}>敬请期待第一期项目上线！</p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 gap-6">
@@ -73,8 +76,8 @@ export default function ProjectsPage() {
                       {p._count.groups}个小组
                     </span>
                   </div>
-                  <h3 className="text-lg font-bold text-ink mb-2">{p.title}</h3>
-                  <p className="text-sm text-ink-light line-clamp-2 mb-3">
+                  <h3 className="text-lg font-bold mb-2" style={{ color: "#3E2723" }}>{p.title}</h3>
+                  <p className="text-sm line-clamp-2 mb-3" style={{ color: "#5D4E44" }}>
                     {p.description}
                   </p>
                   <div className="flex items-center justify-between">

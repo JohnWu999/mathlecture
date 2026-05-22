@@ -2,383 +2,472 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 根变量 */
+/* ==========================================
+   数学小讲师联盟 - 全局样式
+   设计原则：数学内容主导，涂鸦氛围为辅
+   ========================================== */
+
 :root {
+  /* 纸张色 */
   --paper-color: #FAF8F0;
-  --ink-color: #5C4B37;
-  --ink-light: #8A7B6D;
+  --paper-grid: #F5F0E8;
 
-  /* 蜡笔色系（带灰） */
-  --crayon-yellow: #F5E6C8;
-  --crayon-green: #A8D5A2;
-  --crayon-blue: #A2C4E0;
-  --crayon-pink: #E8B4B8;
-  --crayon-orange: #E8C9A8;
+  /* 文字色 - 深棕/深灰，确保可读性 */
+  --ink-color: #3E2723;
+  --ink-light: #5D4E44;
+  --ink-muted: #8D7E72;
 
-  /* 手绘边框阴影 - 6层不同偏移+颜色模拟粗细不均 */
+  /* 主色调 - 3个蜡笔基础色（草绿、天蓝、暖黄） */
+  --crayon-green: #A5D6A7;
+  --crayon-blue: #90CAF9;
+  --crayon-yellow: #FFF59D;
+
+  /* 点缀色 - 温暖橙 */
+  --crayon-accent: #FFCC80;
+
+  /* 边框色 */
+  --border-color: #5C4B37;
+  --border-light: rgba(92, 75, 55, 0.5);
+
+  /* 手绘边框 - 简化为3层，粗细不均 */
   --hand-border:
-    2px 2px 0 0 #5C4B37,
-    3.5px 3px 0 0 #7A6B5D,
-    -1px 2.5px 0 0 #5C4B37,
-    2px -1.5px 0 0 #6B5B45,
-    -2px -1px 0 0 #4A3F35,
-    4px 1px 0 0 #5C4B37;
+    2px 2px 0 0 var(--border-color),
+    3px 3px 0 0 var(--border-light),
+    -1px 2px 0 0 var(--border-color);
 
   --hand-border-btn:
-    2px 2px 0 0 #5C4B37,
-    3px 3px 0 0 #5C4B37,
-    -1px 2px 0 0 #5C4B37;
+    2px 2px 0 0 var(--border-color),
+    3px 3px 0 0 var(--border-light);
 }
 
-/* 全局基础 */
+/* ==========================================
+   全局基础
+   ========================================== */
 body {
   background-color: var(--paper-color);
   color: var(--ink-color);
-  font-family: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
+  font-family: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* 方格纸背景 */
+/* 标题字体规范：手写感只用于标题，正文用圆体 */
+h1, h2, h3 {
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ink-color);
+}
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.125rem; }
+
+@media (min-width: 768px) {
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 1.75rem; }
+}
+
+p {
+  line-height: 1.6;
+  color: var(--ink-light);
+}
+
+/* ==========================================
+   背景系统
+   ========================================== */
+
+/* 方格纸背景 - 70%面积 */
 .paper-grid {
   background-color: var(--paper-color);
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 60 0 L 0 0 0 60' fill='none' stroke='rgba(92,74,61,0.10)' stroke-width='1.2'/%3E%3C/svg%3E");
+  background-image:
+    linear-gradient(rgba(92, 74, 55, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(92, 74, 55, 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
 }
 
-/* ==========================
+/* 数学涂鸦装饰 - 只在角落/边缘，10-15%透明度 */
+.math-doodle-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* 左上角小数字 */
+.math-doodle-bg::before {
+  content: '1  2  +  3';
+  position: absolute;
+  top: 80px;
+  left: 20px;
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 28px;
+  color: var(--border-color);
+  opacity: 0.1;
+  transform: rotate(-8deg);
+  letter-spacing: 4px;
+}
+
+/* 右上角几何图形 */
+.math-doodle-bg::after {
+  content: '';
+  position: absolute;
+  top: 60px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border: 2px solid var(--border-color);
+  border-radius: 50%;
+  opacity: 0.1;
+  transform: rotate(5deg);
+}
+
+/* 左下角三角形 */
+.math-doodle-corner-bl {
+  position: fixed;
+  bottom: 40px;
+  left: 30px;
+  width: 0;
+  height: 0;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-bottom: 40px solid var(--border-color);
+  opacity: 0.08;
+  pointer-events: none;
+  z-index: 0;
+  transform: rotate(-15deg);
+}
+
+/* 右下角数学公式 */
+.math-doodle-corner-br {
+  position: fixed;
+  bottom: 60px;
+  right: 40px;
+  font-family: 'Times New Roman', serif;
+  font-size: 22px;
+  color: var(--border-color);
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: 0;
+  transform: rotate(10deg);
+  letter-spacing: 2px;
+}
+
+/* ==========================================
+   ∞ 符号品牌延伸
+   ========================================== */
+
+/* ∞分隔线 - 像数学公式中的省略号 */
+.infinity-divider {
+  height: 24px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 24'%3E%3Ctext x='8' y='18' font-size='16' fill='%235C4B37' opacity='0.35' font-family='Times New Roman'%3E%E2%88%9E%3C/text%3E%3Ctext x='32' y='18' font-size='16' fill='%235C4B37' opacity='0.35' font-family='Times New Roman'%3E%E2%88%9E%3C/text%3E%3Ctext x='56' y='18' font-size='16' fill='%235C4B37' opacity='0.35' font-family='Times New Roman'%3E%E2%88%9E%3C/text%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-size: 80px 24px;
+  border: none;
+  opacity: 0.7;
+}
+
+/* ∞旋转动画 */
+@keyframes infinity-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-infinity-spin {
+  animation: infinity-spin 4s linear infinite;
+}
+
+/* ∞进度点 */
+.infinity-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  font-family: 'Times New Roman', serif;
+  font-size: 14px;
+  color: var(--ink-muted);
+}
+.infinity-dot.active {
+  color: var(--crayon-green);
+  font-weight: bold;
+}
+
+/* ∞标题装饰 */
+.infinity-title::after {
+  content: ' ∞';
+  font-family: 'Times New Roman', serif;
+  color: var(--ink-muted);
+  opacity: 0.4;
+  font-size: 0.8em;
+}
+
+/* ==========================================
    便利贴卡片系统
-   每个颜色有不同的不规则圆角+旋转角度
-   ========================== */
+   手绘感边框，但内部干净清晰
+   ========================================== */
 .sticker {
   padding: 20px;
   position: relative;
   z-index: 1;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* 每个卡片独特的手绘边框 */
 .sticker::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
   pointer-events: none;
+  border-radius: 10px 14px 12px 16px;
+  border: 2px solid var(--border-color);
+  border-top-width: 2.5px;
+  border-bottom-width: 2.5px;
+  border-left-width: 1.8px;
 }
 
-/* 第二层边框 - 不完全重合，制造抖动/手绘感 */
 .sticker::after {
   content: '';
   position: absolute;
+  inset: -3px;
   z-index: -2;
   pointer-events: none;
-  filter: blur(18px);
-  opacity: 0.6;
+  border-radius: 12px 16px 14px 18px;
+  opacity: 0.12;
 }
 
-/* 黄色卡片 - 左上圆右上尖 */
+/* 黄色卡片 - 暖黄 */
 .sticker-yellow {
   background-color: var(--crayon-yellow);
-  border-radius: 70% 25% 55% 45% / 45% 55% 35% 65%;
-  box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3), 0 0 40px 10px rgba(245, 230, 200, 0.25);
-  transform: rotate(-0.8deg);
-}
-.sticker-yellow::before {
-  inset: -1px;
-  border-radius: 72% 23% 58% 42% / 48% 52% 32% 68%;
-  border: 2.5px solid #5C4B37;
-  border-bottom-width: 3.5px;
-  border-right-color: #7A6B5D;
-  border-left-width: 2px;
-  transform: rotate(0.3deg);
-}
-.sticker-yellow::after {
-  inset: -12px;
-  border-radius: 65% 30% 50% 50%;
-  background: radial-gradient(ellipse at 40% 40%, rgba(255, 220, 80, 0.5) 0%, transparent 65%);
-}
-.sticker-yellow:hover {
-  transform: rotate(0.5deg) scale(1.01);
-}
-
-/* 绿色卡片 - 右上圆左下尖 */
-.sticker-green {
-  background-color: var(--crayon-green);
-  border-radius: 30% 70% 45% 55% / 60% 40% 60% 40%;
-  box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3), 0 0 40px 10px rgba(120, 220, 120, 0.25);
-  transform: rotate(0.6deg);
-}
-.sticker-green::before {
-  inset: -1px;
-  border-radius: 32% 68% 48% 52% / 58% 42% 58% 42%;
-  border: 2.5px solid #5C4B37;
-  border-top-width: 2px;
-  border-left-width: 3.5px;
-  border-bottom-color: #7A6B5D;
-  transform: rotate(-0.2deg);
-}
-.sticker-green::after {
-  inset: -12px;
-  border-radius: 50% 60% 40% 50%;
-  background: radial-gradient(ellipse at 40% 40%, rgba(120, 240, 120, 0.45) 0%, transparent 65%);
-}
-.sticker-green:hover {
-  transform: rotate(-0.4deg) scale(1.01);
-}
-
-/* 蓝色卡片 - 右下圆左上尖 */
-.sticker-blue {
-  background-color: var(--crayon-blue);
-  border-radius: 55% 45% 70% 30% / 35% 65% 40% 60%;
-  box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3), 0 0 40px 10px rgba(100, 180, 220, 0.25);
-  transform: rotate(-0.5deg);
-}
-.sticker-blue::before {
-  inset: -1px;
-  border-radius: 58% 42% 68% 32% / 38% 62% 38% 62%;
-  border: 2.5px solid #5C4B37;
-  border-right-width: 3px;
-  border-top-color: #7A6B5D;
-  border-left-width: 2px;
-  transform: rotate(0.4deg);
-}
-.sticker-blue::after {
-  inset: -12px;
-  border-radius: 60% 40% 65% 35%;
-  background: radial-gradient(ellipse at 40% 40%, rgba(100, 200, 240, 0.45) 0%, transparent 65%);
-}
-.sticker-blue:hover {
-  transform: rotate(0.3deg) scale(1.01);
-}
-
-/* 粉色卡片 - 左下圆右上尖 */
-.sticker-pink {
-  background-color: var(--crayon-pink);
-  border-radius: 45% 55% 30% 70% / 65% 35% 55% 45%;
-  box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3), 0 0 40px 10px rgba(255, 150, 170, 0.25);
-  transform: rotate(0.7deg);
-}
-.sticker-pink::before {
-  inset: -1px;
-  border-radius: 48% 52% 28% 72% / 62% 38% 52% 48%;
-  border: 2.5px solid #5C4B37;
-  border-bottom-width: 2px;
-  border-right-width: 3.5px;
-  border-left-color: #7A6B5D;
+  border-radius: 10px 14px 12px 16px;
+  box-shadow: var(--hand-border);
   transform: rotate(-0.3deg);
 }
-.sticker-pink::after {
-  inset: -12px;
-  border-radius: 50% 50% 30% 70%;
-  background: radial-gradient(ellipse at 40% 40%, rgba(255, 160, 180, 0.45) 0%, transparent 65%);
+.sticker-yellow::after {
+  background: var(--crayon-yellow);
 }
-.sticker-pink:hover {
-  transform: rotate(-0.5deg) scale(1.01);
+.sticker-yellow:hover {
+  transform: rotate(0.2deg) scale(1.01);
+  box-shadow: 3px 3px 0 0 var(--border-color), 4px 4px 0 0 var(--border-light), -1px 2px 0 0 var(--border-color);
+}
+
+/* 绿色卡片 - 草绿 */
+.sticker-green {
+  background-color: var(--crayon-green);
+  border-radius: 12px 10px 14px 12px;
+  box-shadow: var(--hand-border);
+  transform: rotate(0.3deg);
+}
+.sticker-green::after {
+  background: var(--crayon-green);
+}
+.sticker-green:hover {
+  transform: rotate(-0.2deg) scale(1.01);
+}
+
+/* 蓝色卡片 - 天蓝 */
+.sticker-blue {
+  background-color: var(--crayon-blue);
+  border-radius: 14px 12px 10px 16px;
+  box-shadow: var(--hand-border);
+  transform: rotate(-0.2deg);
+}
+.sticker-blue::after {
+  background: var(--crayon-blue);
+}
+.sticker-blue:hover {
+  transform: rotate(0.2deg) scale(1.01);
 }
 
 /* 白色卡片 */
 .sticker-white {
-  background-color: rgba(255, 255, 255, 0.75);
-  border-radius: 60% 40% 50% 50% / 50% 50% 40% 60%;
-  box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3), 0 0 40px 10px rgba(0, 0, 0, 0.08);
-  transform: rotate(-0.4deg);
-}
-.sticker-white::before {
-  inset: -1px;
-  border-radius: 58% 42% 52% 48% / 48% 52% 42% 58%;
-  border: 2.5px solid #5C4B37;
-  border-top-width: 3px;
-  border-bottom-color: #7A6B5D;
-  transform: rotate(0.2deg);
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 12px 14px 10px 16px;
+  box-shadow: var(--hand-border);
+  transform: rotate(0.1deg);
 }
 .sticker-white::after {
-  inset: -12px;
-  border-radius: 55% 45% 45% 55%;
-  background: radial-gradient(ellipse at 40% 40%, rgba(200, 200, 200, 0.3) 0%, transparent 65%);
+  background: rgba(200, 200, 200, 0.3);
+  opacity: 0.08;
 }
 .sticker-white:hover {
-  transform: rotate(0.3deg) scale(1.01);
+  transform: rotate(-0.1deg) scale(1.01);
 }
 
-/* 橙色卡片 */
+/* 橙色卡片 - 点缀色，少量使用 */
 .sticker-orange {
-  background-color: var(--crayon-orange);
-  border-radius: 50% 50% 60% 40% / 40% 60% 50% 50%;
-  box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3), 0 0 40px 10px rgba(255, 180, 120, 0.25);
-  transform: rotate(0.4deg);
-}
-.sticker-orange::before {
-  inset: -1px;
-  border-radius: 52% 48% 58% 42% / 42% 58% 48% 52%;
-  border: 2.5px solid #5C4B37;
-  border-left-width: 3.5px;
-  border-top-color: #7A6B5D;
-  transform: rotate(-0.4deg);
+  background-color: var(--crayon-accent);
+  border-radius: 10px 16px 12px 14px;
+  box-shadow: var(--hand-border);
+  transform: rotate(0.2deg);
 }
 .sticker-orange::after {
-  inset: -12px;
-  border-radius: 45% 55% 55% 45%;
-  background: radial-gradient(ellipse at 40% 40%, rgba(255, 190, 140, 0.45) 0%, transparent 65%);
+  background: var(--crayon-accent);
+  opacity: 0.15;
 }
 .sticker-orange:hover {
-  transform: rotate(-0.6deg) scale(1.01);
+  transform: rotate(-0.2deg) scale(1.01);
 }
 
-/* ==========================
+/* 粉色卡片 - 少量使用 */
+.sticker-pink {
+  background-color: #FFCDD2;
+  border-radius: 14px 10px 16px 12px;
+  box-shadow: var(--hand-border);
+  transform: rotate(-0.3deg);
+}
+.sticker-pink::after {
+  background: #FFCDD2;
+  opacity: 0.15;
+}
+.sticker-pink:hover {
+  transform: rotate(0.2deg) scale(1.01);
+}
+
+/* ==========================================
    按钮系统
-   每个按钮不同的不规则圆角+旋转
-   ========================== */
+   ========================================== */
 .hand-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 14px 32px;
+  padding: 14px 28px;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
   transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: none;
+  color: var(--ink-color);
+  letter-spacing: 0.02em;
 }
 
-/* 绿色按钮 */
 .hand-btn-green {
   background-color: var(--crayon-green);
-  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  box-shadow: var(--hand-border-btn), inset 0 0 10px rgba(255,255,255,0.3), 0 0 16px rgba(100, 220, 100, 0.2);
-  transform: rotate(0.3deg);
-}
-.hand-btn-green:hover {
-  transform: translate(-2px, -2px) scale(1.02) rotate(-0.5deg);
-  box-shadow: 2px 2px 0 0 #5C4B37, 3px 3px 0 0 #7A6B5D, -1px 2px 0 0 #5C4B37, inset 0 0 10px rgba(255,255,255,0.3), 0 0 22px rgba(100, 220, 100, 0.35);
-}
-.hand-btn-green:active {
-  transform: translate(2px, 2px) scale(0.98) rotate(0.3deg);
-}
-
-/* 蓝色按钮 */
-.hand-btn-blue {
-  background-color: var(--crayon-blue);
-  border-radius: 40% 60% 70% 30% / 50% 40% 60% 50%;
-  box-shadow: var(--hand-border-btn), inset 0 0 10px rgba(255,255,255,0.3), 0 0 16px rgba(100, 180, 220, 0.2);
-  transform: rotate(-0.4deg);
-}
-.hand-btn-blue:hover {
-  transform: translate(-2px, -2px) scale(1.02) rotate(0.3deg);
-  box-shadow: 2px 2px 0 0 #5C4B37, 3px 3px 0 0 #7A6B5D, -1px 2px 0 0 #5C4B37, inset 0 0 10px rgba(255,255,255,0.3), 0 0 22px rgba(100, 180, 220, 0.35);
-}
-.hand-btn-blue:active {
-  transform: translate(2px, 2px) scale(0.98) rotate(-0.4deg);
-}
-
-/* 黄色按钮 */
-.hand-btn-yellow {
-  background-color: var(--crayon-yellow);
-  border-radius: 50% 50% 40% 60% / 60% 40% 50% 50%;
-  box-shadow: var(--hand-border-btn), inset 0 0 10px rgba(255,255,255,0.3), 0 0 16px rgba(255, 200, 50, 0.2);
-  transform: rotate(0.5deg);
-}
-.hand-btn-yellow:hover {
-  transform: translate(-2px, -2px) scale(1.02) rotate(-0.3deg);
-  box-shadow: 2px 2px 0 0 #5C4B37, 3px 3px 0 0 #7A6B5D, -1px 2px 0 0 #5C4B37, inset 0 0 10px rgba(255,255,255,0.3), 0 0 22px rgba(255, 200, 50, 0.35);
-}
-
-/* 粉色按钮 */
-.hand-btn-pink {
-  background-color: var(--crayon-pink);
-  border-radius: 70% 30% 50% 50% / 40% 60% 40% 60%;
-  box-shadow: var(--hand-border-btn), inset 0 0 10px rgba(255,255,255,0.3), 0 0 16px rgba(255, 150, 170, 0.2);
-  transform: rotate(-0.3deg);
-}
-.hand-btn-pink:hover {
-  transform: translate(-2px, -2px) scale(1.02) rotate(0.4deg);
-  box-shadow: 2px 2px 0 0 #5C4B37, 3px 3px 0 0 #7A6B5D, -1px 2px 0 0 #5C4B37, inset 0 0 10px rgba(255,255,255,0.3), 0 0 22px rgba(255, 150, 170, 0.35);
-}
-
-/* 白色按钮 */
-.hand-btn-white {
-  background-color: rgba(255, 255, 255, 0.85);
-  border-radius: 45% 55% 60% 40% / 50% 50% 40% 60%;
-  box-shadow: var(--hand-border-btn), inset 0 0 10px rgba(255,255,255,0.3), 0 0 16px rgba(0, 0, 0, 0.04);
+  border-radius: 10px 14px 12px 16px;
+  box-shadow: var(--hand-border-btn);
   transform: rotate(0.2deg);
 }
-.hand-btn-white:hover {
-  transform: translate(-2px, -2px) scale(1.02) rotate(-0.4deg);
-  box-shadow: 2px 2px 0 0 #5C4B37, 3px 3px 0 0 #7A6B5D, -1px 2px 0 0 #5C4B37, inset 0 0 10px rgba(255,255,255,0.3), 0 0 22px rgba(0, 0, 0, 0.1);
+.hand-btn-green:hover {
+  transform: translate(-2px, -2px) scale(1.02);
+  box-shadow: 3px 3px 0 0 var(--border-color), 4px 4px 0 0 var(--border-light);
+}
+.hand-btn-green:active {
+  transform: translate(1px, 1px) scale(0.98);
 }
 
-/* ==========================
-   其他手绘组件
-   ========================== */
+.hand-btn-blue {
+  background-color: var(--crayon-blue);
+  border-radius: 12px 10px 14px 12px;
+  box-shadow: var(--hand-border-btn);
+  transform: rotate(-0.2deg);
+}
+.hand-btn-blue:hover {
+  transform: translate(-2px, -2px) scale(1.02);
+  box-shadow: 3px 3px 0 0 var(--border-color), 4px 4px 0 0 var(--border-light);
+}
+.hand-btn-blue:active {
+  transform: translate(1px, 1px) scale(0.98);
+}
 
-/* 手绘不规则边框 */
-.hand-border {
-  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3);
+.hand-btn-yellow {
+  background-color: var(--crayon-yellow);
+  border-radius: 14px 12px 10px 16px;
+  box-shadow: var(--hand-border-btn);
   transform: rotate(0.3deg);
+}
+.hand-btn-yellow:hover {
+  transform: translate(-2px, -2px) scale(1.02);
+  box-shadow: 3px 3px 0 0 var(--border-color), 4px 4px 0 0 var(--border-light);
+}
+
+.hand-btn-white {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 10px 14px 12px 16px;
+  box-shadow: var(--hand-border-btn);
+  transform: rotate(-0.1deg);
+}
+.hand-btn-white:hover {
+  transform: translate(-2px, -2px) scale(1.02);
+}
+
+/* ==========================================
+   其他手绘组件
+   ========================================== */
+
+/* 手绘边框 */
+.hand-border {
+  border-radius: 10px 14px 12px 16px;
+  box-shadow: var(--hand-border);
 }
 
 /* 手绘输入框 */
 .hand-input {
-  border-radius: 14px 10px 16px 12px / 12px 16px 10px 14px;
+  border-radius: 10px 14px 12px 16px;
   padding: 12px 16px;
   font-size: 16px;
   color: var(--ink-color);
-  background-color: rgba(255, 255, 255, 0.7);
-  box-shadow: var(--hand-border-btn), inset 0 0 10px rgba(255,255,255,0.3);
-  transform: rotate(0.2deg);
-  transition: box-shadow 0.2s ease;
+  background-color: rgba(255, 255, 255, 0.85);
+  box-shadow: var(--hand-border-btn);
   border: none;
   outline: none;
+  line-height: 1.6;
+  transition: box-shadow 0.2s ease;
 }
 .hand-input:focus {
-  box-shadow: 2px 2px 0 0 #5C4B37, 3px 3px 0 0 #7A6B5D, -1px 2px 0 0 #5C4B37, inset 0 0 12px rgba(255,255,255,0.5), 0 0 12px rgba(92, 75, 55, 0.15);
+  box-shadow: 2px 2px 0 0 var(--border-color), 3px 3px 0 0 var(--border-light), inset 0 0 8px rgba(255,255,255,0.5);
 }
 .hand-input::placeholder {
-  color: var(--ink-light);
+  color: var(--ink-muted);
 }
 
 /* 手绘气泡对话框 */
 .speech-bubble {
   position: relative;
   padding: 14px 18px;
-  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  background-color: rgba(255, 255, 255, 0.6);
-  box-shadow: var(--hand-border), inset 0 0 10px rgba(255,255,255,0.3);
-  transform: rotate(0.3deg);
+  border-radius: 10px 14px 12px 16px;
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: var(--hand-border);
+  transform: rotate(0.2deg);
 }
 .speech-bubble::after {
   content: '';
   position: absolute;
-  bottom: -10px;
+  bottom: -8px;
   left: 24px;
   width: 0;
   height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-top: 10px solid #5C4B37;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid var(--border-color);
 }
 
-/* 手写字体标题 */
+/* 手写字体标题 - 只用于标题和装饰文字 */
 .handwritten-title {
   font-family: 'ZCOOL KuaiLe', 'Noto Sans SC', cursive;
   color: var(--ink-color);
   letter-spacing: 0.05em;
+  line-height: 1.4;
 }
 
-/* 手绘分割线 - 虚线 */
+/* 手绘分割线 - 简单虚线 */
 .hand-divider {
-  height: 3px;
+  height: 2px;
   background: repeating-linear-gradient(
     90deg,
-    #5C4B37 0px,
-    #5C4B37 8px,
-    transparent 8px,
+    var(--border-color) 0px,
+    var(--border-color) 6px,
+    transparent 6px,
     transparent 12px
   );
   border: none;
-  border-radius: 2px;
+  border-radius: 1px;
+  opacity: 0.35;
 }
 
 /* 波浪分割线 */
 .wavy-divider {
-  height: 12px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 C150,120 350,0 600,60 C850,120 1050,0 1200,60 L1200,120 L0,120 Z' fill='%235C4B37' fill-opacity='0.12'/%3E%3C/svg%3E");
+  height: 10px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 C150,120 350,0 600,60 C850,120 1050,0 1200,60 L1200,120 L0,120 Z' fill='%235C4B37' fill-opacity='0.08'/%3E%3C/svg%3E");
   background-size: 1200px 100%;
   border: none;
 }
@@ -386,46 +475,28 @@ body {
 /* 手绘徽章 */
 .hand-badge {
   display: inline-block;
-  padding: 6px 14px;
-  font-size: 14px;
+  padding: 5px 12px;
+  font-size: 13px;
   font-weight: 500;
-  box-shadow: var(--hand-border-btn), inset 0 0 10px rgba(255,255,255,0.3);
+  box-shadow: var(--hand-border-btn);
+  border-radius: 8px 12px 10px 14px;
+  color: var(--ink-color);
 }
 
 .hand-badge-yellow {
   background-color: var(--crayon-yellow);
-  border-radius: 40% 60% 50% 50% / 50% 40% 60% 50%;
-  transform: rotate(0.2deg);
 }
-
 .hand-badge-green {
   background-color: var(--crayon-green);
-  border-radius: 60% 40% 50% 50% / 40% 60% 40% 60%;
-  transform: rotate(-0.3deg);
 }
-
 .hand-badge-blue {
   background-color: var(--crayon-blue);
-  border-radius: 50% 50% 60% 40% / 50% 50% 40% 60%;
-  transform: rotate(0.3deg);
 }
-
-.hand-badge-pink {
-  background-color: var(--crayon-pink);
-  border-radius: 45% 55% 45% 55% / 55% 45% 55% 45%;
-  transform: rotate(-0.2deg);
-}
-
 .hand-badge-white {
-  background-color: rgba(255, 255, 255, 0.85);
-  border-radius: 55% 45% 55% 45% / 45% 55% 45% 55%;
-  transform: rotate(0.15deg);
+  background-color: rgba(255, 255, 255, 0.9);
 }
-
 .hand-badge-orange {
-  background-color: var(--crayon-orange);
-  border-radius: 50% 50% 40% 60% / 40% 60% 50% 50%;
-  transform: rotate(-0.25deg);
+  background-color: var(--crayon-accent);
 }
 
 /* 手绘图标 */
@@ -435,34 +506,99 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  border-radius: 10px 14px 12px 16px;
   background-color: var(--crayon-green);
-  box-shadow: var(--hand-border-btn), inset 0 0 10px rgba(255,255,255,0.3);
-  transform: rotate(0.3deg);
+  box-shadow: var(--hand-border-btn);
+  transform: rotate(0.2deg);
 }
 
 /* 滚动条手绘风格 */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 ::-webkit-scrollbar-track {
   background: var(--paper-color);
 }
 ::-webkit-scrollbar-thumb {
   background: var(--crayon-green);
-  border-radius: 5px;
+  border-radius: 4px;
   border: 2px solid var(--paper-color);
 }
 
-/* 加载中动画 */
+/* ==========================================
+   动画
+   ========================================== */
+
+/* 摇摆动画 */
 @keyframes wiggle {
-  0%, 100% { transform: rotate(-2deg); }
-  50% { transform: rotate(2deg); }
+  0%, 100% { transform: rotate(-1.5deg); }
+  50% { transform: rotate(1.5deg); }
 }
 .animate-wiggle {
   animation: wiggle 2s ease-in-out infinite;
 }
 
+/* 加载中动画 */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+/* 渐入动画 */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out;
+}
+
 /* 微旋转装饰 */
-.tilt-left { transform: rotate(-1.5deg); }
-.tilt-right { transform: rotate(1.5deg); }
+.tilt-left { transform: rotate(-1deg); }
+.tilt-right { transform: rotate(1deg); }
+
+/* 数学符号装饰 - 淡淡的背景 */
+.math-symbol-deco {
+  font-family: 'Times New Roman', 'Noto Serif', serif;
+  color: var(--ink-muted);
+  opacity: 0.12;
+  user-select: none;
+  pointer-events: none;
+  font-size: 3rem;
+  position: absolute;
+}
+
+/* 加载动画容器 */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--paper-color);
+  z-index: 9999;
+  gap: 16px;
+}
+
+.loading-infinity {
+  font-family: 'Times New Roman', serif;
+  font-size: 48px;
+  color: var(--ink-color);
+}
+
+.loading-text {
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 16px;
+  color: var(--ink-light);
+  letter-spacing: 0.05em;
+}

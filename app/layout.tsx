@@ -25,12 +25,24 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen paper-grid">
+      <body className="min-h-screen paper-grid relative">
+        {/* 数学涂鸦背景 - 只在角落/边缘，10-15%透明度 */}
+        <div className="math-doodle-bg" aria-hidden="true" />
+        <div className="math-doodle-corner-bl" aria-hidden="true" />
+        <div className="math-doodle-corner-br" aria-hidden="true">
+          x + y = ?
+        </div>
+
         <SecurityGuard />
         <Providers>{children}</Providers>
+
         {/* 版权声明 */}
-        <footer className="text-center py-6 text-sm" style={{ color: "#8A7B6D" }}>
-          <p>© 2026 数学小讲师联盟 版权所有</p>
+        <footer className="text-center py-6 text-sm relative z-10" style={{ color: "#8A7B6D" }}>
+          <p className="flex items-center justify-center gap-2">
+            <span className="font-serif text-lg opacity-40">&#8734;</span>
+            <span>&copy; 2026 数学小讲师联盟 版权所有</span>
+            <span className="font-serif text-lg opacity-40">&#8734;</span>
+          </p>
           <p className="mt-1 text-xs">
             未经授权，禁止复制、转载或商业使用本站内容
           </p>
