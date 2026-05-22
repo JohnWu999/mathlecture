@@ -22,13 +22,19 @@ export default function Navbar() {
         <Link href="/projects" className="hover:text-ink transition-colors">
           项目营
         </Link>
+        <Link href="/hall" className="hover:text-ink transition-colors">
+          成果广场
+        </Link>
 
         {status === "loading" ? (
           <span className="text-ink-light">加载中...</span>
         ) : session?.user ? (
           <div className="flex items-center gap-3">
-            <span className="text-ink font-medium">
+            <Link href="/profile" className="text-ink font-medium hover:underline">
               {session.user.name || session.user.email}
+            </Link>
+            <span className="px-2 py-0.5 bg-crayon-orange/30 rounded-full text-xs font-medium">
+              ⚡ {session.user.points || 0}
             </span>
             <span
               className={`px-2 py-0.5 rounded-full text-xs font-medium ${
