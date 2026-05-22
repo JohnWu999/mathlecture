@@ -10,34 +10,40 @@
 :root {
   /* 纸张色 */
   --paper-color: #FAF8F0;
-  --paper-grid: #F5F0E8;
 
   /* 文字色 - 深棕/深灰，确保可读性 */
   --ink-color: #3E2723;
   --ink-light: #5D4E44;
   --ink-muted: #8D7E72;
 
-  /* 主色调 - 3个蜡笔基础色（草绿、天蓝、暖黄） */
+  /* 主色调 - 3个蜡笔基础色（深浅不均模拟蜡笔涂抹） */
   --crayon-green: #A5D6A7;
+  --crayon-green-dark: #81C784;
+  --crayon-green-light: #C8E6C9;
   --crayon-blue: #90CAF9;
+  --crayon-blue-dark: #64B5F6;
+  --crayon-blue-light: #BBDEFB;
   --crayon-yellow: #FFF59D;
-
-  /* 点缀色 - 温暖橙 */
-  --crayon-accent: #FFCC80;
+  --crayon-yellow-dark: #FFF176;
+  --crayon-yellow-light: #FFF9C4;
 
   /* 边框色 */
   --border-color: #5C4B37;
-  --border-light: rgba(92, 75, 55, 0.5);
+  --border-light: rgba(92, 75, 55, 0.45);
 
-  /* 手绘边框 - 简化为3层，粗细不均 */
+  /* 手绘边框 - 多层模拟线条抖动+粗细不均 */
   --hand-border:
-    2px 2px 0 0 var(--border-color),
-    3px 3px 0 0 var(--border-light),
-    -1px 2px 0 0 var(--border-color);
+    2.5px 2px 0 0 var(--border-color),
+    3.5px 3px 0 0 var(--border-light),
+    -1.5px 2.5px 0 0 var(--border-color),
+    2px -1px 0 0 var(--border-light),
+    -2px -1.5px 0 0 var(--border-color),
+    3.5px 1px 0 0 var(--border-color);
 
   --hand-border-btn:
     2px 2px 0 0 var(--border-color),
-    3px 3px 0 0 var(--border-light);
+    3px 3px 0 0 var(--border-light),
+    -1px 2px 0 0 var(--border-color);
 }
 
 /* ==========================================
@@ -53,7 +59,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 标题字体规范：手写感只用于标题，正文用圆体 */
+/* 标题字体规范：手写感只用于标题 */
 h1, h2, h3 {
   font-weight: 700;
   line-height: 1.4;
@@ -77,16 +83,19 @@ p {
    背景系统
    ========================================== */
 
-/* 方格纸背景 - 70%面积 */
+/* 方格纸背景 - 70%面积，线条清晰可见 */
 .paper-grid {
   background-color: var(--paper-color);
   background-image:
-    linear-gradient(rgba(92, 74, 55, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(92, 74, 55, 0.06) 1px, transparent 1px);
-  background-size: 28px 28px;
+    linear-gradient(rgba(92, 74, 55, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(92, 74, 55, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
-/* 数学涂鸦装饰 - 只在角落/边缘，10-15%透明度 */
+/* ==========================================
+   数学涂鸦背景 - 30%面积
+   只在角落/边缘，10-15%透明度
+   ========================================== */
 .math-doodle-bg {
   position: fixed;
   inset: 0;
@@ -95,63 +104,90 @@ p {
   overflow: hidden;
 }
 
-/* 左上角小数字 */
+/* 左上角 - 小数字像随手写的 */
 .math-doodle-bg::before {
-  content: '1  2  +  3';
+  content: '';
   position: absolute;
-  top: 80px;
-  left: 20px;
-  font-family: 'ZCOOL KuaiLe', cursive;
-  font-size: 28px;
-  color: var(--border-color);
-  opacity: 0.1;
-  transform: rotate(-8deg);
-  letter-spacing: 4px;
+  top: 0;
+  left: 0;
+  width: 55%;
+  height: 50%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 250'%3E%3Ctext x='40' y='60' font-size='42' fill='%235C4B37' opacity='0.22' font-family='cursive' transform='rotate(-12 40 60)'%3E1%3C/text%3E%3Ctext x='110' y='50' font-size='32' fill='%235C4B37' opacity='0.18' font-family='cursive' transform='rotate(8 110 50)'%3E2%3C/text%3E%3Ctext x='180' y='80' font-size='36' fill='%235C4B37' opacity='0.20' font-family='cursive' transform='rotate(-5 180 80)'%3E3%3C/text%3E%3Ctext x='80' y='120' font-size='28' fill='%235C4B37' opacity='0.16' font-family='cursive'%3E+%3C/text%3E%3Ctext x='140' y='160' font-size='30' fill='%235C4B37' opacity='0.18' font-family='cursive' transform='rotate(15 140 160)'%3E=%3C/text%3E%3Ctext x='60' y='200' font-size='26' fill='%235C4B37' opacity='0.15' font-family='cursive' transform='rotate(-8 60 200)'%3E4%3C/text%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
-/* 右上角几何图形 */
+/* 右上角 - 几何图形像草稿 */
 .math-doodle-bg::after {
   content: '';
   position: absolute;
-  top: 60px;
-  right: 30px;
-  width: 60px;
-  height: 60px;
-  border: 2px solid var(--border-color);
-  border-radius: 50%;
-  opacity: 0.1;
-  transform: rotate(5deg);
+  top: 0;
+  right: 0;
+  width: 55%;
+  height: 48%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 250'%3E%3Ccircle cx='240' cy='60' r='45' fill='none' stroke='%235C4B37' stroke-width='2' opacity='0.20'/%3E%3Cpolygon points='200,160 250,210 160,210' fill='none' stroke='%235C4B37' stroke-width='2' opacity='0.18'/%3E%3Ctext x='180' y='120' font-size='28' fill='%235C4B37' opacity='0.16' font-family='cursive' transform='rotate(20 180 120)'%3E×%3C/text%3E%3Ctext x='220' y='180' font-size='24' fill='%235C4B37' opacity='0.15' font-family='cursive'%3E÷%3C/text%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: top right;
 }
 
-/* 左下角三角形 */
+/* 左下角 - 数学公式和符号 */
 .math-doodle-corner-bl {
   position: fixed;
-  bottom: 40px;
-  left: 30px;
-  width: 0;
-  height: 0;
-  border-left: 25px solid transparent;
-  border-right: 25px solid transparent;
-  border-bottom: 40px solid var(--border-color);
-  opacity: 0.08;
+  bottom: 0;
+  left: 0;
+  width: 55%;
+  height: 48%;
   pointer-events: none;
   z-index: 0;
-  transform: rotate(-15deg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 250'%3E%3Ctext x='50' y='160' font-size='32' fill='%235C4B37' opacity='0.18' font-family='cursive' transform='rotate(-8 50 160)'%3Ea + b%3C/text%3E%3Ctext x='100' y='200' font-size='28' fill='%235C4B37' opacity='0.16' font-family='cursive'%3E÷%3C/text%3E%3Ctext x='40' y='220' font-size='24' fill='%235C4B37' opacity='0.15' font-family='cursive' transform='rotate(12 40 220)'%3E-%3C/text%3E%3Cpolygon points='40,230 70,245 55,215' fill='%235C4B37' opacity='0.14'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: bottom left;
 }
 
-/* 右下角数学公式 */
+/* 右下角 - 数字和几何 */
 .math-doodle-corner-br {
   position: fixed;
-  bottom: 60px;
-  right: 40px;
-  font-family: 'Times New Roman', serif;
-  font-size: 22px;
-  color: var(--border-color);
-  opacity: 0.1;
+  bottom: 0;
+  right: 0;
+  width: 50%;
+  height: 45%;
   pointer-events: none;
   z-index: 0;
-  transform: rotate(10deg);
-  letter-spacing: 2px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 250'%3E%3Ctext x='200' y='180' font-size='36' fill='%235C4B37' opacity='0.18' font-family='cursive' transform='rotate(10 200 180)'%3E5%3C/text%3E%3Ctext x='140' y='210' font-size='30' fill='%235C4B37' opacity='0.16' font-family='cursive' transform='rotate(-15 140 210)'%3E-%3C/text%3E%3Crect x='180' y='120' width='60' height='60' fill='none' stroke='%235C4B37' stroke-width='2' opacity='0.15' transform='rotate(20 210 150)'/%3E%3Ctext x='220' y='100' font-size='26' fill='%235C4B37' opacity='0.14' font-family='cursive' transform='rotate(-5 220 100)'%3E6%3C/text%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: bottom right;
+}
+
+/* 页面中部淡淡数学符号 - 增加面积 */
+.math-doodle-mid-left {
+  position: fixed;
+  top: 50%;
+  left: 2%;
+  transform: translateY(-50%);
+  font-family: 'Times New Roman', serif;
+  font-size: 48px;
+  color: var(--border-color);
+  opacity: 0.06;
+  pointer-events: none;
+  z-index: 0;
+  user-select: none;
+}
+
+.math-doodle-mid-right {
+  position: fixed;
+  top: 40%;
+  right: 3%;
+  font-family: 'Times New Roman', serif;
+  font-size: 36px;
+  color: var(--border-color);
+  opacity: 0.07;
+  pointer-events: none;
+  z-index: 0;
+  user-select: none;
+  transform: rotate(25deg);
 }
 
 /* ==========================================
@@ -177,34 +213,34 @@ p {
   animation: infinity-spin 4s linear infinite;
 }
 
-/* ∞进度点 */
-.infinity-dot {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  font-family: 'Times New Roman', serif;
-  font-size: 14px;
-  color: var(--ink-muted);
-}
-.infinity-dot.active {
-  color: var(--crayon-green);
-  font-weight: bold;
-}
-
 /* ∞标题装饰 */
 .infinity-title::after {
   content: ' ∞';
   font-family: 'Times New Roman', serif;
   color: var(--ink-muted);
-  opacity: 0.4;
-  font-size: 0.8em;
+  opacity: 0.35;
+  font-size: 0.75em;
+}
+
+/* 蜡笔纹理 - 模拟蜡笔在纸上的粒子感 */
+.crayon-texture {
+  position: relative;
+}
+.crayon-texture::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.08;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-size: 80px 80px;
+  mix-blend-mode: multiply;
 }
 
 /* ==========================================
    便利贴卡片系统
-   手绘感边框，但内部干净清晰
+   手绘感边框，内部干净清晰
    ========================================== */
 .sticker {
   padding: 20px;
@@ -213,6 +249,21 @@ p {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* 卡片蜡笔纹理重叠 */
+.sticker::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.10;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-size: 50px 50px;
+  mix-blend-mode: multiply;
+  border-radius: inherit;
+}
+
+/* 手绘边框 - 用多层box-shadow模拟线条抖动+粗细不均 */
 .sticker::before {
   content: '';
   position: absolute;
@@ -220,112 +271,156 @@ p {
   z-index: -1;
   pointer-events: none;
   border-radius: 10px 14px 12px 16px;
-  border: 2px solid var(--border-color);
-  border-top-width: 2.5px;
-  border-bottom-width: 2.5px;
-  border-left-width: 1.8px;
+  box-shadow:
+    2px 2px 0 0 var(--border-color),
+    3px 3px 0 0 var(--border-light),
+    -1.5px 2px 0 0 var(--border-color),
+    2px -1px 0 0 var(--border-light),
+    -2px -1.5px 0 0 var(--border-color),
+    3px 1px 0 0 var(--border-color),
+    inset 0 0 0 2px var(--border-color);
 }
 
-.sticker::after {
+/* 便利贴效果 - 上边缘轻微撕痕 */
+.sticker-note::before {
   content: '';
   position: absolute;
-  inset: -3px;
-  z-index: -2;
-  pointer-events: none;
-  border-radius: 12px 16px 14px 18px;
-  opacity: 0.12;
+  top: -3px;
+  left: 15%;
+  width: 20%;
+  height: 6px;
+  background: var(--paper-color);
+  border-radius: 0 0 40% 40%;
+  z-index: 2;
 }
 
-/* 黄色卡片 - 暖黄 */
+/* 草稿纸效果 - 右下角轻微卷起 */
+.sticker-paper::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.08) 50%);
+  border-radius: 0 0 0 10px;
+  z-index: 2;
+}
+
+/* 卡片背景光 - 蜡笔涂抹感（深浅不均） */
+.sticker-bg-glow {
+  position: absolute;
+  inset: -8px;
+  z-index: -2;
+  pointer-events: none;
+  border-radius: 14px 18px 16px 20px;
+  opacity: 0.18;
+}
+
+/* 黄色便利贴 */
 .sticker-yellow {
-  background-color: var(--crayon-yellow);
+  background:
+    radial-gradient(ellipse at 30% 30%, var(--crayon-yellow-light) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 70%, var(--crayon-yellow-dark) 0%, transparent 50%),
+    var(--crayon-yellow);
   border-radius: 10px 14px 12px 16px;
+  box-shadow: var(--hand-border);
+  transform: rotate(-0.4deg);
+}
+.sticker-yellow .sticker-bg-glow {
+  background: radial-gradient(ellipse at 40% 40%, var(--crayon-yellow) 0%, transparent 65%);
+}
+.sticker-yellow:hover {
+  transform: rotate(0.3deg) scale(1.01);
+}
+
+/* 绿色便利贴 */
+.sticker-green {
+  background:
+    radial-gradient(ellipse at 25% 35%, var(--crayon-green-light) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 65%, var(--crayon-green-dark) 0%, transparent 45%),
+    var(--crayon-green);
+  border-radius: 12px 10px 14px 12px;
+  box-shadow: var(--hand-border);
+  transform: rotate(0.4deg);
+}
+.sticker-green .sticker-bg-glow {
+  background: radial-gradient(ellipse at 40% 40%, var(--crayon-green) 0%, transparent 65%);
+}
+.sticker-green:hover {
+  transform: rotate(-0.3deg) scale(1.01);
+}
+
+/* 蓝色便利贴 */
+.sticker-blue {
+  background:
+    radial-gradient(ellipse at 35% 25%, var(--crayon-blue-light) 0%, transparent 50%),
+    radial-gradient(ellipse at 65% 75%, var(--crayon-blue-dark) 0%, transparent 55%),
+    var(--crayon-blue);
+  border-radius: 14px 12px 10px 16px;
   box-shadow: var(--hand-border);
   transform: rotate(-0.3deg);
 }
-.sticker-yellow::after {
-  background: var(--crayon-yellow);
-}
-.sticker-yellow:hover {
-  transform: rotate(0.2deg) scale(1.01);
-  box-shadow: 3px 3px 0 0 var(--border-color), 4px 4px 0 0 var(--border-light), -1px 2px 0 0 var(--border-color);
-}
-
-/* 绿色卡片 - 草绿 */
-.sticker-green {
-  background-color: var(--crayon-green);
-  border-radius: 12px 10px 14px 12px;
-  box-shadow: var(--hand-border);
-  transform: rotate(0.3deg);
-}
-.sticker-green::after {
-  background: var(--crayon-green);
-}
-.sticker-green:hover {
-  transform: rotate(-0.2deg) scale(1.01);
-}
-
-/* 蓝色卡片 - 天蓝 */
-.sticker-blue {
-  background-color: var(--crayon-blue);
-  border-radius: 14px 12px 10px 16px;
-  box-shadow: var(--hand-border);
-  transform: rotate(-0.2deg);
-}
-.sticker-blue::after {
-  background: var(--crayon-blue);
+.sticker-blue .sticker-bg-glow {
+  background: radial-gradient(ellipse at 40% 40%, var(--crayon-blue) 0%, transparent 65%);
 }
 .sticker-blue:hover {
-  transform: rotate(0.2deg) scale(1.01);
+  transform: rotate(0.3deg) scale(1.01);
 }
 
-/* 白色卡片 */
+/* 白色便利贴/草稿纸 */
 .sticker-white {
-  background-color: rgba(255, 255, 255, 0.85);
+  background:
+    radial-gradient(ellipse at 40% 40%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.75) 60%, transparent 100%);
   border-radius: 12px 14px 10px 16px;
-  box-shadow: var(--hand-border);
-  transform: rotate(0.1deg);
-}
-.sticker-white::after {
-  background: rgba(200, 200, 200, 0.3);
-  opacity: 0.08;
-}
-.sticker-white:hover {
-  transform: rotate(-0.1deg) scale(1.01);
-}
-
-/* 橙色卡片 - 点缀色，少量使用 */
-.sticker-orange {
-  background-color: var(--crayon-accent);
-  border-radius: 10px 16px 12px 14px;
   box-shadow: var(--hand-border);
   transform: rotate(0.2deg);
 }
-.sticker-orange::after {
-  background: var(--crayon-accent);
-  opacity: 0.15;
+.sticker-white::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.06) 50%);
+  border-radius: 0 0 0 8px;
+  z-index: 2;
 }
-.sticker-orange:hover {
+.sticker-white:hover {
   transform: rotate(-0.2deg) scale(1.01);
 }
 
-/* 粉色卡片 - 少量使用 */
+/* 橙色点缀 - 少量使用 */
+.sticker-orange {
+  background:
+    radial-gradient(ellipse at 30% 30%, #FFE0B2 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 70%, #FFCC80 0%, transparent 55%),
+    #FFCC80;
+  border-radius: 10px 16px 12px 14px;
+  box-shadow: var(--hand-border);
+  transform: rotate(0.3deg);
+}
+.sticker-orange:hover {
+  transform: rotate(-0.3deg) scale(1.01);
+}
+
+/* 粉色点缀 - 少量使用 */
 .sticker-pink {
-  background-color: #FFCDD2;
+  background:
+    radial-gradient(ellipse at 40% 30%, #FFCDD2 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 70%, #EF9A9A 0%, transparent 45%),
+    #FFCDD2;
   border-radius: 14px 10px 16px 12px;
   box-shadow: var(--hand-border);
-  transform: rotate(-0.3deg);
-}
-.sticker-pink::after {
-  background: #FFCDD2;
-  opacity: 0.15;
+  transform: rotate(-0.4deg);
 }
 .sticker-pink:hover {
-  transform: rotate(0.2deg) scale(1.01);
+  transform: rotate(0.3deg) scale(1.01);
 }
 
 /* ==========================================
-   按钮系统
+   按钮系统 - 蜡笔感，粗细不均
    ========================================== */
 .hand-btn {
   display: inline-flex;
@@ -339,13 +434,30 @@ p {
   border: none;
   color: var(--ink-color);
   letter-spacing: 0.02em;
+  position: relative;
+  z-index: 1;
+}
+
+.hand-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 10px 14px 12px 16px;
+  border: 2px solid var(--border-color);
+  border-top-width: 2.5px;
+  border-bottom-width: 1.8px;
 }
 
 .hand-btn-green {
-  background-color: var(--crayon-green);
+  background:
+    radial-gradient(ellipse at 30% 30%, var(--crayon-green-light) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 70%, var(--crayon-green-dark) 0%, transparent 45%),
+    var(--crayon-green);
   border-radius: 10px 14px 12px 16px;
   box-shadow: var(--hand-border-btn);
-  transform: rotate(0.2deg);
+  transform: rotate(0.3deg);
 }
 .hand-btn-green:hover {
   transform: translate(-2px, -2px) scale(1.02);
@@ -356,10 +468,13 @@ p {
 }
 
 .hand-btn-blue {
-  background-color: var(--crayon-blue);
+  background:
+    radial-gradient(ellipse at 35% 25%, var(--crayon-blue-light) 0%, transparent 50%),
+    radial-gradient(ellipse at 65% 75%, var(--crayon-blue-dark) 0%, transparent 45%),
+    var(--crayon-blue);
   border-radius: 12px 10px 14px 12px;
   box-shadow: var(--hand-border-btn);
-  transform: rotate(-0.2deg);
+  transform: rotate(-0.3deg);
 }
 .hand-btn-blue:hover {
   transform: translate(-2px, -2px) scale(1.02);
@@ -370,10 +485,13 @@ p {
 }
 
 .hand-btn-yellow {
-  background-color: var(--crayon-yellow);
+  background:
+    radial-gradient(ellipse at 25% 30%, var(--crayon-yellow-light) 0%, transparent 50%),
+    radial-gradient(ellipse at 75% 70%, var(--crayon-yellow-dark) 0%, transparent 45%),
+    var(--crayon-yellow);
   border-radius: 14px 12px 10px 16px;
   box-shadow: var(--hand-border-btn);
-  transform: rotate(0.3deg);
+  transform: rotate(0.4deg);
 }
 .hand-btn-yellow:hover {
   transform: translate(-2px, -2px) scale(1.02);
@@ -381,10 +499,10 @@ p {
 }
 
 .hand-btn-white {
-  background-color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 10px 14px 12px 16px;
   box-shadow: var(--hand-border-btn);
-  transform: rotate(-0.1deg);
+  transform: rotate(-0.2deg);
 }
 .hand-btn-white:hover {
   transform: translate(-2px, -2px) scale(1.02);
@@ -394,19 +512,13 @@ p {
    其他手绘组件
    ========================================== */
 
-/* 手绘边框 */
-.hand-border {
-  border-radius: 10px 14px 12px 16px;
-  box-shadow: var(--hand-border);
-}
-
 /* 手绘输入框 */
 .hand-input {
   border-radius: 10px 14px 12px 16px;
   padding: 12px 16px;
   font-size: 16px;
   color: var(--ink-color);
-  background-color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.85);
   box-shadow: var(--hand-border-btn);
   border: none;
   outline: none;
@@ -420,28 +532,7 @@ p {
   color: var(--ink-muted);
 }
 
-/* 手绘气泡对话框 */
-.speech-bubble {
-  position: relative;
-  padding: 14px 18px;
-  border-radius: 10px 14px 12px 16px;
-  background-color: rgba(255, 255, 255, 0.7);
-  box-shadow: var(--hand-border);
-  transform: rotate(0.2deg);
-}
-.speech-bubble::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 24px;
-  width: 0;
-  height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-top: 8px solid var(--border-color);
-}
-
-/* 手写字体标题 - 只用于标题和装饰文字 */
+/* 手写字体标题 - 只用于标题 */
 .handwritten-title {
   font-family: 'ZCOOL KuaiLe', 'Noto Sans SC', cursive;
   color: var(--ink-color);
@@ -449,7 +540,7 @@ p {
   line-height: 1.4;
 }
 
-/* 手绘分割线 - 简单虚线 */
+/* 手绘分割线 */
 .hand-divider {
   height: 2px;
   background: repeating-linear-gradient(
@@ -464,14 +555,6 @@ p {
   opacity: 0.35;
 }
 
-/* 波浪分割线 */
-.wavy-divider {
-  height: 10px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 C150,120 350,0 600,60 C850,120 1050,0 1200,60 L1200,120 L0,120 Z' fill='%235C4B37' fill-opacity='0.08'/%3E%3C/svg%3E");
-  background-size: 1200px 100%;
-  border: none;
-}
-
 /* 手绘徽章 */
 .hand-badge {
   display: inline-block;
@@ -481,22 +564,42 @@ p {
   box-shadow: var(--hand-border-btn);
   border-radius: 8px 12px 10px 14px;
   color: var(--ink-color);
+  position: relative;
+  z-index: 1;
+}
+
+.hand-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 8px 12px 10px 14px;
+  border: 1.5px solid var(--border-color);
 }
 
 .hand-badge-yellow {
-  background-color: var(--crayon-yellow);
+  background:
+    radial-gradient(ellipse at 30% 30%, var(--crayon-yellow-light) 0%, transparent 50%),
+    var(--crayon-yellow);
 }
 .hand-badge-green {
-  background-color: var(--crayon-green);
+  background:
+    radial-gradient(ellipse at 30% 30%, var(--crayon-green-light) 0%, transparent 50%),
+    var(--crayon-green);
 }
 .hand-badge-blue {
-  background-color: var(--crayon-blue);
+  background:
+    radial-gradient(ellipse at 30% 30%, var(--crayon-blue-light) 0%, transparent 50%),
+    var(--crayon-blue);
 }
 .hand-badge-white {
-  background-color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.9);
 }
 .hand-badge-orange {
-  background-color: var(--crayon-accent);
+  background:
+    radial-gradient(ellipse at 30% 30%, #FFE0B2 0%, transparent 50%),
+    #FFCC80;
 }
 
 /* 手绘图标 */
@@ -507,12 +610,26 @@ p {
   align-items: center;
   justify-content: center;
   border-radius: 10px 14px 12px 16px;
-  background-color: var(--crayon-green);
+  background:
+    radial-gradient(ellipse at 30% 30%, var(--crayon-green-light) 0%, transparent 50%),
+    var(--crayon-green);
   box-shadow: var(--hand-border-btn);
-  transform: rotate(0.2deg);
+  transform: rotate(0.3deg);
+  position: relative;
+  z-index: 1;
 }
 
-/* 滚动条手绘风格 */
+.hand-icon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 10px 14px 12px 16px;
+  border: 1.5px solid var(--border-color);
+}
+
+/* 滚动条 */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -528,8 +645,6 @@ p {
 /* ==========================================
    动画
    ========================================== */
-
-/* 摇摆动画 */
 @keyframes wiggle {
   0%, 100% { transform: rotate(-1.5deg); }
   50% { transform: rotate(1.5deg); }
@@ -538,7 +653,6 @@ p {
   animation: wiggle 2s ease-in-out infinite;
 }
 
-/* 加载中动画 */
 @keyframes pulse-soft {
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
@@ -547,37 +661,20 @@ p {
   animation: pulse-soft 2s ease-in-out infinite;
 }
 
-/* 渐入动画 */
 @keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .animate-fade-in-up {
   animation: fade-in-up 0.6s ease-out;
 }
 
-/* 微旋转装饰 */
 .tilt-left { transform: rotate(-1deg); }
 .tilt-right { transform: rotate(1deg); }
 
-/* 数学符号装饰 - 淡淡的背景 */
-.math-symbol-deco {
-  font-family: 'Times New Roman', 'Noto Serif', serif;
-  color: var(--ink-muted);
-  opacity: 0.12;
-  user-select: none;
-  pointer-events: none;
-  font-size: 3rem;
-  position: absolute;
-}
-
-/* 加载动画容器 */
+/* ==========================================
+   加载动画
+   ========================================== */
 .loading-screen {
   position: fixed;
   inset: 0;

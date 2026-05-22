@@ -37,7 +37,7 @@ export default function HomePage() {
             </Link>
             <Link
               href="/projects"
-              className="hand-btn hand-btn-blue"
+              className="hand-btn hand-btn-green"
             >
               🚀 探索项目营
             </Link>
