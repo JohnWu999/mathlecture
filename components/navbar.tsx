@@ -25,6 +25,11 @@ export default function Navbar() {
         <Link href="/hall" className="hover:text-ink transition-colors">
           成果广场
         </Link>
+        {(session?.user?.role === "TEACHER" || session?.user?.role === "ADMIN") && (
+          <Link href="/teacher" className="hover:text-ink transition-colors font-medium">
+            📊 老师台
+          </Link>
+        )}
 
         {status === "loading" ? (
           <span className="text-ink-light">加载中...</span>
