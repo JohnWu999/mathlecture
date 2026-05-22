@@ -36,7 +36,7 @@ export default function Navbar() {
         ) : session?.user ? (
           <div className="flex items-center gap-3">
             <Link href="/profile" className="text-ink font-medium hover:underline">
-              {session.user.name || session.user.email}
+              {session.user.name || session.user.phone}
             </Link>
             <span className="px-2 py-0.5 bg-crayon-orange/30 rounded-full text-xs font-medium">
               ⚡ {session.user.points || 0}
@@ -58,20 +58,12 @@ export default function Navbar() {
             </button>
           </div>
         ) : (
-          <div className="flex items-center gap-3">
-            <Link
-              href="/login"
-              className="hover:text-ink transition-colors"
-            >
-              登录
-            </Link>
-            <Link
-              href="/register"
-              className="px-4 py-1.5 bg-crayon-green rounded-full text-ink font-medium text-sm hover:shadow-sticker transition-shadow"
-            >
-              注册
-            </Link>
-          </div>
+          <Link
+            href="/login"
+            className="px-4 py-1.5 bg-crayon-green rounded-full text-ink font-medium text-sm hover:shadow-sticker transition-shadow"
+          >
+            登录 / 注册
+          </Link>
         )}
       </div>
     </nav>

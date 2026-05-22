@@ -24,11 +24,12 @@ export async function GET() {
       select: {
         id: true,
         name: true,
-        email: true,
+        phone: true,
         role: true,
         grade: true,
         region: true,
         points: true,
+        isActive: true,
         createdAt: true,
       },
       take: 100,

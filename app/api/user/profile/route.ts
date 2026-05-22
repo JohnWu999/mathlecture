@@ -17,11 +17,12 @@ export async function GET() {
       select: {
         id: true,
         name: true,
-        email: true,
+        phone: true,
         grade: true,
         region: true,
         points: true,
         role: true,
+        isActive: true,
         createdAt: true,
       },
     });

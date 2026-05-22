@@ -2,17 +2,13 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string;
-      email: string | null;
+      phone: string;
       name: string | null;
       image?: string | null;
       role: string;
       points: number;
+      isActive: boolean;
     };
-  }
-
-  interface User {
-    role: string;
-    points: number;
   }
 }
 
@@ -21,5 +17,7 @@ declare module "next-auth/jwt" {
     role?: string;
     id?: string;
     points?: number;
+    phone?: string;
+    isActive?: boolean;
   }
 }

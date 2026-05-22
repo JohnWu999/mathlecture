@@ -13,7 +13,8 @@ datasource db {
 // 用户表：家长/孩子共用账户，通过 role 区分
 model User {
   id            String    @id @default(cuid())
-  email         String?   @unique
+  phone         String    @unique   // 手机号（登录唯一标识）
+  email         String?   @unique   // 邮箱（可选）
   password      String?   // 密码（bcrypt 加密）
   name          String?
   avatar        String?   // 头像URL
@@ -23,6 +24,7 @@ model User {
   points        Int       @default(0)  // 积分
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  isActive      Boolean   @default(false)  // 老师开放权限
 
   // 关联
   questions     Question[]    // 提出的问题

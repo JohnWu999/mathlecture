@@ -22,12 +22,25 @@ interface PendingAnswer {
   question: { title: string; content: string };
 }
 
+interface UserItem {
+  id: string;
+  name: string | null;
+  phone: string;
+  role: string;
+  grade: number | null;
+  region: string | null;
+  points: number;
+  isActive: boolean;
+  createdAt: string;
+}
+
 export default function TeacherPage() {
   const { data: session } = useSession();
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [pendingAnswers, setPendingAnswers] = useState<PendingAnswer[]>([]);
+  const [users, setUsers] = useState<UserItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "reviews">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "reviews" | "users">("dashboard");
 
   const isTeacher = session?.user?.role === "TEACHER" || session?.user?.role === "ADMIN";
 
@@ -36,15 +49,22 @@ export default function TeacherPage() {
       setLoading(false);
       return;
     }
+    loadData();
+  }, [isTeacher]);
+
+  const loadData = () => {
+    setLoading(true);
     Promise.all([
       fetch("/math-young-lecturer/api/teacher/dashboard").then((r) => r.json()),
       fetch("/math-young-lecturer/api/teacher/answers").then((r) => r.json()),
-    ]).then(([dashData, answersData]) => {
+      fetch("/math-young-lecturer/api/teacher/users").then((r) => r.json()),
+    ]).then(([dashData, answersData, usersData]) => {
       setDashboard(dashData);
       setPendingAnswers(Array.isArray(answersData) ? answersData : []);
+      setUsers(Array.isArray(usersData) ? usersData : []);
       setLoading(false);
     });
-  }, [isTeacher]);
+  };
 
   const handleReview = async (id: string, action: "approve" | "reject") => {
     try {
@@ -61,6 +81,26 @@ export default function TeacherPage() {
       alert("操作失败");
     }
   };
+
+  const handleActivate = async (userId: string, activate: boolean) => {
+    try {
+      const res = await fetch(`/math-young-lecturer/api/teacher/activate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, activate }),
+      });
+      if (res.ok) {
+        setUsers((prev) =>
+          prev.map((u) => (u.id === userId ? { ...u, isActive: activate } : u))
+        );
+        alert(activate ? "已开放权限" : "已关闭权限");
+      }
+    } catch (e) {
+      alert("操作失败");
+    }
+  };
+
+  const inactiveUsers = users.filter((u) => !u.isActive && u.role === "STUDENT");
 
   if (!session?.user) {
     return (
@@ -92,11 +132,11 @@ export default function TeacherPage() {
       <section className="px-6 pt-8 pb-16 max-w-5xl mx-auto">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-ink">📊 老师工作台</h1>
-          <p className="text-ink-light text-sm">管理平台、审核讲题、看数据</p>
+          <p className="text-ink-light text-sm">管理平台、审核讲题、开放用户权限</p>
         </div>
 
         {/* Tab 导航 */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-6 flex-wrap">
           <button
             onClick={() => setActiveTab("dashboard")}
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
@@ -119,6 +159,21 @@ export default function TeacherPage() {
             {pendingAnswers.length > 0 && (
               <span className="absolute -top-1 -right-1 w-5 h-5 bg-crayon-pink rounded-full text-[10px] flex items-center justify-center text-ink font-bold">
                 {pendingAnswers.length}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab("users")}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors relative ${
+              activeTab === "users"
+                ? "bg-crayon-yellow text-ink"
+                : "bg-white text-ink-light hover:bg-ink/5"
+            }`}
+          >
+            👤 用户管理
+            {inactiveUsers.length > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-crayon-pink rounded-full text-[10px] flex items-center justify-center text-ink font-bold">
+                {inactiveUsers.length}
               </span>
             )}
           </button>
@@ -157,17 +212,16 @@ export default function TeacherPage() {
                   ✅ 去审核讲题
                 </button>
                 <button
-                  onClick={() => alert("项目创建功能即将上线")}
+                  onClick={() => setActiveTab("users")}
                   className="hand-btn bg-crayon-blue text-ink text-sm"
                 >
-                  ➕ 创建新项目
+                  👤 管理用户权限
                 </button>
               </div>
             </div>
           </>
-        ) : (
+        ) : activeTab === "reviews" ? (
           <>
-            {/* 待审核列表 */}
             {pendingAnswers.length === 0 ? (
               <div className="sticker bg-white text-center py-12">
                 <div className="text-4xl mb-3">🎉</div>
@@ -218,6 +272,54 @@ export default function TeacherPage() {
                 ))}
               </div>
             )}
+          </>
+        ) : (
+          <>
+            {/* 用户管理 */}
+            <div className="mb-4 flex items-center justify-between">
+              <p className="text-sm text-ink-light">
+                共 {users.length} 位用户，{inactiveUsers.length} 位待开放
+              </p>
+            </div>
+            <div className="space-y-3">
+              {users.map((user) => (
+                <div key={user.id} className="sticker bg-white flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-ink">{user.name || "未设置名字"}</span>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                        user.isActive ? "bg-crayon-green/30 text-ink" : "bg-gray-200 text-gray-500"
+                      }`}>
+                        {user.isActive ? "已开放" : "待开放"}
+                      </span>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                        user.role === "TEACHER" ? "bg-crayon-blue/30" : "bg-crayon-yellow/30"
+                      } text-ink`}>
+                        {user.role === "TEACHER" ? "老师" : "学员"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-ink-light mt-1">
+                      📱 {user.phone}
+                      {user.grade && ` · ${user.grade}年级`}
+                      {user.region && ` · ${user.region}`}
+                      {` · ⚡${user.points}积分`}
+                    </p>
+                  </div>
+                  {user.role === "STUDENT" && (
+                    <button
+                      onClick={() => handleActivate(user.id, !user.isActive)}
+                      className={`hand-btn text-xs ml-3 ${
+                        user.isActive
+                          ? "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                          : "bg-crayon-green text-ink"
+                      }`}
+                    >
+                      {user.isActive ? "关闭权限" : "🔓 开放权限"}
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
           </>
         )}
       </section>

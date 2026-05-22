@@ -8,11 +8,12 @@ import Navbar from "@/components/navbar";
 interface ProfileData {
   user: {
     name: string | null;
-    email: string | null;
+    phone: string;
     grade: number | null;
     region: string | null;
     points: number;
     role: string;
+    isActive: boolean;
     createdAt: string;
   };
   questions: { id: string; title: string; status: string; createdAt: string }[];
@@ -81,7 +82,8 @@ export default function ProfilePage() {
         <div className="sticker bg-crayon-yellow text-center mb-6">
           <div className="text-5xl mb-2">👤</div>
           <h1 className="text-xl font-bold text-ink">{user.name || "小朋友"}</h1>
-          <div className="flex justify-center gap-3 mt-3 flex-wrap">
+          <p className="text-sm text-ink-light mt-1">📱 {user.phone}</p>
+          <div className="flex justify-center gap-2 mt-3 flex-wrap">
             {user.grade && (
               <span className="px-3 py-1 bg-white/70 rounded-full text-sm">
                 {user.grade}年级
@@ -95,6 +97,11 @@ export default function ProfilePage() {
             <span className="px-3 py-1 bg-crayon-orange/30 rounded-full text-sm font-medium">
               ⚡ {user.points} 积分
             </span>
+            {!user.isActive && (
+              <span className="px-3 py-1 bg-crayon-pink/30 rounded-full text-sm font-medium">
+                ⏳ 待老师开放权限
+              </span>
+            )}
           </div>
         </div>
 
