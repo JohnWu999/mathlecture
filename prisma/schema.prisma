@@ -20,6 +20,7 @@ model User {
   role          UserRole  @default(STUDENT)
   grade         Int?      // 年级 1或2
   region        String?   // 地域
+  points        Int       @default(0)  // 积分
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
