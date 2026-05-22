@@ -38,7 +38,7 @@ export default function QAPage() {
       <section className="px-6 pt-8 pb-16 max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-ink handwritten-title">你问我答</h1>
+            <h1 className="text-3xl font-bold text-ink">你问我答</h1>
             <p className="text-ink-light mt-1">
               同年级的小伙伴互相帮助，一起解决数学难题
             </p>
@@ -46,14 +46,14 @@ export default function QAPage() {
           <div className="flex gap-3">
             <Link
               href="/qa/ask"
-              className="hand-btn hand-btn-yellow"
+              className="hand-btn bg-crayon-yellow text-ink"
             >
               🙋 我要提问
             </Link>
             {session?.user && (
               <Link
                 href="/qa?filter=my"
-                className="hand-btn hand-btn-green"
+                className="hand-btn bg-crayon-green text-ink"
               >
                 🎤 我要讲题
               </Link>
@@ -64,7 +64,7 @@ export default function QAPage() {
         {loading ? (
           <div className="text-center py-12 text-ink-light">加载中...</div>
         ) : questions.length === 0 ? (
-          <div className="sticker sticker-white text-center py-12">
+          <div className="sticker bg-white text-center py-12">
             <div className="text-4xl mb-3">🎉</div>
             <p className="text-ink font-medium">暂时没有待解答的问题</p>
             <p className="text-ink-light text-sm mt-1">你可以成为第一个提问的人！</p>
@@ -75,22 +75,22 @@ export default function QAPage() {
               <Link
                 key={q.id}
                 href={`/qa/question/${q.id}`}
-                className="sticker sticker-white hover:shadow-float transition-shadow block"
+                className="sticker bg-white hover:shadow-float transition-shadow block"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
                       {q.grade && (
-                        <span className="hand-badge hand-badge-green text-xs">
+                        <span className="px-2 py-0.5 bg-crayon-green/20 rounded-full text-xs font-medium">
                           {q.grade}年级
                         </span>
                       )}
                       {q.topic && (
-                        <span className="hand-badge hand-badge-blue text-xs">
+                        <span className="px-2 py-0.5 bg-crayon-blue/20 rounded-full text-xs font-medium">
                           {q.topic}
                         </span>
                       )}
-                      <span className="hand-badge hand-badge-yellow text-xs">
+                      <span className="px-2 py-0.5 bg-crayon-yellow/30 rounded-full text-xs font-medium">
                         待认领
                       </span>
                     </div>

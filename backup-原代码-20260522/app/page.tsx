@@ -10,11 +10,11 @@ export default function HomePage() {
       {/* Hero 区域 */}
       <section className="px-6 pt-12 pb-16 max-w-6xl mx-auto">
         <div className="text-center space-y-6">
-          <div className="inline-block sticker sticker-yellow">
+          <div className="inline-block sticker bg-crayon-yellow">
             <span className="text-sm font-medium text-ink-light">小学一、二年级 · 同伴互助 · 项目制学习</span>
           </div>
           
-          <h1 className="text-4xl md:text-6xl font-bold text-ink leading-tight handwritten-title">
+          <h1 className="text-4xl md:text-6xl font-bold text-ink leading-tight">
             数学小讲师联盟
           </h1>
           
@@ -31,13 +31,13 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Link
               href="/qa"
-              className="hand-btn hand-btn-green"
+              className="hand-btn bg-crayon-green text-ink"
             >
               🙋 去提问 / 讲题
             </Link>
             <Link
               href="/projects"
-              className="hand-btn hand-btn-blue"
+              className="hand-btn bg-crayon-blue text-ink"
             >
               🚀 探索项目营
             </Link>
@@ -53,7 +53,7 @@ export default function HomePage() {
         
         <div className="grid md:grid-cols-3 gap-6">
           {/* 卡片 1：提问 */}
-          <div className="sticker sticker-white">
+          <div className="sticker bg-white">
             <div className="text-4xl mb-4">🤔</div>
             <h3 className="text-lg font-bold text-ink mb-2">遇到难题？大胆问</h3>
             <p className="text-sm text-ink-light leading-relaxed">
@@ -62,7 +62,7 @@ export default function HomePage() {
           </div>
 
           {/* 卡片 2：讲题 */}
-          <div className="sticker sticker-pink">
+          <div className="sticker bg-crayon-pink">
             <div className="text-4xl mb-4">🎤</div>
             <h3 className="text-lg font-bold text-ink mb-2">会做题？来讲讲</h3>
             <p className="text-sm text-ink-light leading-relaxed">
@@ -71,7 +71,7 @@ export default function HomePage() {
           </div>
 
           {/* 卡片 3：项目营 */}
-          <div className="sticker sticker-blue">
+          <div className="sticker bg-crayon-blue">
             <div className="text-4xl mb-4">🔬</div>
             <h3 className="text-lg font-bold text-ink mb-2">想深度玩？进项目营</h3>
             <p className="text-sm text-ink-light leading-relaxed">
@@ -87,7 +87,7 @@ export default function HomePage() {
           <p className="text-lg font-medium text-ink mb-2">我们的坚持</p>
           <div className="flex flex-wrap justify-center gap-3 text-sm">
             {["赋能而非替代", "反焦虑教育", "真实同伴互动", "科学有依据", "可落地"].map((item) => (
-              <span key={item} className="hand-badge hand-badge-white">
+              <span key={item} className="px-3 py-1 bg-white rounded-full border-2 border-ink shadow-sticker">
                 {item}
               </span>
             ))}
@@ -105,7 +105,7 @@ export default function HomePage() {
         </p>
         <Link
           href="/register"
-          className="hand-btn hand-btn-green text-lg"
+          className="hand-btn bg-crayon-green text-ink text-lg"
         >
           ✏️ 立即报名
         </Link>

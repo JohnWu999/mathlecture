@@ -32,10 +32,10 @@ export default function ProjectsPage() {
       <Navbar />
       <section className="px-6 pt-8 pb-16 max-w-6xl mx-auto">
         <div className="text-center mb-10">
-          <div className="inline-block sticker sticker-yellow mb-3">
+          <div className="inline-block sticker bg-crayon-yellow mb-3">
             <span className="text-3xl">🎯</span>
           </div>
-          <h1 className="text-3xl font-bold text-ink handwritten-title">PBL 项目营</h1>
+          <h1 className="text-3xl font-bold text-ink">PBL 项目营</h1>
           <p className="text-ink-light mt-2 max-w-lg mx-auto">
             以真实问题为驱动，小伙伴们一起探索、合作、解决问题！
           </p>
@@ -44,7 +44,7 @@ export default function ProjectsPage() {
         {loading ? (
           <div className="text-center py-12 text-ink-light">加载中...</div>
         ) : projects.length === 0 ? (
-          <div className="sticker sticker-white text-center py-12">
+          <div className="sticker bg-white text-center py-12">
             <div className="text-4xl mb-3">🛣️</div>
             <p className="text-ink font-medium">暂时没有开放的项目</p>
             <p className="text-ink-light text-sm mt-1">敬请期待第一期项目上线！</p>
@@ -55,7 +55,7 @@ export default function ProjectsPage() {
               <Link
                 key={p.id}
                 href={`/projects/${p.id}`}
-                className="sticker sticker-white hover:shadow-float transition-shadow block overflow-hidden"
+                className="sticker bg-white hover:shadow-float transition-shadow block overflow-hidden"
               >
                 <div className="h-40 bg-crayon-yellow/30 flex items-center justify-center">
                   {p.coverImage ? (
@@ -66,10 +66,10 @@ export default function ProjectsPage() {
                 </div>
                 <div className="p-5">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="hand-badge hand-badge-blue text-xs">
+                    <span className="px-2 py-0.5 bg-crayon-blue/20 rounded-full text-xs font-medium">
                       {p.durationDays}天
                     </span>
-                    <span className="hand-badge hand-badge-green text-xs">
+                    <span className="px-2 py-0.5 bg-crayon-green/20 rounded-full text-xs font-medium">
                       {p._count.groups}个小组
                     </span>
                   </div>

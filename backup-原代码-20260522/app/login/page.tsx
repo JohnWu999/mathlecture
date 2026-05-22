@@ -73,9 +73,9 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
-      <div className="sticker sticker-white w-full max-w-md">
-        <h1 className="text-2xl font-bold text-ink text-center mb-6 handwritten-title">
+    <main className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+      <div className="sticker bg-white w-full max-w-md">
+        <h1 className="text-2xl font-bold text-ink text-center mb-6">
           {mode === "login" ? "🔑 登录" : "✍️ 注册"}
         </h1>
 
@@ -95,7 +95,7 @@ export default function LoginPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="请输入名字"
-                className="w-full hand-input"
+                className="w-full px-4 py-3 rounded-xl border-2 border-warm/30 focus:border-warm outline-none text-ink bg-warm/5"
                 required
               />
             </div>
@@ -109,7 +109,7 @@ export default function LoginPage() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="请输入手机号"
-              className="w-full hand-input"
+              className="w-full px-4 py-3 rounded-xl border-2 border-warm/30 focus:border-warm outline-none text-ink bg-warm/5"
               required
             />
           </div>
@@ -122,7 +122,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="请输入密码"
-              className="w-full hand-input"
+              className="w-full px-4 py-3 rounded-xl border-2 border-warm/30 focus:border-warm outline-none text-ink bg-warm/5"
               required
               minLength={6}
             />
@@ -137,7 +137,7 @@ export default function LoginPage() {
                   <select
                     value={grade}
                     onChange={(e) => setGrade(e.target.value)}
-                    className="w-full hand-input"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-warm/30 focus:border-warm outline-none text-ink bg-warm/5"
                     required
                   >
                     <option value="">选择年级</option>
@@ -151,7 +151,7 @@ export default function LoginPage() {
                   <select
                     value={region}
                     onChange={(e) => setRegion(e.target.value)}
-                    className="w-full hand-input"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-warm/30 focus:border-warm outline-none text-ink bg-warm/5"
                   >
                     <option value="海岸城">海岸城</option>
                     <option value="八达岭">八达岭</option>
@@ -165,7 +165,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="hand-btn w-full hand-btn-green disabled:opacity-50"
+            className="hand-btn w-full bg-warm text-white disabled:opacity-50"
           >
             {loading ? "处理中..." : mode === "login" ? "登录" : "注册"}
           </button>
@@ -177,7 +177,7 @@ export default function LoginPage() {
               还没有账号？
               <button
                 onClick={() => { setMode("register"); setError(""); }}
-                className="text-ink hover:underline font-medium ml-1"
+                className="text-crayon-blue hover:underline font-medium ml-1"
               >
                 立即注册
               </button>
@@ -187,7 +187,7 @@ export default function LoginPage() {
               已有账号？
               <button
                 onClick={() => { setMode("login"); setError(""); }}
-                className="text-ink hover:underline font-medium ml-1"
+                className="text-crayon-blue hover:underline font-medium ml-1"
               >
                 去登录
               </button>

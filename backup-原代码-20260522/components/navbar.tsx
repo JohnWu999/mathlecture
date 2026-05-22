@@ -9,7 +9,7 @@ export default function Navbar() {
   return (
     <nav className="px-6 py-4 flex items-center justify-between max-w-6xl mx-auto">
       <Link href="/" className="flex items-center gap-2">
-        <div className="hand-icon text-xl">
+        <div className="w-10 h-10 bg-crayon-green rounded-full flex items-center justify-center text-xl">
           📐
         </div>
         <span className="font-bold text-lg text-ink">数学小讲师联盟</span>
@@ -38,14 +38,14 @@ export default function Navbar() {
             <Link href="/profile" className="text-ink font-medium hover:underline">
               {session.user.name || session.user.phone}
             </Link>
-            <span className="hand-badge hand-badge-orange text-xs">
+            <span className="px-2 py-0.5 bg-crayon-orange/30 rounded-full text-xs font-medium">
               ⚡ {session.user.points || 0}
             </span>
             <span
               className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                 session.user.role === "TEACHER"
-                  ? "hand-badge hand-badge-blue"
-                  : "hand-badge hand-badge-green"
+                  ? "bg-crayon-blue/30 text-ink"
+                  : "bg-crayon-green/30 text-ink"
               }`}
             >
               {session.user.role === "TEACHER" ? "老师" : "学员"}
@@ -60,7 +60,7 @@ export default function Navbar() {
         ) : (
           <Link
             href="/login"
-            className="hand-btn hand-btn-green text-sm"
+            className="px-4 py-1.5 bg-crayon-green rounded-full text-ink font-medium text-sm hover:shadow-sticker transition-shadow"
           >
             登录 / 注册
           </Link>

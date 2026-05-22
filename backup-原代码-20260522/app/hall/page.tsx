@@ -42,10 +42,10 @@ export default function HallPage() {
       <Navbar />
       <section className="px-6 pt-8 pb-16 max-w-6xl mx-auto">
         <div className="text-center mb-10">
-          <div className="inline-block sticker sticker-orange mb-3">
+          <div className="inline-block sticker bg-crayon-orange mb-3">
             <span className="text-3xl">🏆</span>
           </div>
-          <h1 className="text-3xl font-bold text-ink handwritten-title">成果广场</h1>
+          <h1 className="text-3xl font-bold text-ink">成果广场</h1>
           <p className="text-ink-light mt-2 max-w-lg mx-auto">
             看看小讲师们的精彩讲题和解决的难题！
           </p>
@@ -61,13 +61,13 @@ export default function HallPage() {
                 🎤 优秀讲题
               </h2>
               {data?.topAnswers.length === 0 ? (
-                <div className="sticker sticker-white text-center py-8">
+                <div className="sticker bg-white text-center py-8">
                   <p className="text-ink-light">暂时还没有已采纳的讲题，快来成为第一个吧！</p>
                 </div>
               ) : (
                 <div className="grid md:grid-cols-2 gap-4">
                   {data?.topAnswers.map((a) => (
-                    <div key={a.id} className="sticker sticker-white">
+                    <div key={a.id} className="sticker bg-white">
                       <div className="h-32 bg-crayon-pink/30 flex items-center justify-center rounded-lg mb-3">
                         <span className="text-4xl">🎤</span>
                       </div>
@@ -81,7 +81,7 @@ export default function HallPage() {
                           href={a.videoUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="hand-btn hand-btn-blue text-xs inline-block"
+                          className="hand-btn text-xs bg-crayon-blue text-ink inline-block"
                         >
                           📹 观看视频
                         </a>
@@ -98,7 +98,7 @@ export default function HallPage() {
                 ✅ 已解决的问题
               </h2>
               {data?.solvedQuestions.length === 0 ? (
-                <div className="sticker sticker-white text-center py-8">
+                <div className="sticker bg-white text-center py-8">
                   <p className="text-ink-light">暂时还没有已解决的问题</p>
                 </div>
               ) : (
@@ -113,7 +113,7 @@ export default function HallPage() {
                         </p>
                       </div>
                       <div className="text-right">
-                        <span className="text-xs hand-badge hand-badge-green">
+                        <span className="text-xs px-2 py-1 bg-crayon-green/30 rounded-full">
                           已解决
                         </span>
                         {q.answers[0] && (

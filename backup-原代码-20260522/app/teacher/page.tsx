@@ -131,7 +131,7 @@ export default function TeacherPage() {
       <Navbar />
       <section className="px-6 pt-8 pb-16 max-w-5xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-ink handwritten-title">📊 老师工作台</h1>
+          <h1 className="text-2xl font-bold text-ink">📊 老师工作台</h1>
           <p className="text-ink-light text-sm">管理平台、审核讲题、开放用户权限</p>
         </div>
 
@@ -141,8 +141,8 @@ export default function TeacherPage() {
             onClick={() => setActiveTab("dashboard")}
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
               activeTab === "dashboard"
-                ? "hand-btn hand-btn-yellow text-sm py-2 px-4"
-                : "hand-btn hand-btn-white text-sm py-2 px-4"
+                ? "bg-crayon-yellow text-ink"
+                : "bg-white text-ink-light hover:bg-ink/5"
             }`}
           >
             📊 数据看板
@@ -151,8 +151,8 @@ export default function TeacherPage() {
             onClick={() => setActiveTab("reviews")}
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors relative ${
               activeTab === "reviews"
-                ? "hand-btn hand-btn-yellow text-sm py-2 px-4"
-                : "hand-btn hand-btn-white text-sm py-2 px-4"
+                ? "bg-crayon-yellow text-ink"
+                : "bg-white text-ink-light hover:bg-ink/5"
             }`}
           >
             ✅ 审核讲题
@@ -166,8 +166,8 @@ export default function TeacherPage() {
             onClick={() => setActiveTab("users")}
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors relative ${
               activeTab === "users"
-                ? "hand-btn hand-btn-yellow text-sm py-2 px-4"
-                : "hand-btn hand-btn-white text-sm py-2 px-4"
+                ? "bg-crayon-yellow text-ink"
+                : "bg-white text-ink-light hover:bg-ink/5"
             }`}
           >
             👤 用户管理
@@ -186,34 +186,34 @@ export default function TeacherPage() {
             {/* 统计卡片 */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
               {[
-                { label: "总用户", value: dashboard?.totalUsers || 0, icon: "👤", color: "sticker-blue" },
-                { label: "总问题", value: dashboard?.totalQuestions || 0, icon: "🙋", color: "sticker-green" },
-                { label: "总讲题", value: dashboard?.totalAnswers || 0, icon: "🎤", color: "sticker-yellow" },
-                { label: "待审核", value: dashboard?.pendingAnswers || 0, icon: "⏳", color: "sticker-pink" },
-                { label: "项目数", value: dashboard?.totalProjects || 0, icon: "🎯", color: "sticker-orange" },
-                { label: "报名人数", value: dashboard?.totalRegistrations || 0, icon: "📖", color: "sticker-white" },
+                { label: "总用户", value: dashboard?.totalUsers || 0, icon: "👤", color: "bg-crayon-blue" },
+                { label: "总问题", value: dashboard?.totalQuestions || 0, icon: "🙋", color: "bg-crayon-green" },
+                { label: "总讲题", value: dashboard?.totalAnswers || 0, icon: "🎤", color: "bg-crayon-yellow" },
+                { label: "待审核", value: dashboard?.pendingAnswers || 0, icon: "⏳", color: "bg-crayon-pink" },
+                { label: "项目数", value: dashboard?.totalProjects || 0, icon: "🎯", color: "bg-crayon-orange" },
+                { label: "报名人数", value: dashboard?.totalRegistrations || 0, icon: "📖", color: "bg-crayon-purple" },
               ].map((card) => (
                 <div key={card.label} className={`sticker ${card.color} text-center py-5`}>
                   <div className="text-2xl mb-1">{card.icon}</div>
-                  <p className="text-2xl font-bold text-ink handwritten-title">{card.value}</p>
+                  <p className="text-2xl font-bold text-ink">{card.value}</p>
                   <p className="text-xs text-ink-light">{card.label}</p>
                 </div>
               ))}
             </div>
 
             {/* 快速操作 */}
-            <div className="sticker sticker-white">
+            <div className="sticker bg-white">
               <h3 className="font-bold text-ink mb-3">⚡ 快速操作</h3>
               <div className="flex flex-wrap gap-3">
                 <button
                   onClick={() => setActiveTab("reviews")}
-                  className="hand-btn hand-btn-green text-sm"
+                  className="hand-btn bg-crayon-green text-ink text-sm"
                 >
                   ✅ 去审核讲题
                 </button>
                 <button
                   onClick={() => setActiveTab("users")}
-                  className="hand-btn hand-btn-blue text-sm"
+                  className="hand-btn bg-crayon-blue text-ink text-sm"
                 >
                   👤 管理用户权限
                 </button>
@@ -223,7 +223,7 @@ export default function TeacherPage() {
         ) : activeTab === "reviews" ? (
           <>
             {pendingAnswers.length === 0 ? (
-              <div className="sticker sticker-white text-center py-12">
+              <div className="sticker bg-white text-center py-12">
                 <div className="text-4xl mb-3">🎉</div>
                 <p className="text-ink font-medium">太棒了！没有待审核的讲题</p>
                 <p className="text-ink-light text-sm mt-1">所有讲题都已处理完毕</p>
@@ -231,7 +231,7 @@ export default function TeacherPage() {
             ) : (
               <div className="space-y-4">
                 {pendingAnswers.map((answer) => (
-                  <div key={answer.id} className="sticker sticker-white">
+                  <div key={answer.id} className="sticker bg-white">
                     <div className="flex items-start justify-between gap-4 mb-3">
                       <div>
                         <h3 className="font-bold text-ink">{answer.question.title}</h3>
@@ -243,13 +243,13 @@ export default function TeacherPage() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleReview(answer.id, "approve")}
-                          className="hand-btn text-xs hand-btn-green"
+                          className="hand-btn text-xs bg-crayon-green text-ink"
                         >
                           ✅ 通过
                         </button>
                         <button
                           onClick={() => handleReview(answer.id, "reject")}
-                          className="hand-btn text-xs hand-btn-pink"
+                          className="hand-btn text-xs bg-crayon-pink text-ink"
                         >
                           ❌ 拒绝
                         </button>
@@ -288,12 +288,12 @@ export default function TeacherPage() {
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-ink">{user.name || "未设置名字"}</span>
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
-                        user.isActive ? "hand-badge hand-badge-green" : "hand-badge hand-badge-white"
+                        user.isActive ? "bg-crayon-green/30 text-ink" : "bg-gray-200 text-gray-500"
                       }`}>
                         {user.isActive ? "已开放" : "待开放"}
                       </span>
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
-                        user.role === "TEACHER" ? "hand-badge hand-badge-blue" : "hand-badge hand-badge-yellow"
+                        user.role === "TEACHER" ? "bg-crayon-blue/30" : "bg-crayon-yellow/30"
                       } text-ink`}>
                         {user.role === "TEACHER" ? "老师" : "学员"}
                       </span>
@@ -310,8 +310,8 @@ export default function TeacherPage() {
                       onClick={() => handleActivate(user.id, !user.isActive)}
                       className={`hand-btn text-xs ml-3 ${
                         user.isActive
-                          ? "hand-btn-white text-ink-light"
-                          : "hand-btn-green"
+                          ? "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                          : "bg-crayon-green text-ink"
                       }`}
                     >
                       {user.isActive ? "关闭权限" : "🔓 开放权限"}

@@ -46,7 +46,7 @@ export default function ProfilePage() {
         <Navbar />
         <div className="text-center py-20">
           <p className="text-ink-light mb-4">请先登录查看个人中心</p>
-          <Link href="/login" className="hand-btn hand-btn-green">
+          <Link href="/login" className="hand-btn bg-crayon-green text-ink">
             去登录
           </Link>
         </div>
@@ -79,26 +79,26 @@ export default function ProfilePage() {
       <Navbar />
       <section className="px-6 pt-8 pb-16 max-w-3xl mx-auto">
         {/* 用户卡片 */}
-        <div className="sticker sticker-yellow text-center mb-6">
+        <div className="sticker bg-crayon-yellow text-center mb-6">
           <div className="text-5xl mb-2">👤</div>
           <h1 className="text-xl font-bold text-ink">{user.name || "小朋友"}</h1>
           <p className="text-sm text-ink-light mt-1">📱 {user.phone}</p>
           <div className="flex justify-center gap-2 mt-3 flex-wrap">
             {user.grade && (
-              <span className="hand-badge hand-badge-white text-sm">
+              <span className="px-3 py-1 bg-white/70 rounded-full text-sm">
                 {user.grade}年级
               </span>
             )}
             {user.region && (
-              <span className="hand-badge hand-badge-white text-sm">
+              <span className="px-3 py-1 bg-white/70 rounded-full text-sm">
                 {user.region}
               </span>
             )}
-            <span className="hand-badge hand-badge-orange text-sm font-medium">
+            <span className="px-3 py-1 bg-crayon-orange/30 rounded-full text-sm font-medium">
               ⚡ {user.points} 积分
             </span>
             {!user.isActive && (
-              <span className="hand-badge hand-badge-pink text-sm font-medium">
+              <span className="px-3 py-1 bg-crayon-pink/30 rounded-full text-sm font-medium">
                 ⏳ 待老师开放权限
               </span>
             )}
@@ -109,7 +109,7 @@ export default function ProfilePage() {
         <div className="mb-6">
           <h2 className="font-bold text-ink mb-3">🏆 我的徽章</h2>
           {badges.length === 0 ? (
-            <div className="sticker sticker-white text-center py-6">
+            <div className="sticker bg-white text-center py-6">
               <p className="text-ink-light text-sm">还没有徽章，快去讲题和参加项目吧！</p>
             </div>
           ) : (
@@ -128,14 +128,14 @@ export default function ProfilePage() {
         <div className="mb-6">
           <h2 className="font-bold text-ink mb-3">🙋 我的提问</h2>
           {questions.length === 0 ? (
-            <div className="sticker sticker-white text-center py-4 text-sm text-ink-light">还没有提问</div>
+            <div className="sticker bg-white text-center py-4 text-sm text-ink-light">还没有提问</div>
           ) : (
             <div className="space-y-2">
               {questions.map((q) => (
-                <Link key={q.id} href={`/qa/question/${q.id}`} className="sticker sticker-white block hover:shadow-float transition-shadow">
+                <Link key={q.id} href={`/qa/question/${q.id}`} className="sticker bg-white block hover:shadow-float transition-shadow">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-ink truncate flex-1">{q.title}</span>
-                    <span className={`text-xs ml-2 ${q.status === "RESOLVED" ? "hand-badge hand-badge-green" : "hand-badge hand-badge-yellow"}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ml-2 ${q.status === "RESOLVED" ? "bg-crayon-green/30" : "bg-crayon-yellow/30"}`}>
                       {q.status === "RESOLVED" ? "已解决" : "待解答"}
                     </span>
                   </div>
@@ -149,14 +149,14 @@ export default function ProfilePage() {
         <div className="mb-6">
           <h2 className="font-bold text-ink mb-3">🎤 我的讲题</h2>
           {answers.length === 0 ? (
-            <div className="sticker sticker-white text-center py-4 text-sm text-ink-light">还没有讲题视频</div>
+            <div className="sticker bg-white text-center py-4 text-sm text-ink-light">还没有讲题视频</div>
           ) : (
             <div className="space-y-2">
               {answers.map((a) => (
-                <div key={a.id} className="sticker sticker-white">
+                <div key={a.id} className="sticker bg-white">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-ink truncate flex-1">{a.question.title}</span>
-                    <span className={`text-xs ml-2 ${a.status === "APPROVED" ? "hand-badge hand-badge-green" : "hand-badge hand-badge-yellow"}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ml-2 ${a.status === "APPROVED" ? "bg-crayon-green/30" : "bg-crayon-yellow/30"}`}>
                       {a.status === "APPROVED" ? "已采纳" : "待审核"}
                     </span>
                   </div>
@@ -175,14 +175,14 @@ export default function ProfilePage() {
         <div className="mb-6">
           <h2 className="font-bold text-ink mb-3">🎯 我的项目</h2>
           {registrations.length === 0 ? (
-            <div className="sticker sticker-white text-center py-4 text-sm text-ink-light">还没有报名项目</div>
+            <div className="sticker bg-white text-center py-4 text-sm text-ink-light">还没有报名项目</div>
           ) : (
             <div className="space-y-2">
               {registrations.map((r) => (
-                <div key={r.id} className="sticker sticker-white">
+                <div key={r.id} className="sticker bg-white">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-ink">{r.project.title}</span>
-                    <span className="text-xs hand-badge hand-badge-green">
+                    <span className="text-xs px-2 py-0.5 bg-crayon-green/30 rounded-full">
                       {r.status === "CONFIRMED" ? "已确认" : r.status}
                     </span>
                   </div>

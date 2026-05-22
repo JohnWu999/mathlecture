@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 手绘风格根样式 */
+:root {
+  --paper-color: #FAF8F0;
+  --grid-line: #E8F5E9;
+  --ink-color: #3D3D3D;
+  --crayon-yellow: #FFF8DC;
+  --crayon-green: #90EE90;
+  --crayon-blue: #87CEEB;
+  --crayon-pink: #FFB6C1;
+}
+
+body {
+  background-color: var(--paper-color);
+  color: var(--ink-color);
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+}
+
+/* 方格纸背景 */
+.paper-grid {
+  background-color: var(--paper-color);
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 31px,
+      var(--grid-line) 31px,
+      var(--grid-line) 32px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 31px,
+      var(--grid-line) 31px,
+      var(--grid-line) 32px
+    );
+}
+
+/* 手绘边框效果 */
+.hand-border {
+  border-radius: 24px;
+  border: 2px solid var(--ink-color);
+  box-shadow: 3px 3px 0px 0px rgba(0,0,0,0.15);
+}
+
+/* 便利贴卡片 */
+.sticker {
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 3px 3px 0px 0px rgba(0,0,0,0.12);
+  transform: rotate(-0.5deg);
+  transition: transform 0.2s ease;
+}
+
+.sticker:hover {
+  transform: rotate(0deg) translateY(-2px);
+}
+
+/* 手绘按钮 */
+.hand-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 28px;
+  border-radius: 24px;
+  font-weight: 600;
+  font-size: 16px;
+  border: 2px solid var(--ink-color);
+  box-shadow: 3px 3px 0px 0px rgba(0,0,0,0.15);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.hand-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.15);
+}
+
+.hand-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px rgba(0,0,0,0.15);
+}
+
+/* 手绘气泡对话框 */
+.speech-bubble {
+  position: relative;
+  padding: 14px 18px;
+  border-radius: 20px;
+  border: 2px solid var(--ink-color);
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 24px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid var(--ink-color);
+}
+
+/* 滚动条手绘风格 */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--paper-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--crayon-green);
+  border-radius: 5px;
+  border: 2px solid var(--paper-color);
+}
+
+/* 加载中动画 */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+.animate-wiggle {
+  animation: wiggle 2s ease-in-out infinite;
+}
