@@ -248,6 +248,12 @@ export default function HomePage() {
         <span className="absolute bottom-1/3 right-6 text-3xl text-[#8D6E63] opacity-[0.1] doodle-float-fast">&radic;</span>
         <span className="absolute bottom-20 left-8 text-3xl text-[#8D6E63] opacity-[0.08] doodle-float">&plusmn;</span>
         <span className="absolute bottom-16 right-12 text-4xl text-[#8D6E63] opacity-[0.1] doodle-float-slow">&#8734;</span>
+        {/* 新增符号 */}
+        <span className="absolute top-32 left-[15%] text-2xl text-[#8D6E63] opacity-[0.06] doodle-float-slow">&#10022;</span>
+        <span className="absolute top-[45%] right-[12%] text-2xl text-[#8D6E63] opacity-[0.07] doodle-float">?</span>
+        <span className="absolute bottom-[25%] left-[20%] text-3xl text-[#8D6E63] opacity-[0.08] doodle-float-fast">+</span>
+        <span className="absolute top-[60%] right-[18%] text-2xl text-[#8D6E63] opacity-[0.06] doodle-float-slow">=</span>
+        <span className="absolute bottom-32 right-[25%] text-2xl text-[#8D6E63] opacity-[0.07] doodle-float">?</span>
       </div>
 
       <Navbar />
@@ -256,13 +262,13 @@ export default function HomePage() {
       <section className="relative z-10 px-4 pt-20 pb-20 text-center">
         {/* ① 品牌标题区 */}
         <h1
-          className="text-[32px] leading-tight"
+          className="text-[40px] leading-tight"
           style={{ fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive", color: "#3E2723" }}
         >
           数学小讲师联盟
         </h1>
         <p
-          className="mt-3 text-sm"
+          className="mt-3 text-[12px]"
           style={{ fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif", color: "#8D6E63" }}
         >
           小学生·数学互助成长社区
@@ -273,7 +279,16 @@ export default function HomePage() {
           {/* 移动端：纵向排列 */}
           <div className="md:hidden relative flex flex-col items-start gap-8">
             {/* 左侧竖线 */}
-            <div className="absolute left-[15px] top-3 bottom-3 w-0.5 bg-[#8D6E63]" />
+            <div style={{
+              position: "absolute",
+              left: "15px",
+              top: "12px",
+              bottom: "12px",
+              width: "2px",
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='20' viewBox='0 0 2 20'%3E%3Cpath d='M1 0 Q1.5 5 1 10 T1 20' fill='none' stroke='%238D6E63' stroke-width='2' stroke-dasharray='3,4' stroke-linecap='round'/%3E%3C/svg%3E")`,
+              backgroundRepeat: "repeat-y",
+              backgroundSize: "2px 20px",
+            }} />
 
             {stages.map((stage, index) => {
               const Plant = stage.Plant;
@@ -326,9 +341,9 @@ export default function HomePage() {
                         fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
                         color: "#5D4037",
                         background: "#FAFAF5",
-                        border: "1px solid rgba(141,110,99,0.3)",
+                        border: "2px dashed rgba(141,110,99,0.35)",
                         padding: "16px",
-                        borderRadius: "2px",
+                        borderRadius: "4px 12px 8px 16px / 16px 8px 12px 4px",
                         marginTop: "8px",
                         animation: "fadeIn 0.3s ease",
                       }}
@@ -344,7 +359,16 @@ export default function HomePage() {
           {/* 桌面端：横向排列 */}
           <div className="hidden md:flex relative items-start justify-center gap-10">
             {/* 下方横线 */}
-            <div className="absolute left-10 right-10 bottom-[15px] h-0.5 bg-[#8D6E63]" />
+            <div style={{
+              position: "absolute",
+              left: "40px",
+              right: "40px",
+              bottom: "15px",
+              height: "4px",
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='4' viewBox='0 0 40 4'%3E%3Cpath d='M0 2 Q5 0 10 2 T20 2 T30 2 T40 2' fill='none' stroke='%238D6E63' stroke-width='2' stroke-dasharray='3,5' stroke-linecap='round'/%3E%3C/svg%3E")`,
+              backgroundRepeat: "repeat-x",
+              backgroundSize: "40px 4px",
+            }} />
 
             {stages.map((stage, index) => {
               const Plant = stage.Plant;
@@ -397,9 +421,9 @@ export default function HomePage() {
                         fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
                         color: "#5D4037",
                         background: "#FAFAF5",
-                        border: "1px solid rgba(141,110,99,0.3)",
+                        border: "2px dashed rgba(141,110,99,0.35)",
                         padding: "16px",
-                        borderRadius: "2px",
+                        borderRadius: "4px 12px 8px 16px / 16px 8px 12px 4px",
                         animation: "fadeIn 0.3s ease",
                       }}
                     >
@@ -413,7 +437,7 @@ export default function HomePage() {
         </div>
 
         {/* ③ 分流按钮区 */}
-        <div className="mt-20 flex flex-col md:flex-row items-center justify-center gap-4">
+        <div className="mt-20 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
           <Link
             href="/qa"
             className="btn-hand btn-yellow w-full md:w-[240px] text-center"
@@ -421,6 +445,7 @@ export default function HomePage() {
               padding: "14px 0",
               fontSize: "16px",
               fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive",
+              transform: "rotate(-1deg)",
             }}
           >
             🙋 我是新手，先提问
@@ -432,6 +457,8 @@ export default function HomePage() {
               padding: "14px 0",
               fontSize: "16px",
               fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive",
+              transform: "rotate(2deg)",
+              marginTop: "20px",
             }}
           >
             🎤 我会做题，来讲讲
@@ -467,10 +494,9 @@ export default function HomePage() {
             return (
               <div
                 key={index}
-                className="flex flex-col items-center"
+                className="flex flex-col items-center wavy-border"
                 style={{
                   background: item.iconBg,
-                  border: "2px dashed #8D6E63",
                   borderRadius: "2px 255px 2px 255px / 255px 2px 255px 2px",
                   padding: "32px 24px",
                   transform: `rotate(${rotations[index]}deg)`,
@@ -481,7 +507,7 @@ export default function HomePage() {
                   className="w-14 h-14 flex items-center justify-center relative corner-fold"
                   style={{
                     background: "rgba(255,255,255,0.5)",
-                    border: "2px solid #8D6E63",
+                    border: "2px solid rgba(141,110,99,0.4)",
                     borderRadius: "255px 15px 225px 15px / 15px 225px 15px 255px",
                   }}
                 >

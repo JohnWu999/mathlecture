@@ -23,13 +23,20 @@ export default function Navbar() {
       className="sticky top-0 z-50"
       style={{
         height: "56px",
-        background: "#FAFAF5",
-        backgroundImage:
-          "linear-gradient(rgba(139,90,43,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(139,90,43,0.03) 1px, transparent 1px)",
-        backgroundSize: "24px 24px",
-        borderBottom: "1px solid rgba(141,110,99,0.3)",
+        background: "transparent",
+        borderBottom: "none",
       }}
     >
+      {/* 手绘波浪线分隔 - SVG虚线波浪 */}
+      <div
+        className="absolute bottom-0 left-0 right-0 pointer-events-none"
+        style={{
+          height: "4px",
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='4' viewBox='0 0 40 4'%3E%3Cpath d='M0 2 Q5 0 10 2 T20 2 T30 2 T40 2' fill='none' stroke='rgba(141,110,99,0.35)' stroke-width='2' stroke-dasharray='3,5' stroke-linecap='round'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "repeat-x",
+          backgroundSize: "40px 4px",
+        }}
+      />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-full">
         <div className="flex items-center justify-between h-full">
           {/* Logo */}
@@ -66,8 +73,8 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center" style={{ gap: "32px" }}>
+          {/* Desktop Nav - 中间菜单 */}
+          <div className="nav-show-desktop hidden items-center" style={{ gap: "32px" }}>
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -99,11 +106,14 @@ export default function Navbar() {
                 老师台
               </Link>
             )}
+          </div>
 
+          {/* Desktop 用户信息/登录 - 桌面端单独显示 */}
+          <div className="nav-show-desktop hidden items-center gap-3">
             {status === "loading" ? (
               <span style={{ color: "#8D6E63", fontSize: "14px" }}>加载中...</span>
             ) : session?.user ? (
-              <div className="flex items-center gap-3">
+              <>
                 <Link
                   href="/profile"
                   className="hover:underline"
@@ -137,7 +147,7 @@ export default function Navbar() {
                 >
                   退出
                 </button>
-              </div>
+              </>
             ) : (
               <Link
                 href="/login"
@@ -153,10 +163,69 @@ export default function Navbar() {
             )}
           </div>
 
+          {/* Mobile 右侧 - 登录按钮 + 汉堡 */}
+          <div className="nav-hide-desktop flex items-center gap-2">
+            {status === "loading" ? (
+              <span style={{ color: "#8D6E63", fontSize: "14px" }}>加载中...</span>
+            ) : session?.user ? (
+              <Link
+                href="/profile"
+                className="hover:underline"
+                style={{
+                  fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+                  fontSize: "14px",
+                  color: "#3E2723",
+                }}
+              >
+                {session.user.name || session.user.phone}
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className="btn-hand"
+                style={{
+                  padding: "6px 16px",
+                  fontSize: "14px",
+                  fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive",
+                }}
+              >
+                登陆
+              </Link>
+            )}
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="flex flex-col items-center justify-center gap-1.5"
+              style={{
+                width: "40px",
+                height: "40px",
+                border: "2px solid #8D6E63",
+                borderRadius: "255px 15px 225px 15px / 15px 225px 15px 255px",
+              }}
+              aria-label="菜单"
+            >
+              <span
+                className="block w-5 h-0.5 bg-[#3E2723] transition-transform"
+                style={{
+                  transform: menuOpen ? "rotate(45deg) translateY(6px)" : "none",
+                }}
+              />
+              <span
+                className="block w-5 h-0.5 bg-[#3E2723] transition-opacity"
+                style={{ opacity: menuOpen ? 0 : 1 }}
+              />
+              <span
+                className="block w-5 h-0.5 bg-[#3E2723] transition-transform"
+                style={{
+                  transform: menuOpen ? "rotate(-45deg) translateY(-6px)" : "none",
+                }}
+              />
+            </button>
+          </div>
+
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden flex flex-col items-center justify-center gap-1.5"
+            className="nav-hide-desktop flex flex-col items-center justify-center gap-1.5"
             style={{
               width: "40px",
               height: "40px",
@@ -188,10 +257,11 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {menuOpen && (
         <div
-          className="md:hidden px-4 py-3 space-y-1"
+          className="nav-hide-desktop px-4 py-3 space-y-1"
           style={{
-            background: "#FAFAF5",
-            borderTop: "1px solid rgba(141,110,99,0.3)",
+            background: "rgba(250,250,245,0.96)",
+            borderTop: "none",
+            backdropFilter: "blur(8px)",
           }}
         >
           {navLinks.map((link) => (
@@ -225,16 +295,7 @@ export default function Navbar() {
               老师台
             </Link>
           )}
-          {!session?.user && (
-            <Link
-              href="/login"
-              onClick={() => setMenuOpen(false)}
-              className="block mt-2 btn-hand text-center"
-              style={{ padding: "6px 16px", fontSize: "14px" }}
-            >
-              登陆
-            </Link>
-          )}
+
         </div>
       )}
     </nav>
