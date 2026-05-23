@@ -37,13 +37,11 @@ export default function RootLayout({
         <Providers>{children}</Providers>
 
         {/* 版权声明 */}
-        <footer className="text-center py-6 text-sm relative z-10" style={{ color: "#8A7B6D" }}>
-          <p className="flex items-center justify-center gap-2">
-            <span className="font-serif text-lg opacity-40">&#8734;</span>
-            <span>&copy; 2026 数学小讲师联盟 版权所有</span>
-            <span className="font-serif text-lg opacity-40">&#8734;</span>
+        <footer className="text-center pt-12 pb-8 text-xs relative z-10" style={{ color: "#8D6E63", fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" }}>
+          <p>
+            &copy; 2026 数学小讲师联盟 版权所有
           </p>
-          <p className="mt-1 text-xs">
+          <p className="mt-1">
             未经授权，禁止复制、转载或商业使用本站内容
           </p>
         </footer>
