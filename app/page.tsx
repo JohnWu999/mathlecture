@@ -43,7 +43,9 @@ function SproutSVG({ className = "" }: { className?: string }) {
   );
 }
 
-function TreeSVG({ className = "" }: { className?: string }) {
+function TreeSVG({ className = "", isCurrent = false }: { className?: string; isCurrent?: boolean }) {
+  const sw = isCurrent ? 3 : 2;
+  const branchSw = isCurrent ? 2 : 1.5;
   return (
     <svg width="40" height="52" viewBox="0 0 40 52" className={className}>
       {/* 树干 */}
@@ -51,7 +53,7 @@ function TreeSVG({ className = "" }: { className?: string }) {
         d="M20 50 L20 16"
         fill="none"
         stroke="#8D6E63"
-        strokeWidth="2.5"
+        strokeWidth={sw}
         strokeLinecap="round"
       />
       {/* 左树枝 */}
@@ -59,7 +61,7 @@ function TreeSVG({ className = "" }: { className?: string }) {
         d="M20 32 L13 26"
         fill="none"
         stroke="#8D6E63"
-        strokeWidth="1.5"
+        strokeWidth={branchSw}
         strokeLinecap="round"
       />
       {/* 右树枝 */}
@@ -67,7 +69,7 @@ function TreeSVG({ className = "" }: { className?: string }) {
         d="M20 28 L27 22"
         fill="none"
         stroke="#8D6E63"
-        strokeWidth="1.5"
+        strokeWidth={branchSw}
         strokeLinecap="round"
       />
       {/* 树冠 - 中央大圆 */}
@@ -78,7 +80,7 @@ function TreeSVG({ className = "" }: { className?: string }) {
         fill="#C8E6C9"
         fillOpacity="0.5"
         stroke="#8D6E63"
-        strokeWidth="2"
+        strokeWidth={sw}
       />
       {/* 树冠 - 左侧小圆 */}
       <circle
@@ -88,7 +90,7 @@ function TreeSVG({ className = "" }: { className?: string }) {
         fill="#C8E6C9"
         fillOpacity="0.4"
         stroke="#8D6E63"
-        strokeWidth="1.5"
+        strokeWidth={branchSw}
       />
       {/* 树冠 - 右侧小圆 */}
       <circle
@@ -98,7 +100,7 @@ function TreeSVG({ className = "" }: { className?: string }) {
         fill="#C8E6C9"
         fillOpacity="0.4"
         stroke="#8D6E63"
-        strokeWidth="1.5"
+        strokeWidth={branchSw}
       />
     </svg>
   );
@@ -187,39 +189,39 @@ const stages = [
     cta: "会讲题？录视频教别人",
     detail: "录制 3-5 分钟讲题视频，被采纳赚积分，解锁小讲师身份",
     stickyColor: "#C8E6C9",
-    rotate: 8,
+    rotate: 1,
     Plant: TreeSVG,
-    plantStyle: { transform: "translateY(-10px) translateX(-5px)" },
+    plantStyle: { transform: "scale(1.3) translateY(-15px)" },
   },
   {
     status: "todo" as const,
     emoji: "🔬",
-    role: "项目成员",
-    cta: "想深度玩？组队做项目",
+    role: "项目官",
+    cta: "想深度玩？带队做项目",
     detail: "5 天一个小项目，和队友一起测量、探索、做汇报，异步协作",
     stickyColor: "#BBDEFB",
-    rotate: -1,
+    rotate: -3,
     Plant: ForestSVG,
-    plantStyle: {},
+    plantStyle: { transform: "scale(0.8)" },
   },
 ];
 
 const trustItems = [
   {
     iconBg: "#FFF9C4",
-    icon: "🔒",
+    icon: "🛡️",
     title: "内容安全",
     desc: "所有讲题视频经老师审核后才会展示",
   },
   {
     iconBg: "#C8E6C9",
-    icon: "⏱️",
+    icon: "📅",
     title: "时间灵活",
-    desc: "异步协作，孩子每天只需 15 分钟",
+    desc: "异步协作，自己安排时间",
   },
   {
     iconBg: "#BBDEFB",
-    icon: "👥",
+    icon: "🗣️",
     title: "真实同伴",
     desc: "同年级孩子互助，不是 AI 陪聊",
   },
@@ -277,7 +279,7 @@ export default function HomePage() {
         {/* ② 身份进阶路径图 */}
         <div className="mt-20 mx-auto w-[90%] max-w-[400px] md:max-w-[720px]">
           {/* 移动端：纵向排列 */}
-          <div className="md:hidden relative flex flex-col items-start gap-8">
+          <div className="home-desktop-hidden flex-col relative flex items-start gap-8">
             {/* 左侧竖线 */}
             <div style={{
               position: "absolute",
@@ -296,9 +298,9 @@ export default function HomePage() {
               return (
                 <div key={index} className="flex items-start gap-4 relative w-full">
                   {/* 植物节点 */}
-                  <div className="w-8 flex justify-center shrink-0 relative z-10">
-                    <div style={isCurrent ? { transform: "scale(1.2) translateY(-15px) translateX(-8px)" } : stage.plantStyle}>
-                      <Plant />
+                  <div className="w-8 flex justify-center shrink-0 relative z-20">
+                    <div style={isCurrent ? { transform: "scale(1.3) translateY(-15px)" } : stage.plantStyle}>
+                      <Plant isCurrent={isCurrent} />
                     </div>
                   </div>
 
@@ -308,16 +310,12 @@ export default function HomePage() {
                     style={{
                       background: stage.stickyColor,
                       transform: isCurrent
-                        ? "rotate(6deg) translateY(-16px)"
+                        ? "rotate(1deg) translateY(-20px)"
                         : `rotate(${stage.rotate}deg)`,
+                      ...(isCurrent ? { border: "3px solid #8D6E63" } : {}),
                     }}
                     onClick={() => toggleStage(index)}
                   >
-                    {/* 手绘对话框 */}
-                    {isCurrent && (
-                      <div className="speech-bubble">你现在在这里！ 👇</div>
-                    )}
-
                     <div className="text-2xl text-center">{stage.emoji}</div>
                     <div
                       className="text-center mt-2 text-base"
@@ -357,7 +355,7 @@ export default function HomePage() {
           </div>
 
           {/* 桌面端：横向排列 */}
-          <div className="hidden md:flex relative items-start justify-center gap-10">
+          <div className="home-desktop-flex relative items-start justify-center gap-10">
             {/* 下方横线 */}
             <div style={{
               position: "absolute",
@@ -370,15 +368,22 @@ export default function HomePage() {
               backgroundSize: "40px 4px",
             }} />
 
+            {/* 植物间淡淡铅笔虚线连接 */}
+            <div className="absolute left-[22%] right-[22%] z-10" style={{ top: "22px", height: "2px" }}>
+              <svg width="100%" height="4" preserveAspectRatio="none">
+                <line x1="0" y1="2" x2="100%" y2="2" stroke="#8D6E63" strokeWidth="1" strokeDasharray="4,6" opacity="0.25" strokeLinecap="round" />
+              </svg>
+            </div>
+
             {stages.map((stage, index) => {
               const Plant = stage.Plant;
               const isCurrent = stage.status === "current";
               return (
                 <div key={index} className="flex flex-col items-center flex-1 max-w-[200px] relative">
-                  {/* 植物节点 */}
-                  <div className="h-10 flex items-end justify-center relative z-10 mb-4">
-                    <div style={isCurrent ? { transform: "scale(1.2) translateY(-15px) translateX(-8px)" } : stage.plantStyle}>
-                      <Plant />
+                  {/* 植物节点 - 在横线上方 */}
+                  <div className="h-12 flex items-end justify-center relative z-20 mb-2">
+                    <div style={isCurrent ? { transform: "scale(1.3) translateY(-15px)" } : stage.plantStyle}>
+                      <Plant isCurrent={isCurrent} />
                     </div>
                   </div>
 
@@ -388,16 +393,12 @@ export default function HomePage() {
                     style={{
                       background: stage.stickyColor,
                       transform: isCurrent
-                        ? "rotate(8deg) translateY(-20px)"
+                        ? "rotate(1deg) translateY(-20px)"
                         : `rotate(${stage.rotate}deg)`,
+                      ...(isCurrent ? { border: "3px solid #8D6E63" } : {}),
                     }}
                     onClick={() => toggleStage(index)}
                   >
-                    {/* 手绘对话框 */}
-                    {isCurrent && (
-                      <div className="speech-bubble">你现在在这里！ 👇</div>
-                    )}
-
                     <div className="text-2xl text-center">{stage.emoji}</div>
                     <div
                       className="text-center mt-2 text-base"
@@ -436,8 +437,18 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* 板块间箭头：路径图 → 分流按钮（实际方向是向下） */}
+        <div className="mt-10 flex justify-center">
+          <div className="flex flex-col items-center gap-1" style={{ opacity: 0.5 }}>
+            <svg width="20" height="20" viewBox="0 0 20 20">
+              <path d="M10 2 L10 14 M6 10 L10 14 L14 10" fill="none" stroke="#8D6E63" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" />
+            </svg>
+            <span className="text-xs" style={{ fontFamily: "'ZCOOL KuaiLe', cursive", color: "#8D6E63" }}>先选身份</span>
+          </div>
+        </div>
+
         {/* ③ 分流按钮区 */}
-        <div className="mt-20 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
+        <div className="mt-6 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
           <Link
             href="/qa"
             className="btn-hand btn-yellow w-full md:w-[240px] text-center"
@@ -479,6 +490,16 @@ export default function HomePage() {
         </p>
       </section>
 
+      {/* 板块间箭头：路径图 → 信任背书 */}
+      <div className="relative z-10 flex justify-center py-4">
+        <div className="flex flex-col items-center gap-1" style={{ opacity: 0.5 }}>
+          <svg width="20" height="20" viewBox="0 0 20 20">
+            <path d="M10 2 L10 14 M6 10 L10 14 L14 10" fill="none" stroke="#8D6E63" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" />
+          </svg>
+          <span className="text-xs" style={{ fontFamily: "'ZCOOL KuaiLe', cursive", color: "#8D6E63" }}>家长放心</span>
+        </div>
+      </div>
+
       {/* ==================== 信任背书区 ==================== */}
       <section className="relative z-10 px-4 pt-20 pb-10 text-center">
         <h2
@@ -488,31 +509,32 @@ export default function HomePage() {
           家长最关心的三件事
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto mt-12 items-start md:items-stretch">
+        <div className="home-desktop-grid-3 grid grid-cols-1 gap-6 md:gap-8 max-w-4xl mx-auto mt-12">
           {trustItems.map((item, index) => {
             const rotations = [-2, 1, -1];
             return (
               <div
                 key={index}
-                className="flex flex-col items-center wavy-border"
+                className="flex flex-col items-center relative"
                 style={{
                   background: item.iconBg,
-                  borderRadius: "2px 255px 2px 255px / 255px 2px 255px 2px",
+                  border: "2px solid #8D6E63",
+                  borderRadius: "2px 255px 3px 255px / 255px 3px 255px 2px",
                   padding: "32px 24px",
                   transform: `rotate(${rotations[index]}deg)`,
                 }}
               >
-                {/* 手绘不规则图标 */}
-                <div
-                  className="w-14 h-14 flex items-center justify-center relative corner-fold"
-                  style={{
-                    background: "rgba(255,255,255,0.5)",
-                    border: "2px solid rgba(141,110,99,0.4)",
-                    borderRadius: "255px 15px 225px 15px / 15px 225px 15px 255px",
-                  }}
-                >
-                  <span className="text-2xl">{item.icon}</span>
-                </div>
+                {/* 手绘虚线箭头串联（桌面端） */}
+                {index < 2 && (
+                  <div className="home-desktop-flex absolute -right-5 top-1/2 -translate-y-1/2 z-10 items-center">
+                    <svg width="28" height="16" viewBox="0 0 28 16">
+                      <path d="M0 8 L20 8 M16 4 L20 8 L16 12" fill="none" stroke="#8D6E63" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" opacity="0.4" />
+                    </svg>
+                  </div>
+                )}
+
+                {/* 图标 32px */}
+                <div className="text-[32px] leading-none">{item.icon}</div>
 
                 <h3
                   className="mt-4 text-[15px]"
@@ -532,29 +554,26 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 波浪线分隔 */}
-      <div className="relative z-10 flex justify-center my-10">
-        <svg
-          width="200"
-          height="12"
-          viewBox="0 0 200 12"
-          style={{ opacity: 0.2, width: "60%", maxWidth: "200px" }}
-        >
-          <path
-            d="M0,6 Q10,0 20,6 T40,6 T60,6 T80,6 T100,6 T120,6 T140,6 T160,6 T180,6 T200,6"
-            fill="none"
-            stroke="#8D6E63"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </svg>
+      {/* 板块间箭头：信任背书 → 行动号召 */}
+      <div className="relative z-10 flex justify-center py-4">
+        <div className="flex flex-col items-center gap-1" style={{ opacity: 0.5 }}>
+          <svg width="20" height="20" viewBox="0 0 20 20">
+            <path d="M10 2 L10 14 M6 10 L10 14 L14 10" fill="none" stroke="#8D6E63" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" />
+          </svg>
+          <span className="text-xs" style={{ fontFamily: "'ZCOOL KuaiLe', cursive", color: "#8D6E63" }}>加入吧！</span>
+        </div>
       </div>
 
       {/* ==================== 行动号召区 ==================== */}
-      <section className="relative z-10 px-4 py-16">
+      <section className="relative z-10 px-4 py-16 text-center">
         <div
-          className="card-paper mx-auto w-[90%] max-w-[400px] md:max-w-[600px] text-center"
-          style={{ background: "transparent" }}
+          className="mx-auto w-[90%] max-w-[400px] md:max-w-[600px]"
+          style={{
+            border: "3px solid #8D6E63",
+            borderRadius: "255px 15px 225px 15px / 15px 225px 15px 255px",
+            padding: "48px 32px",
+            background: "transparent",
+          }}
         >
           <h2
             className="text-2xl"
@@ -578,6 +597,8 @@ export default function HomePage() {
               fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive",
               background: "transparent",
               color: "#3E2723",
+              border: "3px solid #8D6E63",
+              position: "relative",
             }}
             onMouseEnter={(e) => {
               (e.target as HTMLElement).style.background = "#FFF9C4";
@@ -590,6 +611,22 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
+
+      {/* ==================== 底部版权 ==================== */}
+      <footer className="relative z-10 text-center" style={{ padding: "48px 16px 32px" }}>
+        <p
+          className="text-[12px]"
+          style={{ fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif", color: "#8D6E63" }}
+        >
+          © 2026 数学小讲师联盟 版权所有
+        </p>
+        <p
+          className="text-[12px] mt-1"
+          style={{ fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif", color: "#8D6E63" }}
+        >
+          未经授权，禁止复制、转载或商业使用本站内容
+        </p>
+      </footer>
 
       {/* fadeIn 动画 */}
       <style jsx>{`
