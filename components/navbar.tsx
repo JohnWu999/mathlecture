@@ -20,9 +20,13 @@ export default function Navbar() {
 
   return (
     <nav
-      className="sticky top-0 z-50 bg-transparent"
+      className="sticky top-0 z-50"
       style={{
         height: "56px",
+        background: "#FAFAF5",
+        backgroundImage:
+          "linear-gradient(rgba(139,90,43,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(139,90,43,0.03) 1px, transparent 1px)",
+        backgroundSize: "24px 24px",
         borderBottom: "1px solid rgba(141,110,99,0.3)",
       }}
     >

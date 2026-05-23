@@ -45,20 +45,60 @@ function SproutSVG({ className = "" }: { className?: string }) {
 
 function TreeSVG({ className = "" }: { className?: string }) {
   return (
-    <svg width="40" height="50" viewBox="0 0 50 55" className={className}>
+    <svg width="40" height="52" viewBox="0 0 40 52" className={className}>
+      {/* 树干 */}
       <path
-        d="M25 52 Q26.5 42 24.5 32 Q23.5 24 25 17"
+        d="M20 50 L20 16"
         fill="none"
         stroke="#8D6E63"
-        strokeWidth="2"
+        strokeWidth="2.5"
         strokeLinecap="round"
       />
+      {/* 左树枝 */}
       <path
-        d="M8 24 Q10 13 19 10.5 Q28 8 36 12.5 Q44 17 42 25.5 Q40 33.5 31 35.5 Q22 37.5 13 33 Q6 29 8 24"
-        fill="#C8E6C9"
+        d="M20 32 L13 26"
+        fill="none"
         stroke="#8D6E63"
         strokeWidth="1.5"
-        opacity="0.5"
+        strokeLinecap="round"
+      />
+      {/* 右树枝 */}
+      <path
+        d="M20 28 L27 22"
+        fill="none"
+        stroke="#8D6E63"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      {/* 树冠 - 中央大圆 */}
+      <circle
+        cx="20"
+        cy="14"
+        r="11"
+        fill="#C8E6C9"
+        fillOpacity="0.5"
+        stroke="#8D6E63"
+        strokeWidth="2"
+      />
+      {/* 树冠 - 左侧小圆 */}
+      <circle
+        cx="11"
+        cy="18"
+        r="7"
+        fill="#C8E6C9"
+        fillOpacity="0.4"
+        stroke="#8D6E63"
+        strokeWidth="1.5"
+      />
+      {/* 树冠 - 右侧小圆 */}
+      <circle
+        cx="29"
+        cy="18"
+        r="7"
+        fill="#C8E6C9"
+        fillOpacity="0.4"
+        stroke="#8D6E63"
+        strokeWidth="1.5"
       />
     </svg>
   );
@@ -422,34 +462,47 @@ export default function HomePage() {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto mt-12 items-start md:items-stretch">
-          {trustItems.map((item, index) => (
-            <div key={index} className="flex flex-col items-center">
-              {/* 手绘不规则形状 */}
+          {trustItems.map((item, index) => {
+            const rotations = [-2, 1, -1];
+            return (
               <div
-                className="w-14 h-14 flex items-center justify-center relative corner-fold"
+                key={index}
+                className="flex flex-col items-center"
                 style={{
                   background: item.iconBg,
-                  border: "2px solid #8D6E63",
-                  borderRadius: "255px 15px 225px 15px / 15px 225px 15px 255px",
+                  border: "2px dashed #8D6E63",
+                  borderRadius: "2px 255px 2px 255px / 255px 2px 255px 2px",
+                  padding: "32px 24px",
+                  transform: `rotate(${rotations[index]}deg)`,
                 }}
               >
-                <span className="text-2xl">{item.icon}</span>
-              </div>
+                {/* 手绘不规则图标 */}
+                <div
+                  className="w-14 h-14 flex items-center justify-center relative corner-fold"
+                  style={{
+                    background: "rgba(255,255,255,0.5)",
+                    border: "2px solid #8D6E63",
+                    borderRadius: "255px 15px 225px 15px / 15px 225px 15px 255px",
+                  }}
+                >
+                  <span className="text-2xl">{item.icon}</span>
+                </div>
 
-              <h3
-                className="mt-4 text-[15px]"
-                style={{ fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive", color: "#3E2723" }}
-              >
-                {item.title}
-              </h3>
-              <p
-                className="mt-2 text-[13px] leading-[1.6] max-w-[280px]"
-                style={{ fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif", color: "#5D4037" }}
-              >
-                {item.desc}
-              </p>
-            </div>
-          ))}
+                <h3
+                  className="mt-4 text-[15px]"
+                  style={{ fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive", color: "#3E2723" }}
+                >
+                  {item.title}
+                </h3>
+                <p
+                  className="mt-2 text-[13px] leading-[1.6] max-w-[280px]"
+                  style={{ fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif", color: "#5D4037" }}
+                >
+                  {item.desc}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </section>
 
