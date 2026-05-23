@@ -158,7 +158,7 @@ export default function Navbar() {
                   fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive",
                 }}
               >
-                登陆
+                登录
               </Link>
             )}
           </div>
@@ -189,7 +189,7 @@ export default function Navbar() {
                   fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive",
                 }}
               >
-                登陆
+                登录
               </Link>
             )}
             <button

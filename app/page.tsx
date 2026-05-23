@@ -195,7 +195,7 @@ const stages = [
   },
   {
     status: "todo" as const,
-    emoji: "🔬",
+    emoji: "🎯",
     role: "项目官",
     cta: "想深度玩？带队做项目",
     detail: "5 天一个小项目，和队友一起测量、探索、做汇报，异步协作",
@@ -221,7 +221,7 @@ const trustItems = [
   },
   {
     iconBg: "#BBDEFB",
-    icon: "🗣️",
+    icon: "🤝",
     title: "真实同伴",
     desc: "同年级孩子互助，不是 AI 陪聊",
   },
@@ -439,9 +439,9 @@ export default function HomePage() {
 
         {/* 板块间箭头：路径图 → 分流按钮（实际方向是向下） */}
         <div className="mt-10 flex justify-center">
-          <div className="flex flex-col items-center gap-1" style={{ opacity: 0.5 }}>
-            <svg width="20" height="20" viewBox="0 0 20 20">
-              <path d="M10 2 L10 14 M6 10 L10 14 L14 10" fill="none" stroke="#8D6E63" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" />
+          <div className="flex flex-col items-center gap-1" style={{ opacity: 0.75 }}>
+            <svg width="28" height="28" viewBox="0 0 20 20">
+              <path d="M10 2 L10 14 M6 10 L10 14 L14 10" fill="none" stroke="#8D6E63" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" />
             </svg>
             <span className="text-xs" style={{ fontFamily: "'ZCOOL KuaiLe', cursive", color: "#8D6E63" }}>先选身份</span>
           </div>
@@ -492,9 +492,9 @@ export default function HomePage() {
 
       {/* 板块间箭头：路径图 → 信任背书 */}
       <div className="relative z-10 flex justify-center py-4">
-        <div className="flex flex-col items-center gap-1" style={{ opacity: 0.5 }}>
-          <svg width="20" height="20" viewBox="0 0 20 20">
-            <path d="M10 2 L10 14 M6 10 L10 14 L14 10" fill="none" stroke="#8D6E63" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" />
+        <div className="flex flex-col items-center gap-1" style={{ opacity: 0.75 }}>
+          <svg width="28" height="28" viewBox="0 0 20 20">
+            <path d="M10 2 L10 14 M6 10 L10 14 L14 10" fill="none" stroke="#8D6E63" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" />
           </svg>
           <span className="text-xs" style={{ fontFamily: "'ZCOOL KuaiLe', cursive", color: "#8D6E63" }}>家长放心</span>
         </div>
@@ -524,12 +524,10 @@ export default function HomePage() {
                   transform: `rotate(${rotations[index]}deg)`,
                 }}
               >
-                {/* 手绘虚线箭头串联（桌面端） */}
+                {/* ∞ 符号串联（桌面端） */}
                 {index < 2 && (
                   <div className="home-desktop-flex absolute -right-5 top-1/2 -translate-y-1/2 z-10 items-center">
-                    <svg width="28" height="16" viewBox="0 0 28 16">
-                      <path d="M0 8 L20 8 M16 4 L20 8 L16 12" fill="none" stroke="#8D6E63" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" opacity="0.4" />
-                    </svg>
+                    <span style={{ fontSize: "28px", color: "#8D6E63", opacity: 0.5, fontFamily: "'Noto Sans SC', sans-serif" }}>∞</span>
                   </div>
                 )}
 
@@ -556,9 +554,9 @@ export default function HomePage() {
 
       {/* 板块间箭头：信任背书 → 行动号召 */}
       <div className="relative z-10 flex justify-center py-4">
-        <div className="flex flex-col items-center gap-1" style={{ opacity: 0.5 }}>
-          <svg width="20" height="20" viewBox="0 0 20 20">
-            <path d="M10 2 L10 14 M6 10 L10 14 L14 10" fill="none" stroke="#8D6E63" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" />
+        <div className="flex flex-col items-center gap-1" style={{ opacity: 0.75 }}>
+          <svg width="28" height="28" viewBox="0 0 20 20">
+            <path d="M10 2 L10 14 M6 10 L10 14 L14 10" fill="none" stroke="#8D6E63" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" />
           </svg>
           <span className="text-xs" style={{ fontFamily: "'ZCOOL KuaiLe', cursive", color: "#8D6E63" }}>加入吧！</span>
         </div>
@@ -569,9 +567,9 @@ export default function HomePage() {
         <div
           className="mx-auto w-[90%] max-w-[400px] md:max-w-[600px]"
           style={{
-            border: "3px solid #8D6E63",
+            border: "3px dashed #8D6E63",
             borderRadius: "255px 15px 225px 15px / 15px 225px 15px 255px",
-            padding: "48px 32px",
+            padding: "32px 24px",
             background: "transparent",
           }}
         >
@@ -585,19 +583,21 @@ export default function HomePage() {
             className="mt-2 text-sm"
             style={{ fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif", color: "#8D6E63" }}
           >
-            第一期种子用户招募中
+            小学一、二年级种子用户招募中
           </p>
 
           <Link
             href="/register"
-            className="btn-hand mt-6 inline-block"
+            className="btn-hand mt-6 inline-flex items-center justify-center"
             style={{
-              padding: "16px 48px",
+              padding: "12px 36px",
               fontSize: "16px",
+              whiteSpace: "nowrap",
               fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive",
               background: "transparent",
               color: "#3E2723",
               border: "3px solid #8D6E63",
+              borderRadius: "255px 15px 225px 15px / 15px 225px 15px 255px",
               position: "relative",
             }}
             onMouseEnter={(e) => {
@@ -612,21 +612,19 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ==================== 底部版权 ==================== */}
-      <footer className="relative z-10 text-center" style={{ padding: "48px 16px 32px" }}>
-        <p
-          className="text-[12px]"
-          style={{ fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif", color: "#8D6E63" }}
-        >
-          © 2026 数学小讲师联盟 版权所有
-        </p>
-        <p
-          className="text-[12px] mt-1"
-          style={{ fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif", color: "#8D6E63" }}
-        >
-          未经授权，禁止复制、转载或商业使用本站内容
-        </p>
-      </footer>
+      {/* 页面底部数学装饰 */}
+      <div className="relative z-0" aria-hidden="true">
+        <div style={{ position: "absolute", bottom: "80px", left: "5%", fontSize: "48px", color: "#8D6E63", opacity: 0.08, fontFamily: "'ZCOOL KuaiLe', cursive", transform: "rotate(-15deg)" }}>
+          +</div>
+        <div style={{ position: "absolute", bottom: "120px", right: "8%", fontSize: "40px", color: "#8D6E63", opacity: 0.08, fontFamily: "'ZCOOL KuaiLe', cursive", transform: "rotate(10deg)" }}>
+          ×</div>
+        <div style={{ position: "absolute", bottom: "60px", right: "20%", fontSize: "36px", color: "#8D6E63", opacity: 0.06, fontFamily: "'ZCOOL KuaiLe', cursive", transform: "rotate(-8deg)" }}>
+          =</div>
+        <div style={{ position: "absolute", bottom: "140px", left: "15%", fontSize: "32px", color: "#8D6E63", opacity: 0.07, fontFamily: "'ZCOOL KuaiLe', cursive", transform: "rotate(20deg)" }}>
+          ∞</div>
+        <div style={{ position: "absolute", bottom: "40px", left: "40%", fontSize: "28px", color: "#8D6E63", opacity: 0.05, fontFamily: "'ZCOOL KuaiLe', cursive", transform: "rotate(-5deg)" }}>
+          π</div>
+      </div>
 
       {/* fadeIn 动画 */}
       <style jsx>{`
