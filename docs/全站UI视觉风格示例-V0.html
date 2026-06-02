@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>数学小讲师联盟｜全站UI视觉风格示例 V0</title>
+<style>
+:root{
+  --bg:#fff8ed; --paper:#fff; --ink:#1f2933; --muted:#64748b; --blue:#2563eb;
+  --orange:#f59e0b; --green:#22a06b; --red:#ef6f6c; --border:#e5e7eb;
+  --grid:#dbeafe; --note:#fef3c7; --project:#dcfce7; --show:#ede9fe;
+  --shadow:0 18px 45px rgba(31,41,51,.08); --line:rgba(37,99,235,.10);
+}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.55),transparent 72%)}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 24px 50px;position:relative}.nav{height:64px;background:rgba(255,255,255,.85);border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;padding:0 22px;backdrop-filter:blur(10px)}
+.logo{font-weight:900;letter-spacing:.02em;display:flex;gap:10px;align-items:center}.logo-mark{width:34px;height:34px;border-radius:12px;background:var(--blue);color:white;display:grid;place-items:center;box-shadow:0 8px 20px rgba(37,99,235,.25)}
+.navlinks{display:flex;gap:18px;color:var(--muted);font-size:14px}.navlinks b{color:var(--blue)}
+.hero{margin-top:28px;display:grid;grid-template-columns:1.05fr .95fr;gap:24px}.panel{background:rgba(255,255,255,.92);border:1px solid var(--border);border-radius:28px;box-shadow:var(--shadow);padding:30px}.eyebrow{color:var(--orange);font-weight:800;font-size:14px;margin-bottom:10px}.hero h1{font-size:48px;line-height:1.08;margin:0 0 10px}.subtitle{font-size:20px;color:var(--muted);line-height:1.7}.tags{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}.tag{border:1px solid var(--border);background:#fff;border-radius:999px;padding:7px 12px;font-size:13px;color:var(--ink)}.tag.blue{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}.tag.green{background:#ecfdf5;color:#047857;border-color:#bbf7d0}.actions{display:flex;gap:12px;margin-top:20px}.btn{border:0;border-radius:14px;padding:13px 18px;font-weight:800;font-size:15px}.primary{background:var(--blue);color:#fff;box-shadow:0 10px 25px rgba(37,99,235,.24)}.secondary{background:#fff;color:var(--ink);border:1px solid var(--border)}
+.board{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.metric{background:#fff;border:1px solid var(--border);border-radius:20px;padding:18px}.metric strong{font-size:28px}.metric span{display:block;color:var(--muted);font-size:13px;margin-top:4px}.cloud{grid-column:1/-1;background:#f8fbff;border:1px dashed #bfdbfe;border-radius:20px;padding:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}.cloud em{font-style:normal;background:#fff;border:1px solid #dbeafe;border-radius:999px;padding:8px 12px;color:#1e40af;font-size:14px}
+.section-title{margin:34px 0 16px;display:flex;justify-content:space-between;align-items:end}.section-title h2{margin:0;font-size:28px}.section-title p{margin:0;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:var(--paper);border:1px solid var(--border);border-radius:24px;box-shadow:var(--shadow);padding:22px;min-height:230px}.card h3{margin:0 0 10px;font-size:20px}.card p{color:var(--muted);line-height:1.7}.thumb{height:72px;border-radius:18px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;font-weight:900}.note{background:var(--note)}.project{background:var(--project)}.show{background:var(--show)}.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.small{font-size:12px;padding:6px 10px;border-radius:999px;background:#f8fafc;border:1px solid var(--border);color:var(--muted)}.stamp{display:inline-flex;align-items:center;gap:6px;margin-top:14px;color:#047857;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:12px;padding:8px 10px;font-weight:800;font-size:13px}.footergrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.admin{background:#f8fafc}.table{width:100%;border-collapse:separate;border-spacing:0 10px;font-size:14px}.table td{background:white;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:12px}.table td:first-child{border-left:1px solid var(--border);border-radius:12px 0 0 12px;font-weight:800}.table td:last-child{border-right:1px solid var(--border);border-radius:0 12px 12px 0;color:var(--muted)}
+.poster{height:360px;background:linear-gradient(135deg,#eff6ff,#fff7ed);border:1px solid #bfdbfe;border-radius:28px;padding:26px;display:flex;flex-direction:column;justify-content:space-between}.poster h3{font-size:30px;margin:0}.qr{width:70px;height:70px;background:repeating-linear-gradient(45deg,#1f2933 0 6px,#fff 6px 12px);border:8px solid #fff;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+@media(max-width:860px){.hero,.cards,.footergrid{grid-template-columns:1fr}.navlinks{display:none}.hero h1{font-size:36px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><div class="logo"><div class="logo-mark">数</div>数学小讲师联盟</div><div class="navlinks"><b>首页</b><span>你问我答</span><span>项目营</span><span>成果广场</span><span>个人中心</span></div></div>
+  <section class="hero">
+    <div class="panel"><div class="eyebrow">小学1–3年级 · 真实思考</div><h1>会思考，爱数学</h1><div class="subtitle">小学低年级孩子的数学共学社区：提出真实问题，尝试讲清思路，和伙伴完成数学小项目。</div><div class="tags"><span class="tag blue">同伴互助</span><span class="tag green">项目制学习</span><span class="tag">不公开排名</span><span class="tag">成长护照</span></div><div class="actions"><button class="btn primary">我要提问</button><button class="btn secondary">看看孩子怎么学</button></div></div>
+    <div class="panel board"><div class="metric"><strong>128</strong><span>个好问题被提出</span></div><div class="metric"><strong>76</strong><span>个问题被讲清楚</span></div><div class="metric"><strong>42</strong><span>位孩子参与项目探索</span></div><div class="metric"><strong>18</strong><span>个小组完成协作</span></div><div class="cloud"><em>画图表达</em><em>勇敢提问</em><em>认真倾听</em><em>合作探索</em><em>讲清思路</em><em>发现规律</em></div></div>
+  </section>
+  <div class="section-title"><div><h2>核心组件示例</h2><p>问题卡、项目卡、成果卡统一纸面感，但各自有清晰身份。</p></div></div>
+  <section class="cards">
+    <article class="card"><div class="thumb note">问题便签 QuestionCard</div><h3>这道面积题我不知道先看哪里</h3><p>困惑：不知道先算什么。热度不是比赛，只是告诉小讲师有更多同学想弄明白。</p><div class="row"><span class="small">二年级</span><span class="small">图形与空间</span><span class="small">12位也有困惑</span></div><span class="stamp">✓ 等待小讲师</span></article>
+    <article class="card"><div class="thumb project">项目任务 ProjectCard</div><h3>我家的小小测量师</h3><p>用尺子和眼睛，发现家里物品的长度秘密。满3人自动开组并开启协作空间。</p><div class="row"><span class="small">所需人数：3人</span><span class="small">还缺1人</span><span class="small">14天</span></div><span class="stamp">✓ 可申请参加</span></article>
+    <article class="card"><div class="thumb show">作品展墙 OutcomeCard</div><h3>我们完成了一个数学小项目</h3><p>成果广场只展示已审核、已授权、无隐私风险的作品。点赞是鼓励，不做排名。</p><div class="row"><span class="small">探索家 ★★</span><span class="small">测量与比较</span><span class="small">分享</span></div><span class="stamp">✓ 老师已审核</span></article>
+  </section>
+  <div class="section-title"><div><h2>后台与分享示例</h2><p>老师/管理员后台保持清晰可信，分享海报延续同一视觉骨架。</p></div></div>
+  <section class="footergrid">
+    <div class="panel admin"><h3>管理员数据资产视图</h3><table class="table"><tr><td>问题库</td><td>筛选、下架、导出仅管理员</td></tr><tr><td>视频库</td><td>审核状态、公开范围、下载日志</td></tr><tr><td>项目库</td><td>AI草稿、老师编辑、管理员发布</td></tr><tr><td>导出日志</td><td>导出人、时间、范围、原因</td></tr></table></div>
+    <div class="poster"><div><div class="logo" style="margin-bottom:22px"><div class="logo-mark">数</div>数学小讲师联盟</div><h3>我提出了一个好问题</h3><p class="subtitle" style="font-size:16px">《这道题我想知道先看哪里》<br>提问也是一种数学能力。</p></div><div style="display:flex;justify-content:space-between;align-items:end"><b>会思考，爱数学</b><div class="qr"></div></div></div>
+  </section>
+</div>
+</body>
+</html>

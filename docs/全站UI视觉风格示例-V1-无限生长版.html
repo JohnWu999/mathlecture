@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>数学小讲师联盟｜无限生长视觉方向 V1</title>
+<style>
+:root{
+  --paper:#fff8ea;--paper2:#fffdf4;--forest:#21483a;--tree:#2f8f67;--sprout:#7ec85f;--blue:#3b82f6;--sun:#ffd166;--orange:#f9733d;--soil:#8b6b4a;--mist:#d9e8d7;--ink:#1d2f27;
+  --shadow:0 24px 80px rgba(33,72,58,.16);--soft:0 12px 32px rgba(33,72,58,.10);
+}
+*{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","PingFang SC",sans-serif;background:var(--paper);color:var(--forest);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(33,72,58,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(33,72,58,.035) 1px,transparent 1px);background-size:34px 34px;mask-image:linear-gradient(to bottom,#000,transparent 80%);}
+.nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:18px 54px;background:rgba(255,248,234,.82);backdrop-filter:blur(18px);border-bottom:1px solid rgba(33,72,58,.08)}
+.logo{display:flex;align-items:center;gap:12px;font-weight:900;letter-spacing:.02em}.mark{width:48px;height:32px;position:relative}.mark svg{width:100%;height:100%;display:block}.nav a{margin:0 12px;color:rgba(33,72,58,.72);text-decoration:none;font-weight:700}.nav .cta{background:var(--forest);color:white;padding:12px 18px;border-radius:999px;box-shadow:var(--soft)}
+.hero{position:relative;min-height:820px;padding:78px 64px 80px;overflow:hidden}.hero-grid{display:grid;grid-template-columns:1.04fr .96fr;gap:32px;max-width:1320px;margin:0 auto;position:relative;z-index:2}.eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(47,143,103,.2);background:#fffdf7;padding:10px 14px;border-radius:999px;font-weight:800;color:var(--tree);box-shadow:var(--soft)}
+h1{font-size:72px;line-height:1.04;letter-spacing:-.06em;margin:28px 0 24px;color:var(--forest);max-width:720px}.highlight{position:relative;color:var(--tree)}.highlight:after{content:"";position:absolute;left:-6px;right:-6px;bottom:5px;height:18px;background:rgba(255,209,102,.55);z-index:-1;border-radius:18px;transform:rotate(-1deg)}
+.lead{font-size:21px;line-height:1.8;color:rgba(33,72,58,.78);max-width:690px}.actions{display:flex;gap:16px;margin-top:34px}.btn{border:0;border-radius:999px;padding:18px 26px;font-size:17px;font-weight:900;cursor:pointer}.primary{background:var(--orange);color:white;box-shadow:0 18px 36px rgba(249,115,61,.25)}.secondary{background:white;color:var(--forest);border:1px solid rgba(33,72,58,.14);box-shadow:var(--soft)}
+.promise{margin-top:34px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:760px}.promise div{background:rgba(255,255,255,.62);border:1px solid rgba(33,72,58,.09);border-radius:24px;padding:16px 16px;box-shadow:var(--soft)}.promise b{display:block;font-size:18px;margin-bottom:4px}.promise span{font-size:13px;color:rgba(33,72,58,.66)}
+.world{position:relative;height:620px;border-radius:48px;background:linear-gradient(180deg,#fffdf4 0%,#eef9e8 100%);box-shadow:var(--shadow);border:1px solid rgba(33,72,58,.10);overflow:hidden}.world:before{content:"∞";position:absolute;font-family:Georgia,serif;font-size:620px;line-height:1;left:-72px;top:-42px;color:rgba(59,130,246,.09);font-weight:700;transform:rotate(-8deg)}
+.path{position:absolute;inset:58px 24px 48px}.node{position:absolute;width:170px;height:170px;border-radius:38px;background:rgba(255,255,255,.78);border:1px solid rgba(33,72,58,.12);box-shadow:var(--soft);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px;backdrop-filter:blur(10px)}.node b{font-size:22px}.node small{margin-top:6px;color:rgba(33,72,58,.65);line-height:1.5}.seed{left:22px;top:250px}.tree{left:205px;top:100px}.forestNode{right:36px;top:260px}.plant{font-size:58px;margin-bottom:8px}.question-card{position:absolute;left:110px;right:92px;bottom:46px;background:#fff;border-radius:30px;padding:22px 24px;border:1px solid rgba(33,72,58,.12);box-shadow:0 24px 64px rgba(33,72,58,.18)}.qtop{display:flex;justify-content:space-between;align-items:center}.badge{display:inline-flex;padding:8px 12px;border-radius:999px;background:rgba(255,209,102,.38);font-weight:900;color:#6b4b00}.qtitle{font-size:22px;font-weight:950;margin:14px 0 10px;color:var(--forest)}.qmeta{display:flex;gap:8px;flex-wrap:wrap}.qmeta span{background:#f1f8ef;border:1px solid rgba(47,143,103,.12);padding:7px 10px;border-radius:999px;font-size:13px;font-weight:800;color:var(--tree)}
+.leaf{position:absolute;border-radius:80% 0 80% 0;background:var(--sprout);opacity:.8;transform:rotate(32deg);animation:float 6s ease-in-out infinite}.leaf.one{width:28px;height:16px;left:72%;top:16%;background:var(--sun)}.leaf.two{width:34px;height:20px;left:13%;top:19%;animation-delay:1.5s}.leaf.three{width:24px;height:14px;right:10%;bottom:20%;background:var(--blue);animation-delay:2.6s}@keyframes float{50%{transform:translateY(-14px) rotate(42deg)}}
+.section{max-width:1320px;margin:0 auto;padding:76px 64px}.section h2{font-size:46px;line-height:1.12;letter-spacing:-.04em;margin:0 0 14px}.section p.sub{font-size:18px;color:rgba(33,72,58,.70);line-height:1.8;max-width:800px}.journey{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:34px}.stage{position:relative;background:#fffdf7;border:1px solid rgba(33,72,58,.10);border-radius:36px;padding:28px;min-height:300px;box-shadow:var(--soft);overflow:hidden}.stage:after{content:"∞";position:absolute;right:-34px;bottom:-70px;font:190px Georgia,serif;color:rgba(33,72,58,.045)}.stage .icon{font-size:62px}.stage h3{font-size:26px;margin:16px 0 10px}.stage p{color:rgba(33,72,58,.70);line-height:1.75}.stage.seedling{background:linear-gradient(180deg,#fffdf7,#f0faec)}.stage.strong{background:linear-gradient(180deg,#fffdf7,#e9f7f0)}.stage.forest{background:linear-gradient(180deg,#fffdf7,#eef7ff)}
+.cards{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;margin-top:34px}.mission{background:var(--forest);color:white;border-radius:40px;padding:34px;min-height:360px;box-shadow:var(--shadow);position:relative;overflow:hidden}.mission:before{content:"";position:absolute;inset:auto -30px -100px auto;width:330px;height:330px;border:38px solid rgba(255,255,255,.08);border-radius:50%}.mission h3{font-size:34px;margin:0 0 12px}.mission p{color:rgba(255,255,255,.76);line-height:1.75}.slots{display:flex;gap:10px;margin-top:20px}.slot{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);padding:12px 14px;border-radius:18px;font-weight:900}.poster{background:#fff;border-radius:40px;padding:32px;box-shadow:var(--soft);border:1px solid rgba(33,72,58,.10);position:relative;overflow:hidden}.poster .big{font-size:42px;font-weight:950;letter-spacing:-.04em}.poster .stamp{display:inline-flex;margin-top:26px;border:2px solid var(--orange);color:var(--orange);padding:10px 14px;border-radius:14px;font-weight:950;transform:rotate(-4deg)}
+.footer-note{text-align:center;padding:30px 0 70px;color:rgba(33,72,58,.60);font-weight:800}
+@media(max-width:980px){.hero-grid,.journey,.cards{grid-template-columns:1fr}.hero{padding:40px 22px}.nav{padding:14px 20px}.navlinks{display:none}h1{font-size:46px}.world{height:560px}.section{padding:50px 22px}.promise{grid-template-columns:1fr}.node{transform:scale(.82);transform-origin:center}.tree{left:38%;top:50px}.forestNode{right:12px}}
+@media(prefers-reduced-motion:reduce){.leaf{animation:none}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="logo"><span class="mark"><svg viewBox="0 0 120 76"><path d="M18 38C32 10 54 10 60 38C66 66 88 66 102 38C88 10 66 10 60 38C54 66 32 66 18 38Z" fill="none" stroke="#2f8f67" stroke-width="9" stroke-linecap="round"/><circle cx="38" cy="26" r="7" fill="#ffd166"/><circle cx="82" cy="50" r="7" fill="#3b82f6"/></svg></span>数学小讲师联盟</div>
+  <div class="navlinks"><a>你问我答</a><a>项目营</a><a>成果广场</a><a>个人中心</a><a class="cta">我要提问</a></div>
+</nav>
+<header class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow">∞ 两个孩子握手，长出无限可能</div>
+      <h1>让一个好问题，<span class="highlight">长成一片数学森林</span>。</h1>
+      <p class="lead">在这里，孩子可以先提出问题，再尝试讲给别人听，最后和同伴一起做项目。数学不只是答对，更是把想法说清楚、做出来、连接起来。</p>
+      <div class="actions"><button class="btn primary">我要提问</button><button class="btn secondary">看看孩子怎么学</button></div>
+      <div class="promise"><div><b>问题发芽</b><span>敢问，是数学思考开始生长。</span></div><div><b>讲解长高</b><span>讲清楚，理解才真正站稳。</span></div><div><b>项目成林</b><span>和同伴一起，把数学做出来。</span></div></div>
+    </div>
+    <div class="world">
+      <div class="leaf one"></div><div class="leaf two"></div><div class="leaf three"></div>
+      <div class="path">
+        <div class="node seed"><div class="plant">🌱</div><b>提问者</b><small>我提出了一个好问题</small></div>
+        <div class="node tree"><div class="plant">🌳</div><b>小讲师</b><small>我把一道题讲清楚</small></div>
+        <div class="node forestNode"><div class="plant">🌲🌳</div><b>探索家</b><small>我们一起完成项目</small></div>
+      </div>
+      <div class="question-card"><div class="qtop"><span class="badge">今日问题种子</span><span>已有 3 位同学也想知道</span></div><div class="qtitle">为什么 1/2 比 1/3 大？我画图时总搞反。</div><div class="qmeta"><span>二年级</span><span>分数直观</span><span>等待小讲师</span></div></div>
+    </div>
+  </div>
+</header>
+<section class="section">
+  <h2>一个孩子的成长，不是从“会做题”开始，而是从敢说出“我哪里不明白”开始。</h2>
+  <p class="sub">视觉系统把产品功能变成一条能被孩子和家长感知的成长路径：问题是种子，讲解是树干，项目是森林。每一次提问、讲题、合作，都在这条 ∞ 路径上留下痕迹。</p>
+  <div class="journey"><div class="stage seedling"><div class="icon">🌱</div><h3>问题种子卡</h3><p>题目不是冷冰冰的记录，而是一颗等待被看见的种子。卡片展示“我卡住的地方”，鼓励真实困惑。</p></div><div class="stage strong"><div class="icon">🌳</div><h3>小讲师树卡</h3><p>讲题不是表演，而是把自己的理解长成树干。重点展示讲清楚了什么、老师审核印章和能力标签。</p></div><div class="stage forest"><div class="icon">🌲</div><h3>森林项目卡</h3><p>项目不是课程货架，而是协作任务。清楚写明所需人数、材料、进度和最终会长出的成果。</p></div></div>
+</section>
+<section class="section">
+  <h2>项目营与分享海报，也要延续“无限生长”的世界观。</h2>
+  <p class="sub">项目卡像森林任务牌；成果封面像展墙；好问题海报、小讲师封面、项目成果海报必须区分，而不是共用一套模板。</p>
+  <div class="cards"><div class="mission"><h3>森林任务｜给家里的物品做一次“长度调查”</h3><p>3 位探索家成组，测量、记录、比较，并用自己的话说明：为什么同样是“长”，测量方法会影响结果？</p><div class="slots"><span class="slot">所需 3 人</span><span class="slot">已加入 2 人</span><span class="slot">还差 1 人解锁</span></div></div><div class="poster"><div class="big">我提出了一个好问题</div><p>为什么同一条线，换个方向看起来就变长了？</p><div class="stamp">老师已审核</div></div></div>
+</section>
+<div class="footer-note">往下看：一个问题如何发芽、长高、成林。</div>
+</body>
+</html>
