@@ -60,6 +60,7 @@ export const HOME_ACTIONS = {
   secondary: { href: "/qa", label: "🎤 去认领一道题" },
   account: { login: "已有账号？", loginLabel: "登录", register: "新同学？", registerLabel: "注册" },
   flowHints: ["先选身份", "家长放心", "加入吧！"],
+  trustTitle: "家长最关心的三件事",
   finalTitle: "准备好加入了吗？",
   finalSubtitle: "小学一、二年级种子用户招募中",
   finalCta: "立即报名",

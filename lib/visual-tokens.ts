@@ -26,6 +26,10 @@ export const handDrawn = {
   softCardRadius: "4px 12px 8px 16px / 16px 8px 12px 4px",
   wavyLineDataUrl:
     "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='4' viewBox='0 0 40 4'%3E%3Cpath d='M0 2 Q5 0 10 2 T20 2 T30 2 T40 2' fill='none' stroke='%238D6E63' stroke-width='2' stroke-dasharray='3,5' stroke-linecap='round'/%3E%3C/svg%3E\")",
+  verticalWavyLineDataUrl:
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='20' viewBox='0 0 2 20'%3E%3Cpath d='M1 0 Q1.5 5 1 10 T1 20' fill='none' stroke='%238D6E63' stroke-width='2' stroke-dasharray='3,4' stroke-linecap='round'/%3E%3C/svg%3E\")",
+  dashedPanelBorder: "2px dashed rgba(141,110,99,0.35)",
+  tornPaperRadius: "2px 255px 3px 255px / 255px 3px 255px 2px",
 } as const;
 
 export const identityColors = {
@@ -69,4 +73,13 @@ export const mathDoodles = [
   { symbol: "+", className: "bottom-[25%] left-[20%] text-3xl opacity-[0.08] doodle-float-fast" },
   { symbol: "=", className: "top-[60%] right-[18%] text-2xl opacity-[0.06] doodle-float-slow" },
   { symbol: "?", className: "bottom-32 right-[25%] text-2xl opacity-[0.07] doodle-float" },
+] as const;
+
+
+export const bottomMathDoodles = [
+  { symbol: "+", style: { bottom: "80px", left: "5%", fontSize: "48px", opacity: 0.08, transform: "rotate(-15deg)" } },
+  { symbol: "×", style: { bottom: "120px", right: "8%", fontSize: "40px", opacity: 0.08, transform: "rotate(10deg)" } },
+  { symbol: "=", style: { bottom: "60px", right: "20%", fontSize: "36px", opacity: 0.06, transform: "rotate(-8deg)" } },
+  { symbol: "∞", style: { bottom: "140px", left: "15%", fontSize: "32px", opacity: 0.07, transform: "rotate(20deg)" } },
+  { symbol: "π", style: { bottom: "40px", left: "40%", fontSize: "28px", opacity: 0.05, transform: "rotate(-5deg)" } },
 ] as const;
