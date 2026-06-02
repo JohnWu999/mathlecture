@@ -9,6 +9,7 @@
     "test:growth-energy": "node --test tests/growth-energy-rules.test.mjs",
     "test:qa-flow": "node --test tests/qa-flow-rules.test.mjs",
     "test:qa-ui": "node --test tests/qa-ui-rules.test.mjs",
+    "test:growth-passport-ui": "node --test tests/growth-passport-ui-rules.test.mjs",
     "lint": "next lint",
     "db:push": "prisma db push",
     "db:studio": "prisma studio"
