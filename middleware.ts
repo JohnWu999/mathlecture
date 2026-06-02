@@ -1,14 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkRateLimit, isProtectedPath, hasBasicSession, rateLimitHeaders } from "./lib/api-guard";
-
-// 配置中间件匹配的路径
-export const config = {
-  matcher: [
-    "/api/:path*",
-  ],
-};
+import { getLegacyPathRedirectTarget } from "./lib/legacy-path-redirect-rules";
 
 export function middleware(req: NextRequest) {
+  const legacyTarget = getLegacyPathRedirectTarget(`${req.nextUrl.pathname}${req.nextUrl.search}`);
+  if (legacyTarget) {
+    const url = req.nextUrl.clone();
+    const [pathname, query = ""] = legacyTarget.split("?");
+    url.pathname = pathname;
+    url.search = query ? `?${query}` : "";
+    return NextResponse.redirect(url, 308);
+  }
+
   // 1. 全局频率限制
   const rateCheck = checkRateLimit(req);
   if (!rateCheck.allowed) {
@@ -41,3 +44,17 @@ export function middleware(req: NextRequest) {
 
   return response;
 }
+
+export const config = {
+  matcher: [
+    "/api/:path*",
+    "/login",
+    "/register",
+    "/teacher/:path*",
+    "/profile/:path*",
+    "/qa/:path*",
+    "/projects/:path*",
+    "/hall/:path*",
+    "/groups/:path*",
+  ],
+};
