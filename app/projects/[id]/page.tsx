@@ -1,16 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Navbar from "@/components/navbar";
+import {
+  formatProjectValidity,
+  getProjectEnrollmentCopy,
+  getProjectGrowthPrompt,
+  getProjectReadiness,
+  getProjectTeamStatus,
+  getProjectTypeLabel,
+} from "@/lib/project-camp-ui-rules.mjs";
 
 interface ProjectDetail {
   id: string;
   title: string;
   description: string;
   price: number;
+  projectType: "FREE" | "PAID";
+  knowledgeTags: string[];
+  unlockRule: string | null;
+  groupSizeMin: number;
+  groupSizeMax: number;
+  validUntil: string | null;
   durationDays: number;
   coverImage: string | null;
   status: string;
@@ -30,15 +44,34 @@ export default function ProjectDetailPage() {
   const [project, setProject] = useState<ProjectDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     fetch(`/math-young-lecturer/api/projects/${id}`)
       .then((r) => r.json())
       .then((data) => {
-        setProject(data);
+        setProject(data?.id ? data : null);
         setLoading(false);
-      });
+      })
+      .catch(() => setLoading(false));
   }, [id]);
+
+  const detail = useMemo(() => {
+    if (!project) return null;
+    return {
+      type: getProjectTypeLabel(project.projectType),
+      readiness: getProjectReadiness(project),
+      team: getProjectTeamStatus({
+        registrations: project._count.registrations,
+        groups: project._count.groups,
+        groupSizeMin: project.groupSizeMin,
+        groupSizeMax: project.groupSizeMax,
+      }),
+      validity: formatProjectValidity(project.validUntil),
+      enrollment: getProjectEnrollmentCopy(project),
+      growthPrompt: getProjectGrowthPrompt(),
+    };
+  }, [project]);
 
   const handleRegister = async () => {
     if (!session?.user) {
@@ -46,19 +79,17 @@ export default function ProjectDetailPage() {
       return;
     }
     setRegistering(true);
+    setMessage("");
     try {
-      const res = await fetch(`/math-young-lecturer/api/projects/${id}/register`, {
-        method: "POST",
-      });
+      const res = await fetch(`/math-young-lecturer/api/projects/${id}/register`, { method: "POST" });
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        alert("🎉 报名成功！请等待老师分配小组。");
-        window.location.reload();
+        setMessage("报名意向已提交。老师会根据项目节奏、成组情况和服务内容确认下一步。");
       } else {
-        const data = await res.json();
-        alert(data.error || "报名失败");
+        setMessage(data.error || "报名意向提交失败，请稍后再试。");
       }
     } catch (e) {
-      alert("报名失败");
+      setMessage("报名意向提交失败，请稍后再试。");
     }
     setRegistering(false);
   };
@@ -67,16 +98,16 @@ export default function ProjectDetailPage() {
     return (
       <main className="min-h-screen">
         <Navbar />
-        <div className="text-center py-20 text-ink-light">加载中...</div>
+        <div className="text-center py-20 text-ink-light">加载项目森林中...</div>
       </main>
     );
   }
 
-  if (!project) {
+  if (!project || !detail) {
     return (
       <main className="min-h-screen">
         <Navbar />
-        <div className="text-center py-20 text-ink-light">项目不存在</div>
+        <div className="text-center py-20 text-ink-light">项目不存在或暂未开放</div>
       </main>
     );
   }
@@ -84,47 +115,56 @@ export default function ProjectDetailPage() {
   return (
     <main className="min-h-screen">
       <Navbar />
-      <section className="px-6 pt-8 pb-16 max-w-3xl mx-auto">
-        {/* 项目头部 */}
+      <section className="px-6 pt-8 pb-16 max-w-4xl mx-auto">
         <div className="sticker bg-crayon-yellow text-center mb-6">
-          <div className="text-5xl mb-3">🎯</div>
+          <div className="text-5xl mb-3">🌳</div>
+          <span className={`hand-badge ${detail.type.badgeClass} text-xs mb-3 inline-block`}>{detail.type.label}</span>
           <h1 className="text-2xl font-bold text-ink">{project.title}</h1>
-          <div className="flex justify-center gap-3 mt-3">
-            <span className="px-3 py-1 bg-white/70 rounded-full text-sm">
-              {project.durationDays}天核心课程
-            </span>
-            <span className="px-3 py-1 bg-white/70 rounded-full text-sm">
-              {project._count.registrations}人已报名
-            </span>
+          <p className="text-sm text-ink-light mt-2 max-w-2xl mx-auto">{detail.type.helper}</p>
+          <div className="flex flex-wrap justify-center gap-3 mt-4">
+            <span className="px-3 py-1 bg-white/70 rounded-full text-sm">{project.durationDays}天探索</span>
+            <span className="px-3 py-1 bg-white/70 rounded-full text-sm">{detail.team.label}</span>
+            <span className="px-3 py-1 bg-white/70 rounded-full text-sm">{detail.validity}</span>
           </div>
         </div>
 
-        {/* 项目介绍 */}
-        <div className="sticker bg-white mb-6">
-          <h2 className="font-bold text-ink mb-3">📝 项目介绍</h2>
-          <p className="text-ink-light leading-relaxed whitespace-pre-wrap">
-            {project.description}
-          </p>
+        <div className="grid md:grid-cols-[1.2fr_0.8fr] gap-6 mb-6">
+          <div className="sticker bg-white">
+            <h2 className="font-bold text-ink mb-3">📝 项目介绍</h2>
+            <p className="text-ink-light leading-relaxed whitespace-pre-wrap">{project.description}</p>
+          </div>
+          <div className="sticker bg-parchment">
+            <h2 className="font-bold text-ink mb-3">{detail.readiness.title}</h2>
+            <p className="text-sm text-ink-light leading-relaxed">{detail.readiness.summary}</p>
+            <p className="text-xs text-ink-light mt-3">{detail.readiness.helper}</p>
+            <div className="flex flex-wrap gap-2 mt-3">
+              {detail.readiness.tags.map((tag) => <span key={tag} className="hand-badge hand-badge-blue text-xs">#{tag}</span>)}
+            </div>
+          </div>
         </div>
 
-        {/* 报名按钮 */}
+        <div className="grid md:grid-cols-2 gap-6 mb-6">
+          <div className="sticker bg-white">
+            <h2 className="font-bold text-ink mb-3">👥 组队状态</h2>
+            <p className="text-ink font-medium">{detail.team.label}</p>
+            <p className="text-sm text-ink-light mt-2 leading-relaxed">{detail.team.helper}</p>
+            <p className="text-xs text-ink-light mt-3">当前报名意向：{project._count.registrations} 人 · 小组：{project._count.groups} 组</p>
+          </div>
+          <div className="sticker bg-crayon-green/70">
+            <h2 className="font-bold text-ink mb-3">🌿 探索成长提示</h2>
+            <p className="text-sm text-ink-light leading-relaxed">{detail.growthPrompt}</p>
+          </div>
+        </div>
+
         <div className="sticker bg-crayon-green text-center mb-6">
-          <p className="text-ink font-medium mb-2">
-            报名费：¥{project.price / 100}
-          </p>
-          <button
-            onClick={handleRegister}
-            disabled={registering}
-            className="hand-btn bg-white text-ink disabled:opacity-50"
-          >
-            {registering ? "报名中..." : "🎉 立即报名"}
+          <p className="text-ink font-bold mb-1">{detail.enrollment.priceLabel}</p>
+          <p className="text-sm text-ink-light mb-4 max-w-2xl mx-auto">{detail.enrollment.helper}</p>
+          <button onClick={handleRegister} disabled={registering} className="hand-btn bg-white text-ink disabled:opacity-50">
+            {registering ? "提交中..." : detail.enrollment.cta}
           </button>
-          <p className="text-xs text-ink-light mt-2">
-            MVP阶段免费体验，无需支付
-          </p>
+          {message && <p className="text-sm text-ink mt-3">{message}</p>}
         </div>
 
-        {/* 小组列表 */}
         {project.groups.length > 0 && (
           <div className="mb-6">
             <h2 className="font-bold text-ink mb-3">👥 项目小组</h2>
@@ -133,16 +173,9 @@ export default function ProjectDetailPage() {
                 <div key={g.id} className="sticker bg-white flex items-center justify-between">
                   <div>
                     <h4 className="font-bold text-ink">{g.name}</h4>
-                    <p className="text-xs text-ink-light">
-                      Day {g.dayProgress} / {project.durationDays} · {g._count.members}人
-                    </p>
+                    <p className="text-xs text-ink-light">Day {g.dayProgress} / {project.durationDays} · {g._count.members}人</p>
                   </div>
-                  <Link
-                    href={`/groups/${g.id}`}
-                    className="hand-btn text-xs bg-crayon-blue text-ink"
-                  >
-                    进入空间
-                  </Link>
+                  <Link href={`/groups/${g.id}`} className="hand-btn text-xs bg-crayon-blue text-ink">进入协作空间</Link>
                 </div>
               ))}
             </div>
