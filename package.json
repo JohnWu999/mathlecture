@@ -12,6 +12,7 @@
     "test:growth-passport-ui": "node --test tests/growth-passport-ui-rules.test.mjs",
     "test:project-camp-ui": "node --test tests/project-camp-ui-rules.test.mjs",
     "test:project-collab-ui": "node --test tests/project-collab-ui-rules.test.mjs",
+    "test:outcome-hall-ui": "node --test tests/outcome-hall-ui-rules.test.mjs",
     "lint": "next lint",
     "db:push": "prisma db push",
     "db:studio": "prisma studio"
