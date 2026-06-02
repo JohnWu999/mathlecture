@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import Navbar from "@/components/navbar";
+import { PUBLIC_IDENTITIES, SITE } from "@/lib/product-copy";
+import { growthMotifs } from "@/components/brand/growth-motifs";
+import { colors, fonts } from "@/lib/visual-tokens";
 
 /* ============================================================
    植物 SVG 节点组件
@@ -170,41 +173,21 @@ function ForestSVG({ className = "" }: { className?: string }) {
    阶段数据
    ============================================================ */
 
-const stages = [
-  {
-    status: "done" as const,
-    emoji: "❓",
-    role: "提问者",
-    cta: "遇到难题？大胆问",
-    detail: "拍照或语音上传你的困惑，同龄小伙伴 24h 内回复",
-    stickyColor: "#FFF9C4",
-    rotate: -2,
-    Plant: SproutSVG,
-    plantStyle: { transform: "rotate(-5deg)" },
-  },
-  {
-    status: "current" as const,
-    emoji: "🎤",
-    role: "小讲师",
-    cta: "会讲题？录视频教别人",
-    detail: "录制 3-5 分钟讲题视频，被采纳赚积分，解锁小讲师身份",
-    stickyColor: "#C8E6C9",
-    rotate: 1,
-    Plant: TreeSVG,
-    plantStyle: { transform: "scale(1.3) translateY(-15px)" },
-  },
-  {
-    status: "todo" as const,
-    emoji: "🎯",
-    role: "项目官",
-    cta: "想深度玩？带队做项目",
-    detail: "5 天一个小项目，和队友一起测量、探索、做汇报，异步协作",
-    stickyColor: "#BBDEFB",
-    rotate: -3,
-    Plant: ForestSVG,
-    plantStyle: { transform: "scale(0.8)" },
-  },
-];
+const stages = PUBLIC_IDENTITIES.map((identity, index) => ({
+  status: (["done", "current", "todo"] as const)[index],
+  emoji: identity.emoji,
+  role: identity.label,
+  cta: identity.cta,
+  detail: identity.detail,
+  stickyColor: ["#FFF9C4", "#C8E6C9", "#BBDEFB"][index],
+  rotate: [-2, 1, -3][index],
+  Plant: growthMotifs[identity.key],
+  plantStyle: [
+    { transform: "rotate(-5deg)" },
+    { transform: "scale(1.3) translateY(-15px)" },
+    { transform: "scale(0.8)" },
+  ][index],
+}));
 
 const trustItems = [
   {
@@ -265,15 +248,15 @@ export default function HomePage() {
         {/* ① 品牌标题区 */}
         <h1
           className="text-[40px] leading-tight"
-          style={{ fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive", color: "#3E2723" }}
+          style={{ fontFamily: fonts.title, color: colors.ink }}
         >
-          数学小讲师联盟
+          {SITE.name}
         </h1>
         <p
           className="mt-3 text-[12px]"
-          style={{ fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif", color: "#8D6E63" }}
+          style={{ fontFamily: fonts.body, color: colors.muted }}
         >
-          小学生·数学互助成长社区
+          {SITE.audience}
         </p>
 
         {/* ② 身份进阶路径图 */}

@@ -4,17 +4,16 @@ import Link from "next/link";
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import { InfinityLogo } from "@/components/brand/infinity-logo";
+import { NAV_LINKS } from "@/lib/product-copy";
+import { colors, fonts, handDrawn } from "@/lib/visual-tokens";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  const navLinks = [
-    { href: "/qa", label: "你问我答" },
-    { href: "/projects", label: "项目营" },
-    { href: "/hall", label: "成果广场" },
-  ];
+  const navLinks = NAV_LINKS;
 
   const isActive = (href: string) => pathname === href;
 
@@ -41,36 +40,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-full">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            {/* Logo 图占位 */}
-            <div
-              className="flex items-center justify-center"
-              style={{
-                width: "32px",
-                height: "32px",
-                border: "2px solid #8D6E63",
-                borderRadius: "255px 15px 225px 15px / 15px 225px 15px 255px",
-                transform: "rotate(-3deg)",
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: "'ZCOOL KuaiLe', cursive",
-                  fontSize: "14px",
-                  color: "#3E2723",
-                }}
-              >
-                &#8734;
-              </span>
-            </div>
-            <span
-              style={{
-                fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive",
-                fontSize: "18px",
-                color: "#3E2723",
-              }}
-            >
-              数学小讲师联盟
-            </span>
+            <InfinityLogo size="sm" />
           </Link>
 
           {/* Desktop Nav - 中间菜单 */}
@@ -81,10 +51,10 @@ export default function Navbar() {
                 href={link.href}
                 className="relative transition-colors"
                 style={{
-                  fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+                  fontFamily: fonts.body,
                   fontSize: "14px",
-                  color: isActive(link.href) ? "#3E2723" : "#8D6E63",
-                  borderBottom: isActive(link.href) ? "2px solid #3E2723" : "none",
+                  color: isActive(link.href) ? colors.ink : colors.muted,
+                  borderBottom: isActive(link.href) ? `2px solid ${colors.ink}` : "none",
                   paddingBottom: "2px",
                 }}
               >
@@ -96,10 +66,10 @@ export default function Navbar() {
                 href="/teacher"
                 className="transition-colors"
                 style={{
-                  fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+                  fontFamily: fonts.body,
                   fontSize: "14px",
-                  color: isActive("/teacher") ? "#3E2723" : "#8D6E63",
-                  borderBottom: isActive("/teacher") ? "2px solid #3E2723" : "none",
+                  color: isActive("/teacher") ? colors.ink : colors.muted,
+                  borderBottom: isActive("/teacher") ? `2px solid ${colors.ink}` : "none",
                   paddingBottom: "2px",
                 }}
               >
@@ -111,16 +81,16 @@ export default function Navbar() {
           {/* Desktop 用户信息/登录 - 桌面端单独显示 */}
           <div className="nav-show-desktop hidden items-center gap-3">
             {status === "loading" ? (
-              <span style={{ color: "#8D6E63", fontSize: "14px" }}>加载中...</span>
+<span style={{ color: colors.muted, fontSize: "14px" }}>加载中...</span>
             ) : session?.user ? (
               <>
                 <Link
                   href="/profile"
                   className="hover:underline"
                   style={{
-                    fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+                    fontFamily: fonts.body,
                     fontSize: "14px",
-                    color: "#3E2723",
+                    color: colors.ink,
                   }}
                 >
                   {session.user.name || session.user.phone}
@@ -129,9 +99,9 @@ export default function Navbar() {
                   className="px-2 py-0.5 text-xs font-medium"
                   style={{
                     background: session.user.role === "TEACHER" ? "#BBDEFB" : "#C8E6C9",
-                    border: "1px solid #8D6E63",
-                    borderRadius: "255px 15px 225px 15px / 15px 225px 15px 255px",
-                    color: "#3E2723",
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: handDrawn.organicRadius,
+                    color: colors.ink,
                   }}
                 >
                   {session.user.role === "TEACHER" ? "老师" : "学员"}
@@ -140,9 +110,9 @@ export default function Navbar() {
                   onClick={() => signOut({ callbackUrl: "/" })}
                   className="hover:underline"
                   style={{
-                    fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+                    fontFamily: fonts.body,
                     fontSize: "14px",
-                    color: "#8D6E63",
+                    color: colors.muted,
                   }}
                 >
                   退出
@@ -155,7 +125,7 @@ export default function Navbar() {
                 style={{
                   padding: "6px 16px",
                   fontSize: "14px",
-                  fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive",
+                  fontFamily: fonts.title,
                 }}
               >
                 登录
@@ -166,15 +136,15 @@ export default function Navbar() {
           {/* Mobile 右侧 - 登录按钮 + 汉堡 */}
           <div className="nav-hide-desktop flex items-center gap-2">
             {status === "loading" ? (
-              <span style={{ color: "#8D6E63", fontSize: "14px" }}>加载中...</span>
+<span style={{ color: colors.muted, fontSize: "14px" }}>加载中...</span>
             ) : session?.user ? (
               <Link
                 href="/profile"
                 className="hover:underline"
                 style={{
-                  fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+                  fontFamily: fonts.body,
                   fontSize: "14px",
-                  color: "#3E2723",
+                  color: colors.ink,
                 }}
               >
                 {session.user.name || session.user.phone}
@@ -186,7 +156,7 @@ export default function Navbar() {
                 style={{
                   padding: "6px 16px",
                   fontSize: "14px",
-                  fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive",
+                  fontFamily: fonts.title,
                 }}
               >
                 登录
@@ -198,8 +168,8 @@ export default function Navbar() {
               style={{
                 width: "40px",
                 height: "40px",
-                border: "2px solid #8D6E63",
-                borderRadius: "255px 15px 225px 15px / 15px 225px 15px 255px",
+                border: `2px solid ${colors.border}`,
+                borderRadius: handDrawn.organicRadius,
               }}
               aria-label="菜单"
             >
@@ -229,8 +199,8 @@ export default function Navbar() {
             style={{
               width: "40px",
               height: "40px",
-              border: "2px solid #8D6E63",
-              borderRadius: "255px 15px 225px 15px / 15px 225px 15px 255px",
+              border: `2px solid ${colors.border}`,
+              borderRadius: handDrawn.organicRadius,
             }}
             aria-label="菜单"
           >
@@ -271,10 +241,10 @@ export default function Navbar() {
               onClick={() => setMenuOpen(false)}
               className="block px-4 py-2.5"
               style={{
-                fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+                fontFamily: fonts.body,
                 fontSize: "14px",
-                color: isActive(link.href) ? "#3E2723" : "#8D6E63",
-                borderBottom: isActive(link.href) ? "2px solid #3E2723" : "none",
+                color: isActive(link.href) ? colors.ink : colors.muted,
+                borderBottom: isActive(link.href) ? `2px solid ${colors.ink}` : "none",
               }}
             >
               {link.label}
@@ -286,10 +256,10 @@ export default function Navbar() {
               onClick={() => setMenuOpen(false)}
               className="block px-4 py-2.5"
               style={{
-                fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+                fontFamily: fonts.body,
                 fontSize: "14px",
-                color: isActive("/teacher") ? "#3E2723" : "#8D6E63",
-                borderBottom: isActive("/teacher") ? "2px solid #3E2723" : "none",
+                color: isActive("/teacher") ? colors.ink : colors.muted,
+                borderBottom: isActive("/teacher") ? `2px solid ${colors.ink}` : "none",
               }}
             >
               老师台
