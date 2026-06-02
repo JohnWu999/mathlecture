@@ -3,7 +3,9 @@ import { checkRateLimit, isProtectedPath, hasBasicSession, rateLimitHeaders } fr
 import { getLegacyPathRedirectTarget } from "./lib/legacy-path-redirect-rules";
 
 export function middleware(req: NextRequest) {
-  const legacyTarget = getLegacyPathRedirectTarget(`${req.nextUrl.pathname}${req.nextUrl.search}`);
+  const legacyTarget = getLegacyPathRedirectTarget(`${req.nextUrl.pathname}${req.nextUrl.search}`, {
+    requestBasePath: req.nextUrl.basePath,
+  });
   if (legacyTarget) {
     const url = req.nextUrl.clone();
     const [pathname, query = ""] = legacyTarget.split("?");

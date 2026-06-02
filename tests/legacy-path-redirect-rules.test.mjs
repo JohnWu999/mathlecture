@@ -20,3 +20,10 @@ test("does not redirect already-correct base path or unrelated assets", () => {
   assert.equal(shouldRedirectLegacyPath("/_next/static/app.js"), false);
   assert.equal(shouldRedirectLegacyPath("/favicon.ico"), false);
 });
+
+test("does not redirect requests that Next.js has already matched under the deployed base path", () => {
+  assert.equal(
+    getLegacyPathRedirectTarget("/teacher", { requestBasePath: "/math-young-lecturer" }),
+    null
+  );
+});
