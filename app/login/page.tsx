@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { getPostLoginRedirectPath } from "@/lib/login-redirect-rules";
 
 export default function LoginPage() {
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -33,7 +34,8 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/");
+    const session = await getSession();
+    router.push(getPostLoginRedirectPath(session?.user?.role));
     router.refresh();
   };
 
