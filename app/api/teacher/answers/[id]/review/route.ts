@@ -26,12 +26,34 @@ export async function POST(req: Request, { params }: { params: { id: string } })
         where: { id: params.id },
         data: { status: "APPROVED" },
       });
-      // 给小讲师加积分
-      await prisma.user.update({
-        where: { id: answer.lecturerId },
-        data: { points: { increment: 10 } },
+      // 给小讲师记录私密“讲解成长能量”，不直接兑换身份星级
+      await prisma.$transaction([
+        prisma.user.update({
+          where: { id: answer.lecturerId },
+          data: { growthEnergy: { increment: 10 }, points: { increment: 10 } },
+        }),
+        prisma.pointTransaction.create({
+          data: {
+            userId: answer.lecturerId,
+            amount: 10,
+            reason: "ANSWER_APPROVED",
+            displayLabel: "讲解成长能量",
+            userMessage: "你努力把一道题讲清楚了。讲给别人听，也是让自己的思考长高。",
+            sourceType: "ANSWER",
+            sourceId: answer.id,
+            visibility: "PRIVATE",
+            affectsIdentityLevel: false,
+          },
+        }),
+      ]);
+      return NextResponse.json({
+        message: "已通过",
+        growthEnergy: {
+          amount: 10,
+          displayLabel: "讲解成长能量",
+          userMessage: "你努力把一道题讲清楚了。讲给别人听，也是让自己的思考长高。",
+        },
       });
-      return NextResponse.json({ message: "已通过" });
     } else {
       await prisma.answer.update({
         where: { id: params.id },
@@ -44,3 +66,4 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     return NextResponse.json({ error: "审核失败" }, { status: 500 });
   }
 }
+

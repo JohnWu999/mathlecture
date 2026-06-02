@@ -29,6 +29,10 @@ export async function GET() {
         grade: true,
         region: true,
         points: true,
+        growthEnergy: true,
+        questionerLevel: true,
+        lecturerLevel: true,
+        explorerLevel: true,
         isActive: true,
         createdAt: true,
       },
@@ -40,3 +44,4 @@ export async function GET() {
     return NextResponse.json({ error: "获取失败" }, { status: 500 });
   }
 }
+

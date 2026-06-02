@@ -35,11 +35,13 @@ INSERT INTO answers (id, "videoUrl", description, "lecturerId", "questionId", st
   ('a_06', 'https://example.com/video6.mp4', '100÷20=5小时后电量用完。', 'u_s05', 'q_06', 'PENDING', NOW(), NOW()),
   ('a_07', 'https://example.com/video7.mp4', '24÷3=8天。', 'u_s08', 'q_07', 'APPROVED', NOW(), NOW()),
   ('a_08', 'https://example.com/video8.mp4', '5×4=20本书。', 'u_s07', 'q_08', 'PENDING', NOW(), NOW()) ON CONFLICT (id) DO NOTHING;
-INSERT INTO point_transactions (id, "userId", amount, reason, "createdAt") VALUES ('pt_1', 'u_s02', 10, '讲题被彩纳', NOW()) ON CONFLICT DO NOTHING;
-INSERT INTO point_transactions (id, "userId", amount, reason, "createdAt") VALUES ('pt_2', 'u_s01', 10, '讲题被彩纳', NOW()) ON CONFLICT DO NOTHING;
-INSERT INTO point_transactions (id, "userId", amount, reason, "createdAt") VALUES ('pt_3', 'u_s04', 10, '讲题被彩纳', NOW()) ON CONFLICT DO NOTHING;
-INSERT INTO point_transactions (id, "userId", amount, reason, "createdAt") VALUES ('pt_4', 'u_s06', 10, '讲题被彩纳', NOW()) ON CONFLICT DO NOTHING;
-INSERT INTO point_transactions (id, "userId", amount, reason, "createdAt") VALUES ('pt_5', 'u_s08', 10, '讲题被彩纳', NOW()) ON CONFLICT DO NOTHING;
+INSERT INTO point_transactions (id, "userId", amount, reason, "displayLabel", "userMessage", "sourceType", visibility, "affectsIdentityLevel", "createdAt") VALUES
+  ('pt_1', 'u_s02', 10, 'ANSWER_APPROVED', '讲解成长能量', '你努力把一道题讲清楚了。讲给别人听，也是让自己的思考长高。', 'ANSWER', 'PRIVATE', false, NOW()),
+  ('pt_2', 'u_s01', 10, 'ANSWER_APPROVED', '讲解成长能量', '你努力把一道题讲清楚了。讲给别人听，也是让自己的思考长高。', 'ANSWER', 'PRIVATE', false, NOW()),
+  ('pt_3', 'u_s04', 10, 'ANSWER_APPROVED', '讲解成长能量', '你努力把一道题讲清楚了。讲给别人听，也是让自己的思考长高。', 'ANSWER', 'PRIVATE', false, NOW()),
+  ('pt_4', 'u_s06', 10, 'ANSWER_APPROVED', '讲解成长能量', '你努力把一道题讲清楚了。讲给别人听，也是让自己的思考长高。', 'ANSWER', 'PRIVATE', false, NOW()),
+  ('pt_5', 'u_s08', 10, 'ANSWER_APPROVED', '讲解成长能量', '你努力把一道题讲清楚了。讲给别人听，也是让自己的思考长高。', 'ANSWER', 'PRIVATE', false, NOW())
+ON CONFLICT DO NOTHING;
 INSERT INTO user_badges (id, "userId", "badgeId", "awardedAt") VALUES
   ('ub_01', 'u_s01', 'badge_lecturer', NOW()),
   ('ub_02', 'u_s02', 'badge_lecturer', NOW()),

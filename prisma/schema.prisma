@@ -21,19 +21,32 @@ model User {
   role          UserRole  @default(STUDENT)
   grade         Int?      // 年级 1或2
   region        String?   // 地域
-  points        Int       @default(0)  // 积分
+  learnerIntro  String?   // 一句话数学介绍
+  inviteCode    String?   @unique // 分享海报二维码追踪码，只用于影响力统计
+  points        Int       @default(0)  // 旧积分字段，兼容历史数据；前台儿童文案使用 growthEnergy
+  growthEnergy  Int       @default(0)  // 数学成长能量，只在个人中心私密展示
+  questionerLevel Int     @default(0)  // 提问者星级，0为未点亮
+  lecturerLevel   Int     @default(0)  // 小讲师星级，0为未点亮
+  explorerLevel   Int     @default(0)  // 探索家星级，0为未点亮
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   isActive      Boolean   @default(false)  // 老师开放权限
 
   // 关联
   questions     Question[]    // 提出的问题
+  claimedQuestions Question[] @relation("ClaimedQuestionLecturer")
   answers       Answer[]      // 讲题视频
   groupMembers  GroupMember[] // 所在小组
   messages      Message[]     // 发送的消息
   registrations ProjectRegistration[]
   pointTransactions PointTransaction[]
   userBadges    UserBadge[]
+  identityProgress IdentityProgress[]
+  questionHeats QuestionHeat[]
+  abilityTagsReceived AbilityTagLog[] @relation("AbilityTagLearner")
+  abilityTagsGiven AbilityTagLog[] @relation("AbilityTagTeacher")
+  shareAssets ShareAsset[]
+  exportLogs ExportLog[]
 
   @@map("users")
 }
@@ -48,18 +61,31 @@ enum UserRole {
 model Question {
   id          String   @id @default(cuid())
   title       String   // 问题标题
+  suggestedTitle String? // 系统建议标题，由家长/孩子确认
   content     String   // 问题内容
+  recognizedText String? // OCR/系统识别题目文字，MVP 可人工填写
   imageUrl    String?  // 题目照片
   isAnonymous Boolean  @default(false) // 匿名提问
   grade       Int?     // 年级
-  topic       String?  // 主题
+  topic       String?  // 主题/知识点
+  confusionType String? // 看不懂题意/不知道先算什么/画图不会画/其他
+  heatCount   Int      @default(0) // 热度冗余计数，真实记录见 QuestionHeat
+  shareScope  ShareScope @default(QUESTION_AUTHOR_ONLY)
+  reviewStatus ContentReviewStatus @default(PENDING)
   status      QuestionStatus @default(OPEN)
+  claimedById String?
+  claimedAt   DateTime?
+  claimExpiresAt DateTime?
+  releasedAt  DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   authorId    String
   author      User     @relation(fields: [authorId], references: [id])
+  claimedBy   User?    @relation("ClaimedQuestionLecturer", fields: [claimedById], references: [id])
   answers     Answer[]
+  heats       QuestionHeat[]
+  shareAssets ShareAsset[]
 
   @@map("questions")
 }
@@ -78,6 +104,11 @@ model Answer {
   videoUrl    String   // 视频地址
   description String?  // 讲题说明
   status      AnswerStatus @default(PENDING)
+  reviewStatus ContentReviewStatus @default(PENDING)
+  clarityTags String[] @default([]) // 能力观察标签/表达清晰标签
+  shareScope  ShareScope @default(QUESTION_AUTHOR_ONLY)
+  coverType   CoverType @default(SYSTEM_CARD)
+  coverData   String?
   mathTip     String?  // 老师的数学小贴士（有错误时不驳回，发贴士）
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -86,6 +117,7 @@ model Answer {
   question    Question @relation(fields: [questionId], references: [id])
   lecturerId  String
   lecturer    User     @relation(fields: [lecturerId], references: [id])
+  shareAssets ShareAsset[]
 
   @@map("answers")
 }
@@ -102,6 +134,12 @@ model Project {
   title       String   // 项目标题
   description String   // 项目介绍
   price       Int      @default(9900) // 分为单位，默认99元
+  projectType ProjectType @default(PAID)
+  knowledgeTags String[] @default([])
+  unlockRule  String? // 前台表达为“准备度/参与条件”，不公开具体积分门槛
+  groupSizeMin Int     @default(3)
+  groupSizeMax Int     @default(5)
+  validUntil  DateTime?
   durationDays Int     @default(5)    // 核心天数
   coverImage  String?  // 封面图
   status      ProjectStatus @default(DRAFT)
@@ -110,8 +148,14 @@ model Project {
 
   registrations ProjectRegistration[]
   groups      Group[]
+  shareAssets ShareAsset[]
 
   @@map("projects")
+}
+
+enum ProjectType {
+  FREE
+  PAID
 }
 
 enum ProjectStatus {
@@ -126,6 +170,7 @@ model ProjectRegistration {
   status    RegistrationStatus @default(PENDING)
   paidAt    DateTime?
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   userId    String
   user      User     @relation(fields: [userId], references: [id])
@@ -137,7 +182,7 @@ model ProjectRegistration {
 }
 
 enum RegistrationStatus {
-  PENDING    // 待支付
+  PENDING    // 待支付/待人工确认
   CONFIRMED  // 已确认
   CANCELLED  // 已取消
 }
@@ -186,18 +231,165 @@ model Message {
   @@map("messages")
 }
 
-// 积分交易表
+// 成长能量流水表：私密账本，不作为公开排名依据
 model PointTransaction {
   id          String   @id @default(cuid())
   amount      Int      // 正负，正为获得
-  reason      String   // 原因
-  description String?  // 备注
+  reason      GrowthEnergyReason
+  description String?  // 后台备注
+  displayLabel String? // 前台给孩子看的温暖说明，如“提问成长能量”
+  userMessage String?  // 行为完成后的提示文案
+  sourceType  GrowthEnergySourceType?
+  sourceId    String?
+  visibility  GrowthEnergyVisibility @default(PRIVATE)
+  affectsIdentityLevel Boolean @default(false) // 身份星级不由总能量直接兑换
   createdAt   DateTime @default(now())
 
   userId      String
   user        User     @relation(fields: [userId], references: [id])
 
+  @@index([userId, createdAt])
   @@map("point_transactions")
+}
+
+enum GrowthEnergyReason {
+  QUESTION_APPROVED
+  QUESTION_CONFUSION_COMPLETED
+  ANSWER_APPROVED
+  HELP_CLASSMATE
+  PROJECT_TASK_COMPLETED
+  PROJECT_OUTCOME_APPROVED
+  REFLECTION_SUBMITTED
+  MANUAL_ADJUSTMENT
+}
+
+enum GrowthEnergySourceType {
+  QUESTION
+  ANSWER
+  PROJECT
+  GROUP
+  MESSAGE
+  MANUAL
+}
+
+enum GrowthEnergyVisibility {
+  PRIVATE
+}
+
+// 身份星级进度：与成长能量分离，来自有效行为和老师审核
+model IdentityProgress {
+  id             String   @id @default(cuid())
+  identityType   IdentityType
+  effectiveCount Int      @default(0)
+  qualityCount   Int      @default(0)
+  level          Int      @default(0)
+  updatedAt      DateTime @updatedAt
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, identityType])
+  @@map("identity_progress")
+}
+
+enum IdentityType {
+  QUESTIONER
+  LECTURER
+  EXPLORER
+}
+
+// 老师能力观察标签日志：可审计，不替孩子改写表达
+model AbilityTagLog {
+  id        String   @id @default(cuid())
+  tag       String
+  note      String?
+  sourceType GrowthEnergySourceType?
+  sourceId String?
+  createdAt DateTime @default(now())
+
+  learnerId String
+  learner   User @relation("AbilityTagLearner", fields: [learnerId], references: [id])
+  teacherId String
+  teacher   User @relation("AbilityTagTeacher", fields: [teacherId], references: [id])
+
+  @@index([learnerId, createdAt])
+  @@map("ability_tag_logs")
+}
+
+// 热度记录：同一学习者对同一道题只能加一次热度，不是公开点赞榜
+model QuestionHeat {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  questionId String
+  userId     String
+
+  question   Question @relation(fields: [questionId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@unique([questionId, userId])
+  @@map("question_heats")
+}
+
+// 分享资产：记录海报/成果封面生成与公开边界
+model ShareAsset {
+  id        String   @id @default(cuid())
+  assetType ShareAssetType
+  url       String?
+  payload   String?
+  shareScope ShareScope @default(QUESTION_AUTHOR_ONLY)
+  reviewStatus ContentReviewStatus @default(PENDING)
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User @relation(fields: [userId], references: [id])
+  questionId String?
+  question Question? @relation(fields: [questionId], references: [id])
+  answerId String?
+  answer Answer? @relation(fields: [answerId], references: [id])
+  projectId String?
+  project Project? @relation(fields: [projectId], references: [id])
+
+  @@index([reviewStatus, shareScope])
+  @@map("share_assets")
+}
+
+enum ShareAssetType {
+  QUESTION_CARD
+  ANSWER_POSTER
+  PROJECT_OUTCOME
+  INVITE_POSTER
+}
+
+// 管理员导出审计：老师不能批量导出全站数据
+model ExportLog {
+  id        String   @id @default(cuid())
+  exportType String
+  scope     String
+  fileUrl   String?
+  createdAt DateTime @default(now())
+
+  operatorId String
+  operator   User @relation(fields: [operatorId], references: [id])
+
+  @@index([operatorId, createdAt])
+  @@map("export_logs")
+}
+
+enum ContentReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ShareScope {
+  QUESTION_AUTHOR_ONLY
+  PUBLIC_HALL
+  GROUP_ONLY
+}
+
+enum CoverType {
+  SYSTEM_CARD
+  CHILD_UPLOAD
+  TEACHER_UPLOAD
 }
 
 // 徽章定义表
