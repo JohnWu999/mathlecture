@@ -53,3 +53,35 @@ export const WARM_MICROCOPY = {
   explain: "慢慢讲，我们听得见",
   project: "把想法带到真实世界里试试看",
 } as const;
+
+
+export const HOME_ACTIONS = {
+  primary: { href: "/qa", label: "🙋 我要提问" },
+  secondary: { href: "/qa", label: "🎤 去认领一道题" },
+  account: { login: "已有账号？", loginLabel: "登录", register: "新同学？", registerLabel: "注册" },
+  flowHints: ["先选身份", "家长放心", "加入吧！"],
+  finalTitle: "准备好加入了吗？",
+  finalSubtitle: "小学一、二年级种子用户招募中",
+  finalCta: "立即报名",
+} as const;
+
+export const TRUST_ITEMS = [
+  {
+    colorKey: "questioner",
+    icon: "🛡️",
+    title: "内容安全",
+    desc: "所有讲题视频经老师审核后才会展示",
+  },
+  {
+    colorKey: "lecturer",
+    icon: "📅",
+    title: "时间灵活",
+    desc: "异步协作，自己安排时间",
+  },
+  {
+    colorKey: "explorer",
+    icon: "🤝",
+    title: "真实同伴",
+    desc: "同年级孩子互助，不是 AI 陪聊",
+  },
+] as const;

@@ -35,3 +35,38 @@ export const identityColors = {
 } as const;
 
 export type IdentityColorKey = keyof typeof identityColors;
+
+
+export const layoutTokens = {
+  maxContent: "max-w-6xl",
+  homeNarrow: "max-w-[400px]",
+  homeWide: "max-w-[720px]",
+  homeCardWide: "max-w-[600px]",
+} as const;
+
+export const motionTokens = {
+  gentleRotations: [-2, 1, -3],
+  trustRotations: [-2, 1, -1],
+  plantTransforms: [
+    { transform: "rotate(-5deg)" },
+    { transform: "scale(1.3) translateY(-15px)" },
+    { transform: "scale(0.8)" },
+  ],
+  currentPlantTransform: { transform: "scale(1.3) translateY(-15px)" },
+} as const;
+
+export const mathDoodles = [
+  { symbol: "∞", className: "top-8 left-8 text-4xl opacity-[0.08] doodle-float" },
+  { symbol: "×", className: "top-20 right-12 text-3xl opacity-[0.1] doodle-float-slow" },
+  { symbol: "÷", className: "top-1/3 left-6 text-3xl opacity-[0.1] doodle-float-fast" },
+  { symbol: "π", className: "top-1/3 right-8 text-3xl opacity-[0.08] doodle-float" },
+  { symbol: "∑", className: "bottom-1/3 left-12 text-3xl opacity-[0.12] doodle-float-slow" },
+  { symbol: "√", className: "bottom-1/3 right-6 text-3xl opacity-[0.1] doodle-float-fast" },
+  { symbol: "±", className: "bottom-20 left-8 text-3xl opacity-[0.08] doodle-float" },
+  { symbol: "∞", className: "bottom-16 right-12 text-4xl opacity-[0.1] doodle-float-slow" },
+  { symbol: "✦", className: "top-32 left-[15%] text-2xl opacity-[0.06] doodle-float-slow" },
+  { symbol: "?", className: "top-[45%] right-[12%] text-2xl opacity-[0.07] doodle-float" },
+  { symbol: "+", className: "bottom-[25%] left-[20%] text-3xl opacity-[0.08] doodle-float-fast" },
+  { symbol: "=", className: "top-[60%] right-[18%] text-2xl opacity-[0.06] doodle-float-slow" },
+  { symbol: "?", className: "bottom-32 right-[25%] text-2xl opacity-[0.07] doodle-float" },
+] as const;

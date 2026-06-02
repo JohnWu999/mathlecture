@@ -3,171 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import Navbar from "@/components/navbar";
-import { PUBLIC_IDENTITIES, SITE } from "@/lib/product-copy";
+import { HOME_ACTIONS, PUBLIC_IDENTITIES, SITE, TRUST_ITEMS } from "@/lib/product-copy";
 import { growthMotifs } from "@/components/brand/growth-motifs";
-import { colors, fonts } from "@/lib/visual-tokens";
-
-/* ============================================================
-   植物 SVG 节点组件
-   ============================================================ */
-
-function SproutSVG({ className = "" }: { className?: string }) {
-  return (
-    <svg width="32" height="36" viewBox="0 0 40 40" className={className}>
-      <path
-        d="M20 38 Q21.5 28 19.5 18 Q18.5 12 20 8"
-        fill="none"
-        stroke="#8D6E63"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M20 8 Q13 4 11.5 10.5 Q14 14.5 20 8"
-        fill="#E8F5E9"
-        stroke="#8D6E63"
-        strokeWidth="1.5"
-        opacity="0.5"
-      />
-      <path
-        d="M20 8 Q27 3 28.5 9.5 Q26 13.5 20 8"
-        fill="#E8F5E9"
-        stroke="#8D6E63"
-        strokeWidth="1.5"
-        opacity="0.5"
-      />
-      <path
-        d="M20 8 Q17.5 2 20 0.5 Q22.5 2 20 8"
-        fill="#E8F5E9"
-        stroke="#8D6E63"
-        strokeWidth="1.5"
-        opacity="0.5"
-      />
-    </svg>
-  );
-}
-
-function TreeSVG({ className = "", isCurrent = false }: { className?: string; isCurrent?: boolean }) {
-  const sw = isCurrent ? 3 : 2;
-  const branchSw = isCurrent ? 2 : 1.5;
-  return (
-    <svg width="40" height="52" viewBox="0 0 40 52" className={className}>
-      {/* 树干 */}
-      <path
-        d="M20 50 L20 16"
-        fill="none"
-        stroke="#8D6E63"
-        strokeWidth={sw}
-        strokeLinecap="round"
-      />
-      {/* 左树枝 */}
-      <path
-        d="M20 32 L13 26"
-        fill="none"
-        stroke="#8D6E63"
-        strokeWidth={branchSw}
-        strokeLinecap="round"
-      />
-      {/* 右树枝 */}
-      <path
-        d="M20 28 L27 22"
-        fill="none"
-        stroke="#8D6E63"
-        strokeWidth={branchSw}
-        strokeLinecap="round"
-      />
-      {/* 树冠 - 中央大圆 */}
-      <circle
-        cx="20"
-        cy="14"
-        r="11"
-        fill="#C8E6C9"
-        fillOpacity="0.5"
-        stroke="#8D6E63"
-        strokeWidth={sw}
-      />
-      {/* 树冠 - 左侧小圆 */}
-      <circle
-        cx="11"
-        cy="18"
-        r="7"
-        fill="#C8E6C9"
-        fillOpacity="0.4"
-        stroke="#8D6E63"
-        strokeWidth={branchSw}
-      />
-      {/* 树冠 - 右侧小圆 */}
-      <circle
-        cx="29"
-        cy="18"
-        r="7"
-        fill="#C8E6C9"
-        fillOpacity="0.4"
-        stroke="#8D6E63"
-        strokeWidth={branchSw}
-      />
-    </svg>
-  );
-}
-
-function ForestSVG({ className = "" }: { className?: string }) {
-  return (
-    <svg width="60" height="52" viewBox="0 0 70 55" className={className}>
-      {/* 左树 */}
-      <path
-        d="M15 50 L15 32"
-        fill="none"
-        stroke="#8D6E63"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M15 32 Q8 24 10.5 17 Q12.5 10 15 14 Q17.5 10 19.5 17 Q22 24 15 32"
-        fill="#A5D6A7"
-        stroke="#8D6E63"
-        strokeWidth="1.5"
-        opacity="0.5"
-      />
-      {/* 中树 */}
-      <path
-        d="M35 50 L35 15"
-        fill="none"
-        stroke="#8D6E63"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M35 15 Q25 8 28.5 1 Q32 -2 35 3 Q38 -2 41.5 1 Q45 8 35 15"
-        fill="#A5D6A7"
-        stroke="#8D6E63"
-        strokeWidth="1.5"
-        opacity="0.5"
-      />
-      {/* 右树 */}
-      <path
-        d="M55 50 L55 32"
-        fill="none"
-        stroke="#8D6E63"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M55 32 Q48 24 50.5 17 Q52.5 10 55 14 Q57.5 10 59.5 17 Q62 24 55 32"
-        fill="#A5D6A7"
-        stroke="#8D6E63"
-        strokeWidth="1.5"
-        opacity="0.5"
-      />
-      {/* 地平线 */}
-      <path
-        d="M5 50 Q20 51.5 35 50 Q50 48.5 65 50"
-        fill="none"
-        stroke="#8D6E63"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
+import { colors, fonts, handDrawn, identityColors, mathDoodles, motionTokens } from "@/lib/visual-tokens";
 
 /* ============================================================
    阶段数据
@@ -179,36 +17,16 @@ const stages = PUBLIC_IDENTITIES.map((identity, index) => ({
   role: identity.label,
   cta: identity.cta,
   detail: identity.detail,
-  stickyColor: ["#FFF9C4", "#C8E6C9", "#BBDEFB"][index],
-  rotate: [-2, 1, -3][index],
+  stickyColor: identityColors[identity.key],
+  rotate: motionTokens.gentleRotations[index],
   Plant: growthMotifs[identity.key],
-  plantStyle: [
-    { transform: "rotate(-5deg)" },
-    { transform: "scale(1.3) translateY(-15px)" },
-    { transform: "scale(0.8)" },
-  ][index],
+  plantStyle: motionTokens.plantTransforms[index],
 }));
 
-const trustItems = [
-  {
-    iconBg: "#FFF9C4",
-    icon: "🛡️",
-    title: "内容安全",
-    desc: "所有讲题视频经老师审核后才会展示",
-  },
-  {
-    iconBg: "#C8E6C9",
-    icon: "📅",
-    title: "时间灵活",
-    desc: "异步协作，自己安排时间",
-  },
-  {
-    iconBg: "#BBDEFB",
-    icon: "🤝",
-    title: "真实同伴",
-    desc: "同年级孩子互助，不是 AI 陪聊",
-  },
-];
+const trustItems = TRUST_ITEMS.map((item) => ({
+  ...item,
+  iconBg: identityColors[item.colorKey],
+}));
 
 /* ============================================================
    首页组件
@@ -225,20 +43,15 @@ export default function HomePage() {
     <main className="min-h-screen relative">
       {/* 涂鸦符号层 */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <span className="absolute top-8 left-8 text-4xl text-[#8D6E63] opacity-[0.08] doodle-float">&#8734;</span>
-        <span className="absolute top-20 right-12 text-3xl text-[#8D6E63] opacity-[0.1] doodle-float-slow">&times;</span>
-        <span className="absolute top-1/3 left-6 text-3xl text-[#8D6E63] opacity-[0.1] doodle-float-fast">&divide;</span>
-        <span className="absolute top-1/3 right-8 text-3xl text-[#8D6E63] opacity-[0.08] doodle-float">&pi;</span>
-        <span className="absolute bottom-1/3 left-12 text-3xl text-[#8D6E63] opacity-[0.12] doodle-float-slow">&sum;</span>
-        <span className="absolute bottom-1/3 right-6 text-3xl text-[#8D6E63] opacity-[0.1] doodle-float-fast">&radic;</span>
-        <span className="absolute bottom-20 left-8 text-3xl text-[#8D6E63] opacity-[0.08] doodle-float">&plusmn;</span>
-        <span className="absolute bottom-16 right-12 text-4xl text-[#8D6E63] opacity-[0.1] doodle-float-slow">&#8734;</span>
-        {/* 新增符号 */}
-        <span className="absolute top-32 left-[15%] text-2xl text-[#8D6E63] opacity-[0.06] doodle-float-slow">&#10022;</span>
-        <span className="absolute top-[45%] right-[12%] text-2xl text-[#8D6E63] opacity-[0.07] doodle-float">?</span>
-        <span className="absolute bottom-[25%] left-[20%] text-3xl text-[#8D6E63] opacity-[0.08] doodle-float-fast">+</span>
-        <span className="absolute top-[60%] right-[18%] text-2xl text-[#8D6E63] opacity-[0.06] doodle-float-slow">=</span>
-        <span className="absolute bottom-32 right-[25%] text-2xl text-[#8D6E63] opacity-[0.07] doodle-float">?</span>
+        {mathDoodles.map((doodle, index) => (
+          <span
+            key={`${doodle.symbol}-${index}`}
+            className={`absolute ${doodle.className}`}
+            style={{ color: colors.border }}
+          >
+            {doodle.symbol}
+          </span>
+        ))}
       </div>
 
       <Navbar />
@@ -282,7 +95,7 @@ export default function HomePage() {
                 <div key={index} className="flex items-start gap-4 relative w-full">
                   {/* 植物节点 */}
                   <div className="w-8 flex justify-center shrink-0 relative z-20">
-                    <div style={isCurrent ? { transform: "scale(1.3) translateY(-15px)" } : stage.plantStyle}>
+                    <div style={isCurrent ? motionTokens.currentPlantTransform : stage.plantStyle}>
                       <Plant isCurrent={isCurrent} />
                     </div>
                   </div>
@@ -295,20 +108,20 @@ export default function HomePage() {
                       transform: isCurrent
                         ? "rotate(1deg) translateY(-20px)"
                         : `rotate(${stage.rotate}deg)`,
-                      ...(isCurrent ? { border: "3px solid #8D6E63" } : {}),
+                      ...(isCurrent ? { border: `3px solid ${colors.border}` } : {}),
                     }}
                     onClick={() => toggleStage(index)}
                   >
                     <div className="text-2xl text-center">{stage.emoji}</div>
                     <div
                       className="text-center mt-2 text-base"
-                      style={{ fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive", color: "#3E2723" }}
+                      style={{ fontFamily: fonts.title, color: colors.ink }}
                     >
                       {stage.role}
                     </div>
                     <div
                       className="text-center mt-1 text-[13px]"
-                      style={{ fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif", color: "#5D4037" }}
+                      style={{ fontFamily: fonts.body, color: colors.inkLight }}
                     >
                       {stage.cta}
                     </div>
@@ -319,12 +132,12 @@ export default function HomePage() {
                     <div
                       className="ml-12 w-full text-[13px] leading-relaxed"
                       style={{
-                        fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
-                        color: "#5D4037",
-                        background: "#FAFAF5",
+                        fontFamily: fonts.body,
+                        color: colors.inkLight,
+                        background: colors.paper,
                         border: "2px dashed rgba(141,110,99,0.35)",
                         padding: "16px",
-                        borderRadius: "4px 12px 8px 16px / 16px 8px 12px 4px",
+                        borderRadius: handDrawn.softCardRadius,
                         marginTop: "8px",
                         animation: "fadeIn 0.3s ease",
                       }}
@@ -346,7 +159,7 @@ export default function HomePage() {
               right: "40px",
               bottom: "15px",
               height: "4px",
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='4' viewBox='0 0 40 4'%3E%3Cpath d='M0 2 Q5 0 10 2 T20 2 T30 2 T40 2' fill='none' stroke='%238D6E63' stroke-width='2' stroke-dasharray='3,5' stroke-linecap='round'/%3E%3C/svg%3E")`,
+              backgroundImage: handDrawn.wavyLineDataUrl,
               backgroundRepeat: "repeat-x",
               backgroundSize: "40px 4px",
             }} />
@@ -354,7 +167,7 @@ export default function HomePage() {
             {/* 植物间淡淡铅笔虚线连接 */}
             <div className="absolute left-[22%] right-[22%] z-10" style={{ top: "22px", height: "2px" }}>
               <svg width="100%" height="4" preserveAspectRatio="none">
-                <line x1="0" y1="2" x2="100%" y2="2" stroke="#8D6E63" strokeWidth="1" strokeDasharray="4,6" opacity="0.25" strokeLinecap="round" />
+                <line x1="0" y1="2" x2="100%" y2="2" stroke={colors.border} strokeWidth="1" strokeDasharray="4,6" opacity="0.25" strokeLinecap="round" />
               </svg>
             </div>
 
@@ -365,7 +178,7 @@ export default function HomePage() {
                 <div key={index} className="flex flex-col items-center flex-1 max-w-[200px] relative">
                   {/* 植物节点 - 在横线上方 */}
                   <div className="h-12 flex items-end justify-center relative z-20 mb-2">
-                    <div style={isCurrent ? { transform: "scale(1.3) translateY(-15px)" } : stage.plantStyle}>
+                    <div style={isCurrent ? motionTokens.currentPlantTransform : stage.plantStyle}>
                       <Plant isCurrent={isCurrent} />
                     </div>
                   </div>
@@ -378,20 +191,20 @@ export default function HomePage() {
                       transform: isCurrent
                         ? "rotate(1deg) translateY(-20px)"
                         : `rotate(${stage.rotate}deg)`,
-                      ...(isCurrent ? { border: "3px solid #8D6E63" } : {}),
+                      ...(isCurrent ? { border: `3px solid ${colors.border}` } : {}),
                     }}
                     onClick={() => toggleStage(index)}
                   >
                     <div className="text-2xl text-center">{stage.emoji}</div>
                     <div
                       className="text-center mt-2 text-base"
-                      style={{ fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive", color: "#3E2723" }}
+                      style={{ fontFamily: fonts.title, color: colors.ink }}
                     >
                       {stage.role}
                     </div>
                     <div
                       className="text-center mt-1 text-[13px]"
-                      style={{ fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif", color: "#5D4037" }}
+                      style={{ fontFamily: fonts.body, color: colors.inkLight }}
                     >
                       {stage.cta}
                     </div>
@@ -402,12 +215,12 @@ export default function HomePage() {
                     <div
                       className="mt-3 w-full text-[13px] leading-relaxed"
                       style={{
-                        fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
-                        color: "#5D4037",
-                        background: "#FAFAF5",
+                        fontFamily: fonts.body,
+                        color: colors.inkLight,
+                        background: colors.paper,
                         border: "2px dashed rgba(141,110,99,0.35)",
                         padding: "16px",
-                        borderRadius: "4px 12px 8px 16px / 16px 8px 12px 4px",
+                        borderRadius: handDrawn.softCardRadius,
                         animation: "fadeIn 0.3s ease",
                       }}
                     >
@@ -424,51 +237,51 @@ export default function HomePage() {
         <div className="mt-10 flex justify-center">
           <div className="flex flex-col items-center gap-1" style={{ opacity: 0.75 }}>
             <svg width="28" height="28" viewBox="0 0 20 20">
-              <path d="M10 2 L10 14 M6 10 L10 14 L14 10" fill="none" stroke="#8D6E63" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" />
+              <path d="M10 2 L10 14 M6 10 L10 14 L14 10" fill="none" stroke={colors.border} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" />
             </svg>
-            <span className="text-xs" style={{ fontFamily: "'ZCOOL KuaiLe', cursive", color: "#8D6E63" }}>先选身份</span>
+            <span className="text-xs" style={{ fontFamily: fonts.title, color: colors.muted }}>{HOME_ACTIONS.flowHints[0]}</span>
           </div>
         </div>
 
         {/* ③ 分流按钮区 */}
         <div className="mt-6 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
           <Link
-            href="/qa"
+            href={HOME_ACTIONS.primary.href}
             className="btn-hand btn-yellow w-full md:w-[240px] text-center"
             style={{
               padding: "14px 0",
               fontSize: "16px",
-              fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive",
+              fontFamily: fonts.title,
               transform: "rotate(-1deg)",
             }}
           >
-            🙋 我是新手，先提问
+            {HOME_ACTIONS.primary.label}
           </Link>
           <Link
-            href="/qa"
+            href={HOME_ACTIONS.secondary.href}
             className="btn-hand btn-green w-full md:w-[240px] text-center"
             style={{
               padding: "14px 0",
               fontSize: "16px",
-              fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive",
+              fontFamily: fonts.title,
               transform: "rotate(2deg)",
               marginTop: "20px",
             }}
           >
-            🎤 我会做题，来讲讲
+            {HOME_ACTIONS.secondary.label}
           </Link>
         </div>
         <p
           className="mt-4 text-[13px]"
-          style={{ fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif", color: "#8D6E63" }}
+          style={{ fontFamily: fonts.body, color: colors.muted }}
         >
-          已有账号？
+          {HOME_ACTIONS.account.login}
           <Link href="/login" className="text-[#3E2723] hover:underline">
-            登录
+            {HOME_ACTIONS.account.loginLabel}
           </Link>
-          · 新同学？
+          · {HOME_ACTIONS.account.register}
           <Link href="/register" className="text-[#3E2723] hover:underline">
-            注册
+            {HOME_ACTIONS.account.registerLabel}
           </Link>
         </p>
       </section>
@@ -477,9 +290,9 @@ export default function HomePage() {
       <div className="relative z-10 flex justify-center py-4">
         <div className="flex flex-col items-center gap-1" style={{ opacity: 0.75 }}>
           <svg width="28" height="28" viewBox="0 0 20 20">
-            <path d="M10 2 L10 14 M6 10 L10 14 L14 10" fill="none" stroke="#8D6E63" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" />
+            <path d="M10 2 L10 14 M6 10 L10 14 L14 10" fill="none" stroke={colors.border} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" />
           </svg>
-          <span className="text-xs" style={{ fontFamily: "'ZCOOL KuaiLe', cursive", color: "#8D6E63" }}>家长放心</span>
+          <span className="text-xs" style={{ fontFamily: fonts.title, color: colors.muted }}>{HOME_ACTIONS.flowHints[1]}</span>
         </div>
       </div>
 
@@ -487,7 +300,7 @@ export default function HomePage() {
       <section className="relative z-10 px-4 pt-20 pb-10 text-center">
         <h2
           className="text-xl"
-          style={{ fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive", color: "#3E2723" }}
+          style={{ fontFamily: fonts.title, color: colors.ink }}
         >
           家长最关心的三件事
         </h2>
@@ -501,7 +314,7 @@ export default function HomePage() {
                 className="flex flex-col items-center relative"
                 style={{
                   background: item.iconBg,
-                  border: "2px solid #8D6E63",
+                  border: `2px solid ${colors.border}`,
                   borderRadius: "2px 255px 3px 255px / 255px 3px 255px 2px",
                   padding: "32px 24px",
                   transform: `rotate(${rotations[index]}deg)`,
@@ -510,7 +323,7 @@ export default function HomePage() {
                 {/* ∞ 符号串联（桌面端） */}
                 {index < 2 && (
                   <div className="home-desktop-flex absolute -right-5 top-1/2 -translate-y-1/2 z-10 items-center">
-                    <span style={{ fontSize: "28px", color: "#8D6E63", opacity: 0.5, fontFamily: "'Noto Sans SC', sans-serif" }}>∞</span>
+                    <span style={{ fontSize: "28px", color: colors.muted, opacity: 0.5, fontFamily: "'Noto Sans SC', sans-serif" }}>∞</span>
                   </div>
                 )}
 
@@ -519,13 +332,13 @@ export default function HomePage() {
 
                 <h3
                   className="mt-4 text-[15px]"
-                  style={{ fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive", color: "#3E2723" }}
+                  style={{ fontFamily: fonts.title, color: colors.ink }}
                 >
                   {item.title}
                 </h3>
                 <p
                   className="mt-2 text-[13px] leading-[1.6] max-w-[280px]"
-                  style={{ fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif", color: "#5D4037" }}
+                  style={{ fontFamily: fonts.body, color: colors.inkLight }}
                 >
                   {item.desc}
                 </p>
@@ -539,9 +352,9 @@ export default function HomePage() {
       <div className="relative z-10 flex justify-center py-4">
         <div className="flex flex-col items-center gap-1" style={{ opacity: 0.75 }}>
           <svg width="28" height="28" viewBox="0 0 20 20">
-            <path d="M10 2 L10 14 M6 10 L10 14 L14 10" fill="none" stroke="#8D6E63" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" />
+            <path d="M10 2 L10 14 M6 10 L10 14 L14 10" fill="none" stroke={colors.border} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" />
           </svg>
-          <span className="text-xs" style={{ fontFamily: "'ZCOOL KuaiLe', cursive", color: "#8D6E63" }}>加入吧！</span>
+          <span className="text-xs" style={{ fontFamily: fonts.title, color: colors.muted }}>{HOME_ACTIONS.flowHints[2]}</span>
         </div>
       </div>
 
@@ -550,23 +363,23 @@ export default function HomePage() {
         <div
           className="mx-auto w-[90%] max-w-[400px] md:max-w-[600px]"
           style={{
-            border: "3px dashed #8D6E63",
-            borderRadius: "255px 15px 225px 15px / 15px 225px 15px 255px",
+            border: `3px dashed ${colors.border}`,
+            borderRadius: handDrawn.organicRadius,
             padding: "32px 24px",
             background: "transparent",
           }}
         >
           <h2
             className="text-2xl"
-            style={{ fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive", color: "#3E2723" }}
+            style={{ fontFamily: fonts.title, color: colors.ink }}
           >
-            准备好加入了吗？
+            {HOME_ACTIONS.finalTitle}
           </h2>
           <p
             className="mt-2 text-sm"
-            style={{ fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif", color: "#8D6E63" }}
+            style={{ fontFamily: fonts.body, color: colors.muted }}
           >
-            小学一、二年级种子用户招募中
+            {HOME_ACTIONS.finalSubtitle}
           </p>
 
           <Link
@@ -576,11 +389,11 @@ export default function HomePage() {
               padding: "12px 36px",
               fontSize: "16px",
               whiteSpace: "nowrap",
-              fontFamily: "'ZCOOL KuaiLe', 'Noto Sans SC', cursive",
+              fontFamily: fonts.title,
               background: "transparent",
-              color: "#3E2723",
-              border: "3px solid #8D6E63",
-              borderRadius: "255px 15px 225px 15px / 15px 225px 15px 255px",
+              color: colors.ink,
+              border: `3px solid ${colors.border}`,
+              borderRadius: handDrawn.organicRadius,
               position: "relative",
             }}
             onMouseEnter={(e) => {
@@ -590,22 +403,22 @@ export default function HomePage() {
               (e.target as HTMLElement).style.background = "transparent";
             }}
           >
-            立即报名
+            {HOME_ACTIONS.finalCta}
           </Link>
         </div>
       </section>
 
       {/* 页面底部数学装饰 */}
       <div className="relative z-0" aria-hidden="true">
-        <div style={{ position: "absolute", bottom: "80px", left: "5%", fontSize: "48px", color: "#8D6E63", opacity: 0.08, fontFamily: "'ZCOOL KuaiLe', cursive", transform: "rotate(-15deg)" }}>
+        <div style={{ position: "absolute", bottom: "80px", left: "5%", fontSize: "48px", color: colors.muted, opacity: 0.08, fontFamily: fonts.title, transform: "rotate(-15deg)" }}>
           +</div>
-        <div style={{ position: "absolute", bottom: "120px", right: "8%", fontSize: "40px", color: "#8D6E63", opacity: 0.08, fontFamily: "'ZCOOL KuaiLe', cursive", transform: "rotate(10deg)" }}>
+        <div style={{ position: "absolute", bottom: "120px", right: "8%", fontSize: "40px", color: colors.muted, opacity: 0.08, fontFamily: fonts.title, transform: "rotate(10deg)" }}>
           ×</div>
-        <div style={{ position: "absolute", bottom: "60px", right: "20%", fontSize: "36px", color: "#8D6E63", opacity: 0.06, fontFamily: "'ZCOOL KuaiLe', cursive", transform: "rotate(-8deg)" }}>
+        <div style={{ position: "absolute", bottom: "60px", right: "20%", fontSize: "36px", color: colors.muted, opacity: 0.06, fontFamily: fonts.title, transform: "rotate(-8deg)" }}>
           =</div>
-        <div style={{ position: "absolute", bottom: "140px", left: "15%", fontSize: "32px", color: "#8D6E63", opacity: 0.07, fontFamily: "'ZCOOL KuaiLe', cursive", transform: "rotate(20deg)" }}>
+        <div style={{ position: "absolute", bottom: "140px", left: "15%", fontSize: "32px", color: colors.muted, opacity: 0.07, fontFamily: fonts.title, transform: "rotate(20deg)" }}>
           ∞</div>
-        <div style={{ position: "absolute", bottom: "40px", left: "40%", fontSize: "28px", color: "#8D6E63", opacity: 0.05, fontFamily: "'ZCOOL KuaiLe', cursive", transform: "rotate(-5deg)" }}>
+        <div style={{ position: "absolute", bottom: "40px", left: "40%", fontSize: "28px", color: colors.muted, opacity: 0.05, fontFamily: fonts.title, transform: "rotate(-5deg)" }}>
           π</div>
       </div>
 

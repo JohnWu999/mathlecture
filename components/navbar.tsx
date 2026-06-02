@@ -174,53 +174,25 @@ export default function Navbar() {
               aria-label="菜单"
             >
               <span
-                className="block w-5 h-0.5 bg-[#3E2723] transition-transform"
+                className="block w-5 h-0.5 transition-transform"
                 style={{
+                  background: colors.ink,
                   transform: menuOpen ? "rotate(45deg) translateY(6px)" : "none",
                 }}
               />
               <span
-                className="block w-5 h-0.5 bg-[#3E2723] transition-opacity"
-                style={{ opacity: menuOpen ? 0 : 1 }}
+                className="block w-5 h-0.5 transition-opacity"
+                style={{ background: colors.ink, opacity: menuOpen ? 0 : 1 }}
               />
               <span
-                className="block w-5 h-0.5 bg-[#3E2723] transition-transform"
+                className="block w-5 h-0.5 transition-transform"
                 style={{
+                  background: colors.ink,
                   transform: menuOpen ? "rotate(-45deg) translateY(-6px)" : "none",
                 }}
               />
             </button>
           </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="nav-hide-desktop flex flex-col items-center justify-center gap-1.5"
-            style={{
-              width: "40px",
-              height: "40px",
-              border: `2px solid ${colors.border}`,
-              borderRadius: handDrawn.organicRadius,
-            }}
-            aria-label="菜单"
-          >
-            <span
-              className="block w-5 h-0.5 bg-[#3E2723] transition-transform"
-              style={{
-                transform: menuOpen ? "rotate(45deg) translateY(6px)" : "none",
-              }}
-            />
-            <span
-              className="block w-5 h-0.5 bg-[#3E2723] transition-opacity"
-              style={{ opacity: menuOpen ? 0 : 1 }}
-            />
-            <span
-              className="block w-5 h-0.5 bg-[#3E2723] transition-transform"
-              style={{
-                transform: menuOpen ? "rotate(-45deg) translateY(-6px)" : "none",
-              }}
-            />
-          </button>
         </div>
       </div>
 
