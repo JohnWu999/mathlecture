@@ -46,6 +46,7 @@ model User {
   abilityTagsReceived AbilityTagLog[] @relation("AbilityTagLearner")
   abilityTagsGiven AbilityTagLog[] @relation("AbilityTagTeacher")
   shareAssets ShareAsset[]
+  projectArtifacts ProjectArtifact[]
   exportLogs ExportLog[]
 
   @@map("users")
@@ -149,6 +150,7 @@ model Project {
   registrations ProjectRegistration[]
   groups      Group[]
   shareAssets ShareAsset[]
+  projectArtifacts ProjectArtifact[]
 
   @@map("projects")
 }
@@ -198,6 +200,7 @@ model Group {
   project     Project  @relation(fields: [projectId], references: [id])
   members     GroupMember[]
   messages    Message[]
+  projectArtifacts ProjectArtifact[]
 
   @@map("groups")
 }
@@ -227,8 +230,39 @@ model Message {
   author    User     @relation(fields: [authorId], references: [id])
   groupId   String
   group     Group    @relation(fields: [groupId], references: [id])
+  projectArtifact ProjectArtifact?
 
   @@map("messages")
+}
+
+// 项目作品表：由协作空间中的“作品提交”正式沉淀，进入成果广场前必须审核+授权
+model ProjectArtifact {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  artifactUrl String?
+  reviewStatus ContentReviewStatus @default(PENDING)
+  shareScope ShareScope @default(GROUP_ONLY)
+  teacherNote String?
+  reviewedAt DateTime?
+  authorizedAt DateTime?
+  withdrawnAt DateTime?
+  withdrawalReason String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  authorId String
+  author   User @relation(fields: [authorId], references: [id])
+  projectId String
+  project Project @relation(fields: [projectId], references: [id])
+  groupId String
+  group Group @relation(fields: [groupId], references: [id])
+  sourceMessageId String? @unique
+  sourceMessage Message? @relation(fields: [sourceMessageId], references: [id])
+  shareAssets ShareAsset[]
+
+  @@index([reviewStatus, shareScope, createdAt])
+  @@map("project_artifacts")
 }
 
 // 成长能量流水表：私密账本，不作为公开排名依据
@@ -337,7 +371,12 @@ model ShareAsset {
   payload   String?
   shareScope ShareScope @default(QUESTION_AUTHOR_ONLY)
   reviewStatus ContentReviewStatus @default(PENDING)
+  teacherNote String?
+  authorizedAt DateTime?
+  withdrawnAt DateTime?
+  withdrawalReason String?
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   userId String
   user   User @relation(fields: [userId], references: [id])
@@ -347,8 +386,11 @@ model ShareAsset {
   answer Answer? @relation(fields: [answerId], references: [id])
   projectId String?
   project Project? @relation(fields: [projectId], references: [id])
+  projectArtifactId String?
+  projectArtifact ProjectArtifact? @relation(fields: [projectArtifactId], references: [id])
 
   @@index([reviewStatus, shareScope])
+  @@index([projectArtifactId])
   @@map("share_assets")
 }
 
@@ -378,12 +420,14 @@ enum ContentReviewStatus {
   PENDING
   APPROVED
   REJECTED
+  WITHDRAWN
 }
 
 enum ShareScope {
   QUESTION_AUTHOR_ONLY
   PUBLIC_HALL
   GROUP_ONLY
+  WITHDRAWN
 }
 
 enum CoverType {

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { buildProjectArtifactDraft, isProjectSubmissionContent } from "@/lib/review-authorization-rules.mjs";
 
 export const dynamic = "force-dynamic";
 
@@ -57,9 +58,18 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       return NextResponse.json({ error: "协作记录不能为空" }, { status: 400 });
     }
 
+    const group = await prisma.group.findUnique({
+      where: { id: params.id },
+      select: { id: true, projectId: true },
+    });
+    if (!group) {
+      return NextResponse.json({ error: "小组不存在" }, { status: 404 });
+    }
+
+    const cleanContent = content.trim();
     const message = await prisma.message.create({
       data: {
-        content: content.trim(),
+        content: cleanContent,
         authorId: session.user.id,
         groupId: params.id,
       },
@@ -68,9 +78,24 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       },
     });
 
+    let projectArtifact = null;
+    if (isProjectSubmissionContent(cleanContent)) {
+      const draft = buildProjectArtifactDraft({
+        messageId: message.id,
+        groupId: group.id,
+        projectId: group.projectId,
+        authorId: session.user.id,
+        content: cleanContent,
+      });
+      projectArtifact = await prisma.projectArtifact.create({ data: draft });
+    }
+
     return NextResponse.json({
       message,
-      childMessage: "记录已留下。真实的观察、讨论和作品过程，都会帮助老师看见小组的探索。",
+      projectArtifact,
+      childMessage: projectArtifact
+        ? "作品已提交给老师审核。审核通过并获得公开授权后，才会进入成果广场。"
+        : "记录已留下。真实的观察、讨论和作品过程，都会帮助老师看见小组的探索。",
     }, { status: 201 });
   } catch (error) {
     console.error("发送协作记录失败:", error);
