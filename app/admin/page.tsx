@@ -34,6 +34,7 @@ export default function AdminPage() {
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState("");
+  const [consultationConfig, setConsultationConfig] = useState<{ settings?: any[]; projects?: any[] }>({});
 
   const options = useMemo(() => getProjectAccessPackageOptions(), []);
   const sections = useMemo(() => getAdminDataWorkbenchSections(), []);
@@ -47,16 +48,20 @@ export default function AdminPage() {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const [usersRes, workbenchRes] = await Promise.all([
+      const [usersRes, workbenchRes, consultationRes] = await Promise.all([
         fetch("/math-young-lecturer/api/admin/users"),
         fetch("/math-young-lecturer/api/admin/workbench"),
+        fetch("/math-young-lecturer/api/admin/consultation-settings"),
       ]);
       const usersData = await usersRes.json().catch(() => []);
       const workbenchData = await workbenchRes.json().catch(() => ({}));
+      const consultationData = await consultationRes.json().catch(() => ({}));
       if (!usersRes.ok) throw new Error(usersData.error || "用户数据加载失败");
       if (!workbenchRes.ok) throw new Error(workbenchData.error || "后台数据库加载失败");
+      if (!consultationRes.ok) throw new Error(consultationData.error || "咨询配置加载失败");
       setUsers(usersData);
       setWorkbench(workbenchData);
+      setConsultationConfig(consultationData);
       if (!selectedUserId && usersData.length > 0) {
         const firstStudent = usersData.find((user: AdminUser) => user.role === "STUDENT") || usersData[0];
         setSelectedUserId(firstStudent.id);
@@ -114,6 +119,26 @@ export default function AdminPage() {
     }
   };
 
+  const saveConsultationSetting = async (payload: any) => {
+    setSaving(true);
+    setNotice("");
+    try {
+      const res = await fetch("/math-young-lecturer/api/admin/consultation-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "保存失败");
+      setNotice(data.message || "咨询入口配置已保存");
+      await fetchAll();
+    } catch (error: any) {
+      setNotice(error.message || "保存失败");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (status === "loading") return <main className="min-h-screen"><Navbar /><div className="text-center py-20 text-ink-light">加载中...</div></main>;
   if (!session?.user) return <main className="min-h-screen"><Navbar /><div className="text-center py-20 text-ink-light">请先登录</div></main>;
   if (session.user.role !== "ADMIN") return <main className="min-h-screen"><Navbar /><div className="text-center py-20"><div className="text-4xl mb-3">🚫</div><p className="text-ink font-medium">无权访问管理员工作台</p><p className="text-ink-light text-sm mt-1">老师工作台负责教学审核；项目包、付费权益和用户运营由管理员处理。</p></div></main>;
@@ -148,6 +173,8 @@ export default function AdminPage() {
             {sections.map((section) => <div key={section.key} className="rounded-2xl bg-paper border border-ink/5 p-3"><p className="text-sm font-bold text-ink">{section.label}</p><p className="text-xs text-ink-light mt-1 leading-relaxed">{section.helper}</p></div>)}
           </div>
         </section>
+
+        <ConsultationSettingsPanel config={consultationConfig} saving={saving} onSave={saveConsultationSetting} />
 
         <div className="grid lg:grid-cols-[360px_1fr] gap-6 mb-8">
           <div className="sticker sticker-white">
@@ -210,6 +237,88 @@ export default function AdminPage() {
         </section>
       </section>
     </main>
+  );
+}
+
+function ConsultationSettingsPanel({ config, saving, onSave }: { config: { settings?: any[]; projects?: any[] }; saving: boolean; onSave: (payload: any) => void }) {
+  const globalSetting = (config.settings || []).find((item) => item.scope === "GLOBAL");
+  const [projectId, setProjectId] = useState("");
+  const selectedSetting = (config.settings || []).find((item) => item.lookupKey === (projectId ? `PROJECT:${projectId}` : "GLOBAL")) || (!projectId ? globalSetting : null);
+  const [qrImageUrl, setQrImageUrl] = useState(globalSetting?.qrImageUrl || "");
+  const [contactName, setContactName] = useState(globalSetting?.contactName || "项目咨询老师");
+  const [contactTitle, setContactTitle] = useState(globalSetting?.contactTitle || "数学小讲师联盟");
+  const [description, setDescription] = useState(globalSetting?.description || "提交报名意向后，请扫码添加企业微信，老师会确认项目节奏、名额和适合度。");
+  const [enabled, setEnabled] = useState(globalSetting?.enabled ?? true);
+  const [uploading, setUploading] = useState(false);
+  const [localNotice, setLocalNotice] = useState("");
+
+  useEffect(() => {
+    const current = selectedSetting || {};
+    setQrImageUrl(current.qrImageUrl || "");
+    setContactName(current.contactName || "项目咨询老师");
+    setContactTitle(current.contactTitle || "数学小讲师联盟");
+    setDescription(current.description || "提交报名意向后，请扫码添加企业微信，老师会确认项目节奏、名额和适合度。");
+    setEnabled(current.enabled ?? true);
+  }, [selectedSetting?.id, projectId]);
+
+  const uploadQr = async (file?: File | null) => {
+    if (!file) return;
+    setUploading(true);
+    setLocalNotice("");
+    try {
+      const form = new FormData();
+      form.append("kind", "consultation-qr");
+      form.append("file", file);
+      const res = await fetch("/math-young-lecturer/api/uploads", { method: "POST", body: form });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "二维码上传失败");
+      setQrImageUrl(data.url || "");
+      setLocalNotice("二维码已上传，请保存咨询入口配置。");
+    } catch (error: any) {
+      setLocalNotice(error.message || "二维码上传失败");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <section className="sticker sticker-white mb-8">
+      <h2 className="font-bold text-ink mb-2">📱 企业微信/咨询入口配置</h2>
+      <p className="text-xs text-ink-light mb-4 leading-relaxed">报名成功后展示真实二维码。可先配置全局入口；如某个项目需要不同老师，可选择项目保存项目级入口覆盖全局。</p>
+      {localNotice && <div className="rounded-2xl bg-crayon-green/20 border border-ink/5 p-3 mb-4 text-xs text-ink">{localNotice}</div>}
+      <div className="grid lg:grid-cols-[1fr_220px] gap-5">
+        <div className="grid md:grid-cols-2 gap-3">
+          <label className="text-xs text-ink-light md:col-span-2">配置范围
+            <select value={projectId} onChange={(e) => setProjectId(e.target.value)} className="mt-1 w-full rounded-xl border border-ink/15 bg-paper px-3 py-2 text-sm text-ink">
+              <option value="">全局咨询入口</option>
+              {(config.projects || []).map((project) => <option key={project.id} value={project.id}>项目级：{project.title}</option>)}
+            </select>
+          </label>
+          <label className="text-xs text-ink-light">联系人名称
+            <input value={contactName} onChange={(e) => setContactName(e.target.value)} maxLength={40} className="mt-1 w-full rounded-xl border border-ink/15 bg-paper px-3 py-2 text-sm text-ink" />
+          </label>
+          <label className="text-xs text-ink-light">联系人/项目标题
+            <input value={contactTitle} onChange={(e) => setContactTitle(e.target.value)} maxLength={60} className="mt-1 w-full rounded-xl border border-ink/15 bg-paper px-3 py-2 text-sm text-ink" />
+          </label>
+          <label className="text-xs text-ink-light md:col-span-2">咨询说明
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)} maxLength={240} className="mt-1 w-full rounded-xl border border-ink/15 bg-paper px-3 py-2 text-sm text-ink min-h-20" />
+          </label>
+          <label className="text-xs text-ink-light md:col-span-2">二维码图片
+            <input type="file" accept="image/png,image/jpeg,image/webp" onChange={(e) => uploadQr(e.target.files?.[0])} className="mt-1 w-full rounded-xl border border-ink/15 bg-paper px-3 py-2 text-sm text-ink" />
+          </label>
+          <label className="flex items-center gap-2 text-xs text-ink-light">
+            <input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} /> 启用该入口
+          </label>
+          <button onClick={() => onSave({ projectId: projectId || null, qrImageUrl, contactName, contactTitle, description, enabled })} disabled={saving || uploading || !qrImageUrl} className="hand-btn hand-btn-green text-xs disabled:opacity-50">{saving ? "保存中..." : uploading ? "上传中..." : "保存咨询入口"}</button>
+        </div>
+        <div className="rounded-2xl bg-paper border border-ink/5 p-3 text-center">
+          <p className="text-xs text-ink-light mb-2">当前二维码预览</p>
+          {qrImageUrl ? <img src={qrImageUrl} alt="企业微信咨询二维码" className="mx-auto h-40 w-40 rounded-2xl object-cover bg-white border border-ink/10" /> : <div className="mx-auto h-40 w-40 rounded-2xl bg-white border border-dashed border-ink/20 grid place-items-center text-xs text-ink-light">请先上传二维码</div>}
+          <p className="mt-3 text-sm font-bold text-ink">{contactName}</p>
+          <p className="text-xs text-ink-light">{contactTitle}</p>
+        </div>
+      </div>
+    </section>
   );
 }
 

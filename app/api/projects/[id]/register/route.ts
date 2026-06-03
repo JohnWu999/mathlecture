@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { normalizeProjectRegistrationIntent, getEnterpriseWechatPrompt } from "@/lib/p0-closure-rules";
+import { normalizeProjectRegistrationIntent } from "@/lib/p0-closure-rules";
+import { buildConsultationDisplay, chooseEffectiveConsultationSetting } from "@/lib/consultation-setting-rules";
 
 export async function POST(req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
@@ -38,13 +39,23 @@ export async function POST(req: Request, { params }: { params: { id: string } })
         contact: intent.contact,
         note: intent.note,
         followUpStatus: intent.followUpStatus,
+        teacherWechatShown: true,
       },
     });
 
+    const [projectSetting, globalSetting] = await Promise.all([
+      prisma.consultationSetting.findUnique({ where: { lookupKey: `PROJECT:${params.id}` } }),
+      prisma.consultationSetting.findUnique({ where: { lookupKey: "GLOBAL" } }),
+    ]);
+    const consultation = buildConsultationDisplay(chooseEffectiveConsultationSetting({ projectSetting, globalSetting }));
+
     return NextResponse.json({
       registration,
-      childMessage: "报名意向已提交。请添加企业微信，老师会人工确认项目节奏、名额和服务内容。",
-      enterpriseWechat: getEnterpriseWechatPrompt(),
+      childMessage: consultation
+        ? "报名意向已提交。请扫码添加项目咨询老师，人工确认项目节奏、名额和服务内容。"
+        : "报名意向已提交。老师会人工确认项目节奏、名额和服务内容。",
+      consultation,
+      enterpriseWechat: consultation?.description || "报名意向已记录，管理员会在后台跟进状态。",
     }, { status: 201 });
   } catch (error: any) {
     console.error("报名失败:", error);

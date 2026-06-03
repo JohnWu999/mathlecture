@@ -47,6 +47,7 @@ export default function ProjectDetailPage() {
   const [registering, setRegistering] = useState(false);
   const [message, setMessage] = useState("");
   const [enterpriseWechat, setEnterpriseWechat] = useState("");
+  const [consultation, setConsultation] = useState<any>(null);
   const [childName, setChildName] = useState("");
   const [grade, setGrade] = useState("");
   const [packageName, setPackageName] = useState("项目报名意向");
@@ -89,6 +90,7 @@ export default function ProjectDetailPage() {
     setRegistering(true);
     setMessage("");
     setEnterpriseWechat("");
+    setConsultation(null);
     try {
       const res = await fetch(`/math-young-lecturer/api/projects/${id}/register`, {
         method: "POST",
@@ -98,7 +100,8 @@ export default function ProjectDetailPage() {
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
         setMessage(data.childMessage || "报名意向已提交。老师会根据项目节奏、成组情况和服务内容确认下一步。");
-        setEnterpriseWechat(data.enterpriseWechat || "请添加企业微信，老师会人工确认下一步。");
+        setConsultation(data.consultation || null);
+        setEnterpriseWechat(data.enterpriseWechat || "报名意向已记录，管理员会在后台跟进状态。");
       } else if (res.status === 401) {
         router.push(`/login?callbackUrl=${encodeURIComponent(pathname || `/projects/${id}`)}`);
       } else {
@@ -197,7 +200,19 @@ export default function ProjectDetailPage() {
             </div>
           </form>
           {message && <p className="text-sm text-ink mt-3">{message}</p>}
-          {enterpriseWechat && <div className="mt-3 mx-auto max-w-xl rounded-2xl bg-white/80 border border-ink/10 p-4 text-sm text-ink leading-relaxed">{enterpriseWechat}</div>}
+          {consultation ? (
+            <div className="mt-4 mx-auto max-w-xl rounded-3xl bg-white/90 border border-ink/10 p-5 text-sm text-ink leading-relaxed grid sm:grid-cols-[150px_1fr] gap-4 items-center text-left">
+              <img src={consultation.qrImageUrl} alt="企业微信咨询二维码" className="h-36 w-36 rounded-2xl object-cover bg-paper border border-ink/10 mx-auto" />
+              <div>
+                <p className="font-bold text-ink">{consultation.title}</p>
+                <p className="text-xs text-ink-light mt-1">{consultation.contactTitle}</p>
+                <p className="text-sm text-ink-light mt-3 leading-relaxed">{consultation.description}</p>
+                <p className="text-xs text-ink-light mt-3">{consultation.helper}</p>
+              </div>
+            </div>
+          ) : enterpriseWechat ? (
+            <div className="mt-3 mx-auto max-w-xl rounded-2xl bg-white/80 border border-ink/10 p-4 text-sm text-ink leading-relaxed">{enterpriseWechat}</div>
+          ) : null}
         </div>
 
         {project.groups.length > 0 && (

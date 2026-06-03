@@ -9,7 +9,7 @@ import { assertUploadAllowed, buildUploadPublicUrl, sanitizeUploadFilename } fro
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const ALLOWED_KINDS = new Set(["question-image", "answer-video", "project-artifact"]);
+const ALLOWED_KINDS = new Set(["question-image", "answer-video", "project-artifact", "consultation-qr"]);
 
 function getUploadRoot() {
   return process.env.UPLOAD_DIR || path.join(process.cwd(), "public", "uploads");
