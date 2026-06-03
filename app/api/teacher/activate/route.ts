@@ -10,7 +10,7 @@ export async function POST(req: Request) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "请先登录" }, { status: 401 });
   }
-  if (session.user.role !== "TEACHER" && session.user.role !== "ADMIN") {
+  if (session.user.role !== "TEACHER") {
     return NextResponse.json({ error: "无权访问" }, { status: 403 });
   }
 

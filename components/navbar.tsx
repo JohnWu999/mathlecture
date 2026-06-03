@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { InfinityLogo } from "@/components/brand/infinity-logo";
 import { NAV_LINKS } from "@/lib/product-copy";
 import { colors, fonts, handDrawn } from "@/lib/visual-tokens";
+import { getPersonalCenterHrefForRole, getVisibleWorkspaceNavForRole } from "@/lib/role-access-boundary-rules.mjs";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -14,6 +15,8 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const navLinks = NAV_LINKS;
+  const workspaceLinks = getVisibleWorkspaceNavForRole(session?.user?.role);
+  const personalCenterHref = getPersonalCenterHrefForRole(session?.user?.role);
 
   const isActive = (href: string) => pathname === href;
 
@@ -61,21 +64,22 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            {(session?.user?.role === "TEACHER" || session?.user?.role === "ADMIN") && (
+            {workspaceLinks.map((link) => (
               <Link
-                href="/teacher"
+                key={link.href}
+                href={link.href}
                 className="transition-colors"
                 style={{
                   fontFamily: fonts.body,
                   fontSize: "14px",
-                  color: isActive("/teacher") ? colors.ink : colors.muted,
-                  borderBottom: isActive("/teacher") ? `2px solid ${colors.ink}` : "none",
+                  color: isActive(link.href) ? colors.ink : colors.muted,
+                  borderBottom: isActive(link.href) ? `2px solid ${colors.ink}` : "none",
                   paddingBottom: "2px",
                 }}
               >
-                老师台
+                {link.label}
               </Link>
-            )}
+            ))}
           </div>
 
           {/* Desktop 用户信息/登录 - 桌面端单独显示 */}
@@ -85,7 +89,7 @@ export default function Navbar() {
             ) : session?.user ? (
               <>
                 <Link
-                  href="/profile"
+                  href={personalCenterHref}
                   className="hover:underline"
                   style={{
                     fontFamily: fonts.body,
@@ -98,13 +102,13 @@ export default function Navbar() {
                 <span
                   className="px-2 py-0.5 text-xs font-medium"
                   style={{
-                    background: session.user.role === "TEACHER" ? "#BBDEFB" : "#C8E6C9",
+                    background: session.user.role === "ADMIN" ? "#FFE0B2" : session.user.role === "TEACHER" ? "#BBDEFB" : "#C8E6C9",
                     border: `1px solid ${colors.border}`,
                     borderRadius: handDrawn.organicRadius,
                     color: colors.ink,
                   }}
                 >
-                  {session.user.role === "TEACHER" ? "老师" : "学员"}
+                  {session.user.role === "ADMIN" ? "管理员" : session.user.role === "TEACHER" ? "老师" : "学员"}
                 </span>
                 <button
                   onClick={() => signOut({ callbackUrl: "/" })}
@@ -139,7 +143,7 @@ export default function Navbar() {
 <span style={{ color: colors.muted, fontSize: "14px" }}>加载中...</span>
             ) : session?.user ? (
               <Link
-                href="/profile"
+                href={personalCenterHref}
                 className="hover:underline"
                 style={{
                   fontFamily: fonts.body,
@@ -222,21 +226,22 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          {(session?.user?.role === "TEACHER" || session?.user?.role === "ADMIN") && (
+          {workspaceLinks.map((link) => (
             <Link
-              href="/teacher"
+              key={link.href}
+              href={link.href}
               onClick={() => setMenuOpen(false)}
               className="block px-4 py-2.5"
               style={{
                 fontFamily: fonts.body,
                 fontSize: "14px",
-                color: isActive("/teacher") ? colors.ink : colors.muted,
-                borderBottom: isActive("/teacher") ? `2px solid ${colors.ink}` : "none",
+                color: isActive(link.href) ? colors.ink : colors.muted,
+                borderBottom: isActive(link.href) ? `2px solid ${colors.ink}` : "none",
               }}
             >
-              老师台
+              {link.label}
             </Link>
-          )}
+          ))}
 
         </div>
       )}

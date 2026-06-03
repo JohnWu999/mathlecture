@@ -1,8 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 import { checkRateLimit, isProtectedPath, hasBasicSession, rateLimitHeaders } from "./lib/api-guard";
 import { getLegacyPathRedirectTarget } from "./lib/legacy-path-redirect-rules";
+import {
+  canAccessAdminOperationApi,
+  canAccessTeacherOperationApi,
+  canAccessWorkspacePath,
+  getRequiredRoleForWorkspacePath,
+  getRoleHomePath,
+} from "./lib/role-access-boundary-rules";
 
-export function middleware(req: NextRequest) {
+const BASE_PATH = "/math-young-lecturer";
+
+function stripBasePath(pathname: string) {
+  if (pathname === BASE_PATH) return "/";
+  if (pathname.startsWith(`${BASE_PATH}/`)) return pathname.slice(BASE_PATH.length) || "/";
+  return pathname;
+}
+
+function withBasePath(pathname: string) {
+  if (pathname.startsWith(BASE_PATH)) return pathname;
+  return `${BASE_PATH}${pathname === "/" ? "" : pathname}`;
+}
+
+function redirectTo(req: NextRequest, pathname: string, status = 307) {
+  const url = req.nextUrl.clone();
+  url.pathname = withBasePath(pathname);
+  url.search = "";
+  return NextResponse.redirect(url, status);
+}
+
+export async function middleware(req: NextRequest) {
+  const normalizedPath = stripBasePath(req.nextUrl.pathname);
   const legacyTarget = getLegacyPathRedirectTarget(`${req.nextUrl.pathname}${req.nextUrl.search}`, {
     requestBasePath: req.nextUrl.basePath,
   });
@@ -26,10 +55,31 @@ export function middleware(req: NextRequest) {
     );
   }
 
-  // 2. 检查是否是需要保护的路径
-  if (isProtectedPath(req.nextUrl.pathname)) {
-    // 非登录用户返回 401
-    if (!hasBasicSession(req)) {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const role = typeof token?.role === "string" ? token.role : "";
+
+  // 2. 页面级身份边界：工作台不能作为身份切换器
+  const requiredWorkspaceRole = getRequiredRoleForWorkspacePath(normalizedPath);
+  if (requiredWorkspaceRole) {
+    if (!token) return redirectTo(req, "/login");
+    if (!canAccessWorkspacePath(role, normalizedPath)) {
+      return redirectTo(req, getRoleHomePath(role));
+    }
+  }
+
+  // 3. API 级身份边界：老师 API 和管理员 API 分离
+  if (normalizedPath.startsWith("/api/teacher/")) {
+    if (!token && !hasBasicSession(req)) return NextResponse.json({ error: "请先登录后访问" }, { status: 401 });
+    if (!canAccessTeacherOperationApi(role)) return NextResponse.json({ error: "无权访问老师工作台接口" }, { status: 403 });
+  }
+  if (normalizedPath.startsWith("/api/admin/")) {
+    if (!token && !hasBasicSession(req)) return NextResponse.json({ error: "请先登录后访问" }, { status: 401 });
+    if (!canAccessAdminOperationApi(role)) return NextResponse.json({ error: "无权访问管理员后台接口" }, { status: 403 });
+  }
+
+  // 4. 其他受保护 API 的基础登录门槛
+  if (isProtectedPath(normalizedPath)) {
+    if (!token && !hasBasicSession(req)) {
       return NextResponse.json(
         { error: "请先登录后访问" },
         { status: 401 }
@@ -37,7 +87,6 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  // 正常请求，添加频率限制头
   const response = NextResponse.next();
   const headers = rateLimitHeaders(rateCheck.remaining, rateCheck.resetTime);
   Object.entries(headers).forEach(([key, value]) => {
@@ -52,8 +101,12 @@ export const config = {
     "/api/:path*",
     "/login",
     "/register",
+    "/admin/:path*",
+    "/admin",
     "/teacher/:path*",
+    "/teacher",
     "/profile/:path*",
+    "/profile",
     "/qa/:path*",
     "/projects/:path*",
     "/hall/:path*",

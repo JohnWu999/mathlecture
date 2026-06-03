@@ -97,6 +97,19 @@ export default function ProfilePage() {
     );
   }
 
+  if (session.user.role !== "STUDENT") {
+    return (
+      <main className="min-h-screen">
+        <Navbar />
+        <div className="text-center py-20">
+          <div className="text-4xl mb-3">🚫</div>
+          <p className="text-ink font-medium">该页面只对学习者账号开放</p>
+          <p className="text-ink-light text-sm mt-1">老师和管理员请使用各自工作台；如需切换身份，请退出后登录对应账号。</p>
+        </div>
+      </main>
+    );
+  }
+
   if (loading) {
     return <main className="min-h-screen"><Navbar /><div className="text-center py-20 text-ink-light">加载中...</div></main>;
   }

@@ -77,7 +77,7 @@ export default function TeacherPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"dashboard" | "questions" | "answers" | "outcomes" | "users">("dashboard");
 
-  const isTeacher = session?.user?.role === "TEACHER" || session?.user?.role === "ADMIN";
+  const isTeacher = session?.user?.role === "TEACHER";
 
   useEffect(() => {
     if (!isTeacher) {

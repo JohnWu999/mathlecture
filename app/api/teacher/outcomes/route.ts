@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 async function checkTeacherAuth() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return { error: "请先登录", status: 401 } as const;
-  if (session.user.role !== "TEACHER" && session.user.role !== "ADMIN") {
+  if (session.user.role !== "TEACHER") {
     return { error: "无权访问", status: 403 } as const;
   }
   return { session } as const;

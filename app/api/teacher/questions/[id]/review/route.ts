@@ -7,7 +7,7 @@ import { createQuestionApprovalGrowthEnergy } from "@/lib/qa-flow-rules.mjs";
 async function checkTeacherAuth() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return { error: "请先登录", status: 401, session: null };
-  if (session.user.role !== "TEACHER" && session.user.role !== "ADMIN") {
+  if (session.user.role !== "TEACHER") {
     return { error: "无权访问", status: 403, session };
   }
   return { error: null, status: 200, session };

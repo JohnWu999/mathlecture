@@ -10,6 +10,9 @@ export async function GET() {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "请先登录" }, { status: 401 });
   }
+  if (session.user.role !== "STUDENT") {
+    return NextResponse.json({ error: "该接口只对学习者账号开放" }, { status: 403 });
+  }
 
   try {
     const user = await prisma.user.findUnique({
