@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import {
+  buildShareAssetAuthorizationUpdate,
+  normalizeOutcomeReviewInput,
+} from "@/lib/review-authorization-rules.mjs";
 
 async function checkTeacherAuth() {
   const session = await getServerSession(authOptions);
@@ -14,17 +18,45 @@ async function checkTeacherAuth() {
 
 export const dynamic = "force-dynamic";
 
+async function syncAnswerShareAsset(answer: any, reviewStatus: string, shareScope: string, teacherNote: string) {
+  const update = buildShareAssetAuthorizationUpdate({ reviewStatus, shareScope, teacherNote });
+  const existing = await prisma.shareAsset.findFirst({ where: { answerId: answer.id } });
+  const data = {
+    assetType: "ANSWER_POSTER" as const,
+    userId: answer.lecturerId,
+    questionId: answer.questionId,
+    answerId: answer.id,
+    url: answer.videoUrl,
+    payload: JSON.stringify({ title: answer.question?.suggestedTitle || answer.question?.title || "讲解成果" }),
+    ...update,
+  };
+  if (existing) return prisma.shareAsset.update({ where: { id: existing.id }, data });
+  return prisma.shareAsset.create({ data });
+}
+
+async function syncProjectShareAsset(artifact: any, reviewStatus: string, shareScope: string, teacherNote: string) {
+  const update = buildShareAssetAuthorizationUpdate({ reviewStatus, shareScope, teacherNote });
+  const existing = await prisma.shareAsset.findFirst({ where: { projectArtifactId: artifact.id } });
+  const data = {
+    assetType: "PROJECT_OUTCOME" as const,
+    userId: artifact.authorId,
+    projectId: artifact.projectId,
+    projectArtifactId: artifact.id,
+    url: artifact.artifactUrl || undefined,
+    payload: JSON.stringify({ title: artifact.title }),
+    ...update,
+  };
+  if (existing) return prisma.shareAsset.update({ where: { id: existing.id }, data });
+  return prisma.shareAsset.create({ data });
+}
+
 export async function POST(req: Request) {
   const auth = await checkTeacherAuth();
   if ("error" in auth) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   try {
-    const { sourceType, id, action, shareScope = "GROUP_ONLY", teacherNote = "" } = await req.json();
-    if (!id || !sourceType || !["approve", "reject"].includes(action)) {
-      return NextResponse.json({ error: "参数不完整" }, { status: 400 });
-    }
-    const reviewStatus = action === "approve" ? "APPROVED" : "REJECTED";
-    const nextShareScope = action === "approve" && shareScope === "PUBLIC_HALL" ? "PUBLIC_HALL" : sourceType === "PROJECT_ARTIFACT" ? "GROUP_ONLY" : "QUESTION_AUTHOR_ONLY";
+    const input = normalizeOutcomeReviewInput(await req.json());
+    const { sourceType, id, action, reviewStatus, shareScope, teacherNote } = input;
 
     if (sourceType === "ANSWER") {
       const answer = await prisma.answer.update({
@@ -32,11 +64,16 @@ export async function POST(req: Request) {
         data: {
           status: action === "approve" ? "APPROVED" : "REJECTED",
           reviewStatus,
-          shareScope: nextShareScope,
+          shareScope,
           mathTip: teacherNote || undefined,
         },
-        include: { lecturer: true },
+        include: {
+          lecturer: true,
+          question: { select: { id: true, title: true, suggestedTitle: true } },
+        },
       });
+
+      await syncAnswerShareAsset(answer, reviewStatus, shareScope, teacherNote);
       return NextResponse.json({ message: action === "approve" ? "讲解成果已审核" : "讲解成果已退回", outcome: answer });
     }
 
@@ -45,12 +82,14 @@ export async function POST(req: Request) {
         where: { id },
         data: {
           reviewStatus,
-          shareScope: nextShareScope,
+          shareScope,
           teacherNote: teacherNote || undefined,
           reviewedAt: new Date(),
-          authorizedAt: nextShareScope === "PUBLIC_HALL" ? new Date() : undefined,
+          authorizedAt: shareScope === "PUBLIC_HALL" ? new Date() : undefined,
         },
       });
+
+      await syncProjectShareAsset(artifact, reviewStatus, shareScope, teacherNote);
 
       if (action === "approve") {
         await prisma.$transaction([
@@ -78,8 +117,8 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ error: "不支持的成果类型" }, { status: 400 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("成果审核失败:", error);
-    return NextResponse.json({ error: "审核失败" }, { status: 500 });
+    return NextResponse.json({ error: error?.message || "审核失败" }, { status: 500 });
   }
 }

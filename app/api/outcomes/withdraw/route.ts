@@ -2,8 +2,25 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import {
+  buildShareAssetAuthorizationUpdate,
+  buildWithdrawalUpdate,
+} from "@/lib/review-authorization-rules.mjs";
 
 export const dynamic = "force-dynamic";
+
+async function withdrawShareAsset(where: { answerId?: string; projectArtifactId?: string }, reason: string) {
+  const existing = await prisma.shareAsset.findFirst({ where });
+  if (!existing) return null;
+  return prisma.shareAsset.update({
+    where: { id: existing.id },
+    data: buildShareAssetAuthorizationUpdate({
+      reviewStatus: "WITHDRAWN",
+      shareScope: "WITHDRAWN",
+      withdrawalReason: reason,
+    }),
+  });
+}
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -18,28 +35,28 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "当前版本仅支持老师/管理员撤回公开授权" }, { status: 403 });
     }
 
+    const withdrawal = buildWithdrawalUpdate({ reason });
+    const { deleteSourceRecord: _deleteSourceRecord, ...sourceUpdate } = withdrawal;
+
     if (sourceType === "ANSWER") {
       const outcome = await prisma.answer.update({
         where: { id },
         data: {
           reviewStatus: "WITHDRAWN",
           shareScope: "WITHDRAWN",
-          mathTip: reason,
+          mathTip: withdrawal.withdrawalReason,
         },
       });
+      await withdrawShareAsset({ answerId: id }, withdrawal.withdrawalReason);
       return NextResponse.json({ message: "公开授权已撤回，讲解仍保留为孩子的学习记录。", outcome });
     }
 
     if (sourceType === "PROJECT_ARTIFACT") {
       const outcome = await prisma.projectArtifact.update({
         where: { id },
-        data: {
-          reviewStatus: "WITHDRAWN",
-          shareScope: "WITHDRAWN",
-          withdrawnAt: new Date(),
-          withdrawalReason: reason,
-        },
+        data: sourceUpdate,
       });
+      await withdrawShareAsset({ projectArtifactId: id }, withdrawal.withdrawalReason);
       return NextResponse.json({ message: "公开授权已撤回，项目作品仍保留在小组记录中。", outcome });
     }
 
