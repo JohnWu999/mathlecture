@@ -177,6 +177,13 @@ enum ProjectStatus {
 model ProjectRegistration {
   id        String   @id @default(cuid())
   status    RegistrationStatus @default(PENDING)
+  childName String?
+  grade     Int?
+  packageName String?
+  contact   String?
+  note      String?
+  teacherWechatShown Boolean @default(false)
+  followUpStatus RegistrationFollowUpStatus @default(PENDING)
   paidAt    DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -187,13 +194,21 @@ model ProjectRegistration {
   project   Project  @relation(fields: [projectId], references: [id])
 
   @@unique([userId, projectId])
+  @@index([status, followUpStatus])
   @@map("project_registrations")
 }
 
 enum RegistrationStatus {
-  PENDING    // 待支付/待人工确认
+  PENDING    // 待人工确认/跟进
   CONFIRMED  // 已确认
   CANCELLED  // 已取消
+}
+
+enum RegistrationFollowUpStatus {
+  PENDING
+  CONTACTED
+  CONFIRMED
+  CANCELLED
 }
 
 // 小组表

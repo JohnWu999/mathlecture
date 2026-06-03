@@ -13,6 +13,9 @@ export async function POST(req: Request) {
 
   try {
     const { videoUrl, description, questionId, shareScope } = await req.json();
+    if (!String(videoUrl || '').trim()) {
+      return NextResponse.json({ error: "请先上传讲题视频" }, { status: 400 });
+    }
 
     // 检查问题是否被当前用户认领，且仍在 72 小时有效期内
     const question = await prisma.question.findUnique({

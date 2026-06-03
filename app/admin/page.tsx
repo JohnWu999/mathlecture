@@ -16,6 +16,7 @@ type WorkbenchData = {
   projectArtifacts?: any[];
   paymentRecords?: any[];
   auditLogs?: any[];
+  registrationIntents?: any[];
 };
 
 const money = (amount?: number | null) => `¥${((amount || 0) / 100).toFixed(2)}`;
@@ -31,6 +32,7 @@ export default function AdminPage() {
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
+  const [notice, setNotice] = useState("");
 
   const options = useMemo(() => getProjectAccessPackageOptions(), []);
   const sections = useMemo(() => getAdminDataWorkbenchSections(), []);
@@ -59,15 +61,19 @@ export default function AdminPage() {
         setSelectedUserId(firstStudent.id);
       }
     } catch (error: any) {
-      alert(error.message || "加载失败");
+      setNotice(error.message || "加载失败");
     } finally {
       setLoading(false);
     }
   };
 
   const openProjectAccess = async () => {
-    if (!selectedUserId || !packageType) return alert("请先选择学生和项目权限类型");
+    if (!selectedUserId || !packageType) {
+      setNotice("请先选择学生和项目权限类型");
+      return;
+    }
     setSaving(true);
+    setNotice("");
     try {
       const res = await fetch("/math-young-lecturer/api/admin/project-access", {
         method: "POST",
@@ -76,12 +82,12 @@ export default function AdminPage() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "开通失败");
-      alert(data.message || "项目权限已开通");
+      setNotice(data.message || "项目权限已开通");
       setNote("");
       setPaymentAmount(0);
       await fetchAll();
     } catch (error: any) {
-      alert(error.message || "开通失败");
+      setNotice(error.message || "开通失败");
     } finally {
       setSaving(false);
     }
@@ -98,6 +104,7 @@ export default function AdminPage() {
     { label: "问题", value: workbench.counts?.questions ?? 0, icon: "🙋", color: "sticker-pink" },
     { label: "视频", value: workbench.counts?.lectureVideos ?? 0, icon: "🎤", color: "sticker-blue" },
     { label: "作品", value: workbench.counts?.projectArtifacts ?? 0, icon: "🧩", color: "sticker-green" },
+    { label: "报名意向", value: workbench.counts?.registrationIntents ?? 0, icon: "📮", color: "sticker-yellow" },
   ];
 
   return (
@@ -109,9 +116,10 @@ export default function AdminPage() {
           <p className="text-ink-light text-sm">严格按三身份设计：学习者看个人成长护照，老师做教学审核，管理员管理全站数据库、项目包、付费与审计。</p>
         </div>
 
-        <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <div className="grid md:grid-cols-3 lg:grid-cols-7 gap-4 mb-8">
           {countCards.map((card) => <div key={card.label} className={`sticker ${card.color} text-center py-5`}><div className="text-2xl mb-1">{card.icon}</div><p className="text-2xl font-bold text-ink handwritten-title">{card.value}</p><p className="text-xs text-ink-light">{card.label}</p></div>)}
         </div>
+        {notice && <div className="sticker bg-crayon-green/20 mb-8 text-sm text-ink">{notice}</div>}
 
         <section className="sticker sticker-white mb-8">
           <h2 className="font-bold text-ink mb-3">🧭 后台模块总览</h2>
@@ -157,6 +165,9 @@ export default function AdminPage() {
         <section className="grid lg:grid-cols-2 gap-6">
           <DatabaseCard title="🎯 项目管理数据库" helper="项目标题、类型、状态、知识标签、价格、有效期、报名/小组/作品/权益数量。">
             {(workbench.projects || []).map((p) => <Row key={p.id} title={p.title} meta={`${p.projectType} · ${p.status} · ${money(p.price)} · 报名${p._count?.registrations || 0} · 小组${p._count?.groups || 0} · 作品${p._count?.projectArtifacts || 0}`} note={(p.knowledgeTags || []).join("、") || `有效至 ${dateText(p.validUntil)}`} />)}
+          </DatabaseCard>
+          <DatabaseCard title="📮 报名意向库" helper="报名不再直接确认；管理员在这里查看孩子昵称、年级、项目包、联系方式和人工跟进状态。">
+            {(workbench.registrationIntents || []).map((r) => <Row key={r.id} title={`${r.childName || r.user?.name || "未命名孩子"} · ${r.project?.title || "未关联项目"}`} meta={`${r.status} · 跟进：${r.followUpStatus || "PENDING"} · ${r.grade || "—"}年级 · ${r.packageName || "项目报名意向"}`} note={`家长/账号：${r.user?.name || "—"} · 联系方式：${r.contact || r.user?.phone || "未留"}${r.note ? ` · 备注：${r.note}` : ""}`} />)}
           </DatabaseCard>
           <DatabaseCard title="🙋 提问者问题数据库" helper="问题、年级、知识点、困惑类型、审核状态、认领状态、热度与回答数。">
             {(workbench.questions || []).map((q) => <Row key={q.id} title={q.title} meta={`${q.author?.name || "匿名"} · ${q.grade || "—"}年级 · ${q.topic || "未标知识点"} · ${q.reviewStatus}/${q.status}`} note={`困惑：${q.confusionType || "未填"} · 热度${q.heatCount || 0} · 回答${q._count?.answers || 0} · 认领：${q.claimedBy?.name || "未认领"}`} />)}

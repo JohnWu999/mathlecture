@@ -19,6 +19,8 @@ export default function AskPage() {
   const [content, setContent] = useState("");
   const [recognizedText, setRecognizedText] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [grade, setGrade] = useState("1");
   const [topic, setTopic] = useState("20以内加减法");
   const [customTopic, setCustomTopic] = useState("");
@@ -57,6 +59,21 @@ export default function AskPage() {
     setSuccessMessage("");
 
     try {
+      let finalImageUrl = imageUrl;
+      if (imageFile) {
+        setUploadingImage(true);
+        const uploadForm = new FormData();
+        uploadForm.append("kind", "question-image");
+        uploadForm.append("file", imageFile);
+        const uploadRes = await fetch("/math-young-lecturer/api/uploads", {
+          method: "POST",
+          body: uploadForm,
+        });
+        const uploadData = await uploadRes.json().catch(() => ({}));
+        if (!uploadRes.ok) throw new Error(uploadData.error || "题目照片上传失败");
+        finalImageUrl = uploadData.url;
+        setImageUrl(finalImageUrl);
+      }
       const res = await fetch("/math-young-lecturer/api/questions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -65,7 +82,7 @@ export default function AskPage() {
           suggestedTitle: suggestedTitle || generatedTitle || title,
           content,
           recognizedText,
-          imageUrl,
+          imageUrl: finalImageUrl,
           grade: parseInt(grade),
           topic: finalTopic,
           confusionType,
@@ -85,6 +102,7 @@ export default function AskPage() {
     } catch (err: any) {
       setError(err.message);
       setLoading(false);
+      setUploadingImage(false);
     }
   };
 
@@ -113,8 +131,19 @@ export default function AskPage() {
             {successMessage && <div className="px-4 py-2 bg-crayon-green/30 rounded-lg text-sm text-ink">{successMessage}</div>}
 
             <div>
-              <label className="block text-sm font-medium text-ink mb-1">题目照片或图片链接</label>
-              <input type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="w-full px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-paper focus:border-crayon-green focus:outline-none" placeholder="MVP 先填写图片链接；后续接入直接拍照上传" />
+              <label className="block text-sm font-medium text-ink mb-1">上传题目照片</label>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  setImageFile(file);
+                  if (!file) setImageUrl("");
+                }}
+                className="w-full px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-paper focus:border-crayon-green focus:outline-none"
+              />
+              {imageFile && <p className="text-xs text-ink-light mt-1">已选择：{imageFile.name}，提交时会先上传照片。</p>}
+              {imageUrl && <p className="text-xs text-ink-light mt-1">照片已上传：{imageUrl}</p>}
               <p className="text-xs text-ink-light mt-1">拍照上传是为了让小讲师看清题目，不会公开未审核内容。</p>
             </div>
 
@@ -185,7 +214,7 @@ export default function AskPage() {
             </label>
 
             <button type="submit" disabled={loading} className="hand-btn w-full bg-crayon-green text-ink disabled:opacity-50">
-              {loading ? "提交给老师审核中..." : "✅ 提交问题，等待老师审核"}
+              {uploadingImage ? "上传题目照片中..." : loading ? "提交给老师审核中..." : "✅ 提交问题，等待老师审核"}
             </button>
           </form>
         </div>

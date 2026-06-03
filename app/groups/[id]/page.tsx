@@ -47,6 +47,8 @@ export default function GroupPage() {
   const [messageType, setMessageType] = useState("DISCUSSION");
   const [newMessage, setNewMessage] = useState("");
   const [artifactUrl, setArtifactUrl] = useState("");
+  const [artifactFile, setArtifactFile] = useState<File | null>(null);
+  const [uploadingArtifact, setUploadingArtifact] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [notice, setNotice] = useState("");
@@ -91,7 +93,19 @@ export default function GroupPage() {
     setSending(true);
     setNotice("");
     try {
-      const content = buildTypedMessageContent({ type: messageType, text: newMessage, artifactUrl });
+      let finalArtifactUrl = artifactUrl;
+      if (artifactFile) {
+        setUploadingArtifact(true);
+        const uploadForm = new FormData();
+        uploadForm.append("kind", "project-artifact");
+        uploadForm.append("file", artifactFile);
+        const uploadRes = await fetch("/math-young-lecturer/api/uploads", { method: "POST", body: uploadForm });
+        const uploadData = await uploadRes.json().catch(() => ({}));
+        if (!uploadRes.ok) throw new Error(uploadData.error || "作品附件上传失败");
+        finalArtifactUrl = uploadData.url;
+        setArtifactUrl(finalArtifactUrl);
+      }
+      const content = buildTypedMessageContent({ type: messageType, text: newMessage, artifactUrl: finalArtifactUrl });
       const res = await fetch(`/math-young-lecturer/api/groups/${id}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -101,15 +115,17 @@ export default function GroupPage() {
       if (res.ok) {
         setNewMessage("");
         setArtifactUrl("");
+        setArtifactFile(null);
         setNotice(data.childMessage || "协作记录已留下。");
         fetchSpace();
       } else {
         setNotice(data.error || "发送失败，请稍后再试。");
       }
-    } catch (e) {
-      setNotice("发送失败，请稍后再试。");
+    } catch (e: any) {
+      setNotice(e.message || "发送失败，请稍后再试。");
     }
     setSending(false);
+    setUploadingArtifact(false);
   };
 
   const formatTime = (dateStr: string) => {
@@ -192,16 +208,28 @@ export default function GroupPage() {
                     className="w-full min-h-[92px] px-4 py-3 rounded-xl border-2 border-ink/15 bg-paper focus:border-crayon-blue focus:outline-none transition-colors text-sm"
                   />
                   {(messageType === "EVIDENCE" || messageType === "SUBMISSION") && (
-                    <input
-                      type="url"
-                      value={artifactUrl}
-                      onChange={(e) => setArtifactUrl(e.target.value)}
-                      placeholder="可选：粘贴照片、视频、海报或作品链接"
-                      className="w-full px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-paper focus:border-crayon-blue focus:outline-none transition-colors text-sm"
-                    />
+                    <div className="space-y-2">
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,application/pdf"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0] || null;
+                          setArtifactFile(file);
+                        }}
+                        className="w-full px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-paper focus:border-crayon-blue focus:outline-none transition-colors text-sm"
+                      />
+                      {artifactFile && <p className="text-xs text-ink-light">已选择：{artifactFile.name}，提交时会上传到项目记录。</p>}
+                      <input
+                        type="url"
+                        value={artifactUrl}
+                        onChange={(e) => setArtifactUrl(e.target.value)}
+                        placeholder="可选：如果作品已经在外部平台，也可以补充链接"
+                        className="w-full px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-paper focus:border-crayon-blue focus:outline-none transition-colors text-sm"
+                      />
+                    </div>
                   )}
                   <button type="submit" disabled={sending || !newMessage.trim()} className="hand-btn bg-crayon-blue text-ink disabled:opacity-50 px-5">
-                    {sending ? "记录中..." : `提交${selectedType.label}`}
+                    {uploadingArtifact ? "上传附件中..." : sending ? "记录中..." : `提交${selectedType.label}`}
                   </button>
                   {notice && <p className="text-sm text-ink-light">{notice}</p>}
                 </form>

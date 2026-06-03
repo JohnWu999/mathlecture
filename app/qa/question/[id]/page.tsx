@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Navbar from "@/components/navbar";
 import {
@@ -47,6 +47,8 @@ interface QuestionDetail {
 
 export default function QuestionDetailPage() {
   const { id } = useParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const { data: session } = useSession();
   const [question, setQuestion] = useState<QuestionDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -54,6 +56,8 @@ export default function QuestionDetailPage() {
   const [heating, setHeating] = useState(false);
   const [message, setMessage] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
   const [description, setDescription] = useState("");
   const [answerShareScope, setAnswerShareScope] = useState("QUESTION_AUTHOR_ONLY");
   const [submitting, setSubmitting] = useState(false);
@@ -78,7 +82,7 @@ export default function QuestionDetailPage() {
 
   const handleClaim = async () => {
     if (!session?.user) {
-      alert("请先登录。登录后就可以认领讲题啦。");
+      router.push(`/login?callbackUrl=${encodeURIComponent(pathname || `/qa/question/${id}`)}`);
       return;
     }
     setClaiming(true);
@@ -89,14 +93,14 @@ export default function QuestionDetailPage() {
       setMessage(data.childMessage || "认领成功，请在72小时内上传讲解。");
       loadQuestion();
     } catch (e: any) {
-      alert(e.message || "认领失败");
+      setMessage(e.message || "认领失败");
     }
     setClaiming(false);
   };
 
   const handleHeat = async () => {
     if (!session?.user) {
-      alert("请先登录。登录后就可以告诉我们：这个问题也值得被讲清楚。");
+      router.push(`/login?callbackUrl=${encodeURIComponent(pathname || `/qa/question/${id}`)}`);
       return;
     }
     setHeating(true);
@@ -107,7 +111,7 @@ export default function QuestionDetailPage() {
       setQuestion((prev) => (prev ? { ...prev, heatCount: data.heatCount } : prev));
       setMessage(data.childMessage || "已经加了一点热度。");
     } catch (e: any) {
-      alert(e.message || "加热度失败");
+      setMessage(e.message || "加热度失败");
     }
     setHeating(false);
   };
@@ -116,21 +120,35 @@ export default function QuestionDetailPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
+      let finalVideoUrl = videoUrl;
+      if (videoFile) {
+        setUploadingVideo(true);
+        const uploadForm = new FormData();
+        uploadForm.append("kind", "answer-video");
+        uploadForm.append("file", videoFile);
+        const uploadRes = await fetch("/math-young-lecturer/api/uploads", { method: "POST", body: uploadForm });
+        const uploadData = await uploadRes.json().catch(() => ({}));
+        if (!uploadRes.ok) throw new Error(uploadData.error || "讲题视频上传失败");
+        finalVideoUrl = uploadData.url;
+        setVideoUrl(finalVideoUrl);
+      }
       const res = await fetch(`/math-young-lecturer/api/answers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ questionId: id, videoUrl, description, shareScope: answerShareScope }),
+        body: JSON.stringify({ questionId: id, videoUrl: finalVideoUrl, description, shareScope: answerShareScope }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "提交失败");
       setMessage(data.childMessage || getAnswerSubmitPrompt(answerShareScope));
       setVideoUrl("");
+      setVideoFile(null);
       setDescription("");
       loadQuestion();
     } catch (e: any) {
-      alert(e.message || "提交失败");
+      setMessage(e.message || "提交失败");
     }
     setSubmitting(false);
+    setUploadingVideo(false);
   };
 
   const isClaimedByMe = useMemo(() => {
@@ -190,7 +208,19 @@ export default function QuestionDetailPage() {
             <h3 className="font-bold text-ink mb-1">🎤 提交你的讲题视频</h3>
             <p className="text-xs text-ink-light mb-3">{getAnswerSubmitPrompt(answerShareScope)}</p>
             <form onSubmit={handleSubmitAnswer} className="space-y-4">
-              <input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} required className="w-full px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none" placeholder="上传视频后填写链接..." />
+              <input
+                type="file"
+                accept="video/mp4,video/webm,video/quicktime"
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  setVideoFile(file);
+                  if (!file) setVideoUrl("");
+                }}
+                required={!videoUrl}
+                className="w-full px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none"
+              />
+              {videoFile && <p className="text-xs text-ink-light">已选择：{videoFile.name}，提交时会先上传视频。</p>}
+              {videoUrl && <p className="text-xs text-ink-light">视频已上传：{videoUrl}</p>}
               <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} className="w-full px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none resize-none" placeholder="简单说说你的讲解思路..." />
               <div className="space-y-2">
                 {QUESTION_SHARE_OPTIONS.map((option) => (
@@ -200,7 +230,7 @@ export default function QuestionDetailPage() {
                   </label>
                 ))}
               </div>
-              <button type="submit" disabled={submitting} className="hand-btn w-full bg-white text-ink disabled:opacity-50">{submitting ? "提交中..." : "✅ 提交讲题视频，等待老师审核"}</button>
+              <button type="submit" disabled={submitting} className="hand-btn w-full bg-white text-ink disabled:opacity-50">{uploadingVideo ? "上传讲题视频中..." : submitting ? "提交中..." : "✅ 提交讲题视频，等待老师审核"}</button>
             </form>
           </div>
         )}
@@ -223,7 +253,7 @@ export default function QuestionDetailPage() {
                       if (!confirm("确认采纳这个回答？采纳后会给小讲师记录私密讲解成长能量。")) return;
                       const res = await fetch(`/math-young-lecturer/api/answers/${answer.id}/approve`, { method: "POST" });
                       const data = await res.json().catch(() => ({}));
-                      if (res.ok) { setMessage(data.growthEnergy?.userMessage || "采纳成功，小讲师会收到讲解成长能量。"); loadQuestion(); } else { alert(data.error || "采纳失败"); }
+                      if (res.ok) { setMessage(data.growthEnergy?.userMessage || "采纳成功，小讲师会收到讲解成长能量。"); loadQuestion(); } else { setMessage(data.error || "采纳失败"); }
                     }}
                     className="hand-btn hand-btn-green text-xs mt-3"
                   >

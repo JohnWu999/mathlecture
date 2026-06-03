@@ -8,7 +8,7 @@ export async function GET() {
   const auth = await requireAdmin();
   if (auth.error) return auth.error;
 
-  const [projects, questions, lectureVideos, projectArtifacts, paymentRecords, auditLogs] = await Promise.all([
+  const [projects, questions, lectureVideos, projectArtifacts, paymentRecords, auditLogs, registrationIntents] = await Promise.all([
     prisma.project.findMany({
       orderBy: { updatedAt: "desc" },
       take: 30,
@@ -106,6 +106,24 @@ export async function GET() {
         operator: { select: { id: true, name: true, phone: true } },
       },
     }),
+    prisma.projectRegistration.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 40,
+      select: {
+        id: true,
+        status: true,
+        childName: true,
+        grade: true,
+        packageName: true,
+        contact: true,
+        note: true,
+        followUpStatus: true,
+        createdAt: true,
+        updatedAt: true,
+        project: { select: { id: true, title: true } },
+        user: { select: { id: true, name: true, phone: true } },
+      },
+    }),
   ]);
 
   return NextResponse.json({
@@ -115,6 +133,7 @@ export async function GET() {
     projectArtifacts,
     paymentRecords,
     auditLogs,
+    registrationIntents,
     counts: {
       projects: projects.length,
       questions: questions.length,
@@ -122,6 +141,7 @@ export async function GET() {
       projectArtifacts: projectArtifacts.length,
       paymentRecords: paymentRecords.length,
       auditLogs: auditLogs.length,
+      registrationIntents: registrationIntents.length,
     },
   });
 }

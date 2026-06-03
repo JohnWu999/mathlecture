@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Navbar from "@/components/navbar";
@@ -40,11 +40,18 @@ interface ProjectDetail {
 export default function ProjectDetailPage() {
   const { id } = useParams();
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session } = useSession();
   const [project, setProject] = useState<ProjectDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState(false);
   const [message, setMessage] = useState("");
+  const [enterpriseWechat, setEnterpriseWechat] = useState("");
+  const [childName, setChildName] = useState("");
+  const [grade, setGrade] = useState("");
+  const [packageName, setPackageName] = useState("项目报名意向");
+  const [contact, setContact] = useState("");
+  const [note, setNote] = useState("");
 
   useEffect(() => {
     fetch(`/math-young-lecturer/api/projects/${id}`)
@@ -73,18 +80,27 @@ export default function ProjectDetailPage() {
     };
   }, [project]);
 
-  const handleRegister = async () => {
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!session?.user) {
-      router.push("/login");
+      router.push(`/login?callbackUrl=${encodeURIComponent(pathname || `/projects/${id}`)}`);
       return;
     }
     setRegistering(true);
     setMessage("");
+    setEnterpriseWechat("");
     try {
-      const res = await fetch(`/math-young-lecturer/api/projects/${id}/register`, { method: "POST" });
+      const res = await fetch(`/math-young-lecturer/api/projects/${id}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ childName, grade: Number(grade), packageName, contact, note }),
+      });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        setMessage("报名意向已提交。老师会根据项目节奏、成组情况和服务内容确认下一步。");
+        setMessage(data.childMessage || "报名意向已提交。老师会根据项目节奏、成组情况和服务内容确认下一步。");
+        setEnterpriseWechat(data.enterpriseWechat || "请添加企业微信，老师会人工确认下一步。");
+      } else if (res.status === 401) {
+        router.push(`/login?callbackUrl=${encodeURIComponent(pathname || `/projects/${id}`)}`);
       } else {
         setMessage(data.error || "报名意向提交失败，请稍后再试。");
       }
@@ -159,10 +175,29 @@ export default function ProjectDetailPage() {
         <div className="sticker bg-crayon-green text-center mb-6">
           <p className="text-ink font-bold mb-1">{detail.enrollment.priceLabel}</p>
           <p className="text-sm text-ink-light mb-4 max-w-2xl mx-auto">{detail.enrollment.helper}</p>
-          <button onClick={handleRegister} disabled={registering} className="hand-btn bg-white text-ink disabled:opacity-50">
-            {registering ? "提交中..." : detail.enrollment.cta}
-          </button>
+          <form onSubmit={handleRegister} className="max-w-2xl mx-auto text-left space-y-3">
+            <div className="grid sm:grid-cols-2 gap-3">
+              <input value={childName} onChange={(e) => setChildName(e.target.value)} required placeholder="孩子昵称" className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none" />
+              <input value={grade} onChange={(e) => setGrade(e.target.value)} required type="number" min="1" max="3" placeholder="年级，如 3" className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none" />
+            </div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <select value={packageName} onChange={(e) => setPackageName(e.target.value)} className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none">
+                <option>项目报名意向</option>
+                <option>5 次项目包</option>
+                <option>20 周项目包</option>
+                <option>先咨询再决定</option>
+              </select>
+              <input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="联系方式（可选）" className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none" />
+            </div>
+            <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder="想让老师了解的情况（可选）" className="w-full px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none resize-none" />
+            <div className="text-center">
+              <button type="submit" disabled={registering} className="hand-btn bg-white text-ink disabled:opacity-50">
+                {registering ? "提交中..." : detail.enrollment.cta}
+              </button>
+            </div>
+          </form>
           {message && <p className="text-sm text-ink mt-3">{message}</p>}
+          {enterpriseWechat && <div className="mt-3 mx-auto max-w-xl rounded-2xl bg-white/80 border border-ink/10 p-4 text-sm text-ink leading-relaxed">{enterpriseWechat}</div>}
         </div>
 
         {project.groups.length > 0 && (

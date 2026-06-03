@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Navbar from "@/components/navbar";
 import { getHeatPrompt, getQuestionStatusBadge } from "@/lib/qa-ui-rules.mjs";
@@ -23,9 +24,12 @@ interface Question {
 
 export default function QAPage() {
   const { data: session } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [listRule, setListRule] = useState("热度只帮助待讲题目排序，不是点赞榜，也不显示排名。");
+  const [notice, setNotice] = useState("");
 
   useEffect(() => {
     fetch("/math-young-lecturer/api/questions?status=OPEN")
@@ -40,7 +44,7 @@ export default function QAPage() {
 
   const handleHeat = async (questionId: string) => {
     if (!session?.user) {
-      alert("请先登录。登录后就可以告诉我们：这个问题也值得被讲清楚。");
+      router.push(`/login?callbackUrl=${encodeURIComponent(pathname || "/qa")}`);
       return;
     }
     try {
@@ -50,9 +54,9 @@ export default function QAPage() {
       setQuestions((prev) =>
         prev.map((q) => (q.id === questionId ? { ...q, heatCount: data.heatCount } : q))
       );
-      alert(data.childMessage || "已经帮这道题加了一点热度。");
+      setNotice(data.childMessage || "已经帮这道题加了一点热度。");
     } catch (error: any) {
-      alert(error.message || "加热度失败");
+      setNotice(error.message || "加热度失败");
     }
   };
 
@@ -84,6 +88,7 @@ export default function QAPage() {
           <p className="text-sm text-ink-light mt-1">{listRule}</p>
           <p className="text-xs text-ink-light mt-2">未审核问题不会公开；操作时需要登录，但浏览问题不需要。</p>
         </div>
+        {notice && <div className="sticker bg-crayon-green/20 mb-6 text-sm text-ink">{notice}</div>}
 
         <hr className="infinity-divider mb-8" />
 
