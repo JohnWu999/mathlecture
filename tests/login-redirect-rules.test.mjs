@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { getPostLoginRedirectPath } from '../lib/login-redirect-rules.mjs';
 
-test('redirects teacher and admin to teacher workspace after login', () => {
+test('redirects teacher and admin to distinct role workspaces after login', () => {
   assert.equal(getPostLoginRedirectPath('TEACHER'), '/teacher');
-  assert.equal(getPostLoginRedirectPath('ADMIN'), '/teacher');
+  assert.equal(getPostLoginRedirectPath('ADMIN'), '/admin');
 });
 
 test('redirects learner to growth passport after login', () => {

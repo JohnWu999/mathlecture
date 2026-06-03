@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import Navbar from "@/components/navbar";
 import { TEACHER_QUESTION_REVIEW_COPY } from "@/lib/qa-ui-rules.mjs";
 import { getAuthorizationStatusLabel, getTeacherOutcomeReviewTabs } from "@/lib/review-authorization-rules.mjs";
+import { getTeacherStudentStatusCopy } from "@/lib/admin-teacher-workspace-rules.mjs";
 
 interface DashboardData {
   totalUsers: number;
@@ -183,7 +184,7 @@ export default function TeacherPage() {
       });
       if (res.ok) {
         setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, isActive: activate } : u)));
-        alert(activate ? "已开放权限" : "已关闭权限");
+        alert(activate ? "已开放基础参与" : "已暂停基础参与");
       }
     } catch (e) {
       alert("操作失败");
@@ -192,6 +193,7 @@ export default function TeacherPage() {
 
   const inactiveUsers = users.filter((u) => !u.isActive && u.role === "STUDENT");
   const outcomeTabs = getTeacherOutcomeReviewTabs();
+  const studentStatusCopy = getTeacherStudentStatusCopy();
 
   if (!session?.user) return <main className="min-h-screen"><Navbar /><div className="text-center py-20"><p className="text-ink-light">请先登录</p></div></main>;
   if (!isTeacher) return <main className="min-h-screen"><Navbar /><div className="text-center py-20"><div className="text-4xl mb-3">🚫</div><p className="text-ink font-medium">无权访问</p><p className="text-ink-light text-sm mt-1">该页面仅对老师开放</p></div></main>;
@@ -211,7 +213,7 @@ export default function TeacherPage() {
             { key: "questions", label: "🌱 审核问题", count: pendingQuestions.length },
             { key: "answers", label: "✅ 审核讲题", count: pendingAnswers.length },
             { key: "outcomes", label: "🌳 成果审核", count: outcomes.length },
-            { key: "users", label: "👤 用户管理", count: inactiveUsers.length },
+            { key: "users", label: studentStatusCopy.tabLabel, count: inactiveUsers.length },
           ].map((tab) => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors relative ${activeTab === tab.key ? "hand-btn hand-btn-yellow text-sm py-2 px-4" : "hand-btn hand-btn-white text-sm py-2 px-4"}`}>
               {tab.label}
@@ -232,7 +234,7 @@ export default function TeacherPage() {
                 { label: "报名人数", value: dashboard?.totalRegistrations || 0, icon: "📖", color: "sticker-white" },
               ].map((card) => <div key={card.label} className={`sticker ${card.color} text-center py-5`}><div className="text-2xl mb-1">{card.icon}</div><p className="text-2xl font-bold text-ink handwritten-title">{card.value}</p><p className="text-xs text-ink-light">{card.label}</p></div>)}
             </div>
-            <div className="sticker sticker-white"><h3 className="font-bold text-ink mb-3">⚡ 快速操作</h3><div className="flex flex-wrap gap-3"><button onClick={() => setActiveTab("questions")} className="hand-btn hand-btn-yellow text-sm">🌱 去审核问题</button><button onClick={() => setActiveTab("answers")} className="hand-btn hand-btn-green text-sm">✅ 去审核讲题</button><button onClick={() => setActiveTab("outcomes")} className="hand-btn hand-btn-yellow text-sm">🌳 去成果审核</button><button onClick={() => setActiveTab("users")} className="hand-btn hand-btn-blue text-sm">👤 管理用户权限</button></div></div>
+            <div className="sticker sticker-white"><h3 className="font-bold text-ink mb-3">⚡ 快速操作</h3><div className="flex flex-wrap gap-3"><button onClick={() => setActiveTab("questions")} className="hand-btn hand-btn-yellow text-sm">🌱 去审核问题</button><button onClick={() => setActiveTab("answers")} className="hand-btn hand-btn-green text-sm">✅ 去审核讲题</button><button onClick={() => setActiveTab("outcomes")} className="hand-btn hand-btn-yellow text-sm">🌳 去成果审核</button><button onClick={() => setActiveTab("users")} className="hand-btn hand-btn-blue text-sm">👤 查看学生状态</button></div></div>
           </>
         ) : activeTab === "questions" ? (
           pendingQuestions.length === 0 ? <div className="sticker sticker-white text-center py-12"><div className="text-4xl mb-3">🌿</div><p className="text-ink font-medium">没有待审核的问题</p><p className="text-ink-light text-sm mt-1">审核通过的问题才会开放认领。</p></div> :
@@ -277,7 +279,11 @@ export default function TeacherPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {users.map((user) => <div key={user.id} className="sticker sticker-white flex items-center justify-between gap-4"><div><p className="font-bold text-ink">{user.name || "未命名"}</p><p className="text-xs text-ink-light">{user.phone} · {user.role}{user.grade && ` · ${user.grade}年级`}</p><p className="text-xs text-ink-light mt-1">成长能量：{user.growthEnergy ?? user.points}</p></div>{user.role === "STUDENT" && <button onClick={() => handleActivate(user.id, !user.isActive)} className={`hand-btn text-xs ${user.isActive ? "hand-btn-pink" : "hand-btn-green"}`}>{user.isActive ? "关闭权限" : "开放权限"}</button>}</div>)}
+            <div className="sticker sticker-white">
+              <h3 className="font-bold text-ink mb-2">{studentStatusCopy.heading}</h3>
+              <p className="text-sm text-ink-light">{studentStatusCopy.helper}</p>
+            </div>
+            {users.map((user) => <div key={user.id} className="sticker sticker-white flex items-center justify-between gap-4"><div><p className="font-bold text-ink">{user.name || "未命名"}</p><p className="text-xs text-ink-light">{user.phone} · {user.role}{user.grade && ` · ${user.grade}年级`}</p><p className="text-xs text-ink-light mt-1">成长能量：{user.growthEnergy ?? user.points}</p><p className="text-xs text-ink-light mt-1">当前状态：{user.isActive ? "基础参与已开放" : "基础参与已暂停"}</p></div>{user.role === "STUDENT" && <button onClick={() => handleActivate(user.id, !user.isActive)} className={`hand-btn text-xs ${user.isActive ? "hand-btn-pink" : "hand-btn-green"}`}>{user.isActive ? studentStatusCopy.deactivateLabel : studentStatusCopy.activateLabel}</button>}</div>)}
           </div>
         )}
       </section>

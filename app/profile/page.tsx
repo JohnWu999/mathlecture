@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Navbar from "@/components/navbar";
@@ -63,6 +63,7 @@ interface ProfileData {
     recentTransactions: GrowthEnergyTransaction[];
   };
   identityProgress?: IdentityProgressItem[];
+  projectAccesses?: { id: string; packageType: string; status: string; quotaTotal?: number | null; quotaUsed?: number | null; validUntil?: string | null; note?: string | null; project?: { title: string } | null }[];
 }
 
 export default function ProfilePage() {
@@ -109,22 +110,28 @@ export default function ProfilePage() {
   const energyCopy = getGrowthEnergyCopy(totalGrowthEnergy);
   const safetyCopy = getPassportSafetyCopy();
 
-  const identityCards = useMemo(() => {
+  const identityCards = IDENTITY_PASSPORTS.map((identity) => {
     const progressMap = new Map((profile.identityProgress || []).map((item) => [item.identityType, item]));
-    return IDENTITY_PASSPORTS.map((identity) => {
-      const fallbackLevel = identity.type === "QUESTIONER" ? user.questionerLevel : identity.type === "LECTURER" ? user.lecturerLevel : user.explorerLevel;
-      return getIdentityPassportCard(
-        progressMap.get(identity.type) || {
-          identityType: identity.type,
-          level: fallbackLevel || 0,
-          effectiveCount: 0,
-          qualityCount: 0,
-        }
-      );
-    });
-  }, [profile.identityProgress, user.questionerLevel, user.lecturerLevel, user.explorerLevel]);
+    const fallbackLevel = identity.type === "QUESTIONER" ? user.questionerLevel : identity.type === "LECTURER" ? user.lecturerLevel : user.explorerLevel;
+    return getIdentityPassportCard(
+      progressMap.get(identity.type) || {
+        identityType: identity.type,
+        level: fallbackLevel || 0,
+        effectiveCount: 0,
+        qualityCount: 0,
+      }
+    );
+  });
 
   const recentTransactions = profile.growthEnergy?.recentTransactions || [];
+  const projectAccesses = profile.projectAccesses || [];
+  const packageLabel = (type: string) => ({
+    BASIC_EXPERIENCE: "基础体验项目",
+    FIVE_SESSION_PACK: "5 次项目包",
+    TWENTY_WEEK_PACK: "20 周项目包",
+    SPECIFIC_PROJECT: "指定项目权限",
+    PAUSE_PROJECT_ACCESS: "暂停项目权限",
+  } as Record<string, string>)[type] || type;
 
   return (
     <main className="min-h-screen">
@@ -268,7 +275,7 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        <section className="grid md:grid-cols-3 gap-4">
+        <section className="grid md:grid-cols-4 gap-4">
           <div className="sticker sticker-white">
             <h2 className="font-bold text-ink mb-3">🙋 我的提问</h2>
             {questions.length === 0 ? <p className="text-sm text-ink-light">还没有提问</p> : questions.slice(0, 5).map((q) => (
@@ -276,15 +283,26 @@ export default function ProfilePage() {
             ))}
           </div>
           <div className="sticker sticker-white">
-            <h2 className="font-bold text-ink mb-3">🎤 我的讲题</h2>
+            <h2 className="font-bold text-ink mb-3">🎤 我的小讲师视频</h2>
             {answers.length === 0 ? <p className="text-sm text-ink-light">还没有讲题视频</p> : answers.slice(0, 5).map((a) => (
               <div key={a.id} className="text-sm text-ink-light mb-2 truncate">🎤 {a.question.title}</div>
             ))}
           </div>
           <div className="sticker sticker-white">
-            <h2 className="font-bold text-ink mb-3">🎯 我的项目</h2>
+            <h2 className="font-bold text-ink mb-3">🎯 我的项目与作品</h2>
             {registrations.length === 0 ? <p className="text-sm text-ink-light">还没有报名项目</p> : registrations.slice(0, 5).map((r) => (
               <div key={r.id} className="text-sm text-ink-light mb-2 truncate">🌳 {r.project.title}</div>
+            ))}
+          </div>
+          <div className="sticker sticker-yellow">
+            <h2 className="font-bold text-ink mb-3">🎟️ 我的项目权限</h2>
+            {projectAccesses.length === 0 ? <p className="text-sm text-ink-light">还没有项目包记录。开通由管理员后台登记，老师不处理付费权益。</p> : projectAccesses.slice(0, 5).map((access) => (
+              <div key={access.id} className="rounded-xl bg-white/70 border border-ink/5 p-3 mb-2 text-xs text-ink-light">
+                <p className="font-bold text-ink">{packageLabel(access.packageType)} · {access.status}</p>
+                <p>次数：{access.quotaTotal == null ? "按周期/不限次" : `${access.quotaUsed || 0}/${access.quotaTotal}`}</p>
+                {access.project?.title && <p>项目：{access.project.title}</p>}
+                {access.validUntil && <p>有效至：{new Date(access.validUntil).toLocaleDateString()}</p>}
+              </div>
             ))}
           </div>
         </section>

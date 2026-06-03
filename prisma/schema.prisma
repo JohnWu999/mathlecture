@@ -39,6 +39,10 @@ model User {
   groupMembers  GroupMember[] // 所在小组
   messages      Message[]     // 发送的消息
   registrations ProjectRegistration[]
+  projectAccesses UserProjectAccess[] @relation("ProjectAccessLearner")
+  openedProjectAccesses UserProjectAccess[] @relation("ProjectAccessOpenedBy")
+  paymentRecords PaymentRecord[] @relation("PaymentRecordLearner")
+  operatedPaymentRecords PaymentRecord[] @relation("PaymentRecordOperator")
   pointTransactions PointTransaction[]
   userBadges    UserBadge[]
   identityProgress IdentityProgress[]
@@ -48,6 +52,7 @@ model User {
   shareAssets ShareAsset[]
   projectArtifacts ProjectArtifact[]
   exportLogs ExportLog[]
+  adminAuditLogs AdminAuditLog[]
 
   @@map("users")
 }
@@ -151,6 +156,8 @@ model Project {
   groups      Group[]
   shareAssets ShareAsset[]
   projectArtifacts ProjectArtifact[]
+  projectAccesses UserProjectAccess[]
+  paymentRecords PaymentRecord[]
 
   @@map("projects")
 }
@@ -263,6 +270,100 @@ model ProjectArtifact {
 
   @@index([reviewStatus, shareScope, createdAt])
   @@map("project_artifacts")
+}
+
+// 项目权限/服务权益：由管理员开通，记录项目包、次数、周期、指定项目与暂停状态
+model UserProjectAccess {
+  id          String @id @default(cuid())
+  packageType ProjectAccessPackageType
+  status      ProjectAccessStatus @default(ACTIVE)
+  quotaTotal  Int?
+  quotaUsed   Int @default(0)
+  validFrom   DateTime @default(now())
+  validUntil  DateTime?
+  note        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId      String
+  user        User @relation("ProjectAccessLearner", fields: [userId], references: [id])
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id])
+  openedById  String
+  openedBy    User @relation("ProjectAccessOpenedBy", fields: [openedById], references: [id])
+  paymentRecordId String?
+  paymentRecord PaymentRecord? @relation(fields: [paymentRecordId], references: [id])
+
+  @@index([userId, status])
+  @@index([packageType, status])
+  @@map("user_project_accesses")
+}
+
+enum ProjectAccessPackageType {
+  BASIC_EXPERIENCE
+  FIVE_SESSION_PACK
+  TWENTY_WEEK_PACK
+  SPECIFIC_PROJECT
+  PAUSE_PROJECT_ACCESS
+}
+
+enum ProjectAccessStatus {
+  ACTIVE
+  PAUSED
+  EXPIRED
+  CANCELLED
+}
+
+// MVP 付费/退费/延期/转期记录：管理员手工登记，不做自动支付
+model PaymentRecord {
+  id        String @id @default(cuid())
+  recordType PaymentRecordType @default(PAYMENT)
+  amount    Int @default(0)
+  status    PaymentRecordStatus @default(CONFIRMED)
+  method    String?
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId     String
+  user       User @relation("PaymentRecordLearner", fields: [userId], references: [id])
+  projectId  String?
+  project    Project? @relation(fields: [projectId], references: [id])
+  operatorId String
+  operator   User @relation("PaymentRecordOperator", fields: [operatorId], references: [id])
+  projectAccesses UserProjectAccess[]
+
+  @@index([userId, createdAt])
+  @@map("payment_records")
+}
+
+enum PaymentRecordType {
+  PAYMENT
+  REFUND
+  DELAY
+  TRANSFER
+  RESERVE_SEAT
+}
+
+enum PaymentRecordStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model AdminAuditLog {
+  id        String @id @default(cuid())
+  action    String
+  targetType String
+  targetId  String?
+  payload   String?
+  createdAt DateTime @default(now())
+
+  operatorId String
+  operator   User @relation(fields: [operatorId], references: [id])
+
+  @@index([operatorId, createdAt])
+  @@map("admin_audit_logs")
 }
 
 // 成长能量流水表：私密账本，不作为公开排名依据

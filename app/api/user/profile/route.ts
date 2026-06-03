@@ -97,6 +97,22 @@ export async function GET() {
       },
     });
 
+    const projectAccesses = await prisma.userProjectAccess.findMany({
+      where: { userId: session.user.id },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      select: {
+        id: true,
+        packageType: true,
+        status: true,
+        quotaTotal: true,
+        quotaUsed: true,
+        validUntil: true,
+        note: true,
+        project: { select: { title: true } },
+      },
+    });
+
     return NextResponse.json({
       user,
       questions,
@@ -111,6 +127,7 @@ export async function GET() {
         recentTransactions: growthEnergyTransactions,
       },
       identityProgress,
+      projectAccesses,
     });
   } catch (error) {
     console.error("获取个人资料失败:", error);
