@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import Navbar from "@/components/navbar";
 import { getProjectAccessPackageOptions } from "@/lib/admin-teacher-workspace-rules.mjs";
 import { getAdminDataWorkbenchSections } from "@/lib/role-workspace-completeness-rules.mjs";
+import { getRegistrationFollowUpOptions, getFollowUpStatusLabel } from "@/lib/registration-followup-rules.mjs";
 
 type ProjectAccess = { id: string; packageType: string; status: string; quotaTotal?: number | null; quotaUsed?: number | null; validUntil?: string | null; note?: string | null; project?: { id?: string; title: string } | null };
 type AdminUser = { id: string; name?: string | null; phone?: string | null; role: string; grade?: string | number | null; region?: string | null; isActive: boolean; projectAccesses?: ProjectAccess[] };
@@ -93,6 +94,26 @@ export default function AdminPage() {
     }
   };
 
+  const updateRegistrationFollowUp = async (registrationId: string, followUpStatus: string, followUpNote: string) => {
+    setSaving(true);
+    setNotice("");
+    try {
+      const res = await fetch(`/math-young-lecturer/api/admin/registrations/${registrationId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ followUpStatus, note: followUpNote }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "更新失败");
+      setNotice(data.message || "报名意向跟进状态已更新");
+      await fetchAll();
+    } catch (error: any) {
+      setNotice(error.message || "更新失败");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (status === "loading") return <main className="min-h-screen"><Navbar /><div className="text-center py-20 text-ink-light">加载中...</div></main>;
   if (!session?.user) return <main className="min-h-screen"><Navbar /><div className="text-center py-20 text-ink-light">请先登录</div></main>;
   if (session.user.role !== "ADMIN") return <main className="min-h-screen"><Navbar /><div className="text-center py-20"><div className="text-4xl mb-3">🚫</div><p className="text-ink font-medium">无权访问管理员工作台</p><p className="text-ink-light text-sm mt-1">老师工作台负责教学审核；项目包、付费权益和用户运营由管理员处理。</p></div></main>;
@@ -166,8 +187,10 @@ export default function AdminPage() {
           <DatabaseCard title="🎯 项目管理数据库" helper="项目标题、类型、状态、知识标签、价格、有效期、报名/小组/作品/权益数量。">
             {(workbench.projects || []).map((p) => <Row key={p.id} title={p.title} meta={`${p.projectType} · ${p.status} · ${money(p.price)} · 报名${p._count?.registrations || 0} · 小组${p._count?.groups || 0} · 作品${p._count?.projectArtifacts || 0}`} note={(p.knowledgeTags || []).join("、") || `有效至 ${dateText(p.validUntil)}`} />)}
           </DatabaseCard>
-          <DatabaseCard title="📮 报名意向库" helper="报名不再直接确认；管理员在这里查看孩子昵称、年级、项目包、联系方式和人工跟进状态。">
-            {(workbench.registrationIntents || []).map((r) => <Row key={r.id} title={`${r.childName || r.user?.name || "未命名孩子"} · ${r.project?.title || "未关联项目"}`} meta={`${r.status} · 跟进：${r.followUpStatus || "PENDING"} · ${r.grade || "—"}年级 · ${r.packageName || "项目报名意向"}`} note={`家长/账号：${r.user?.name || "—"} · 联系方式：${r.contact || r.user?.phone || "未留"}${r.note ? ` · 备注：${r.note}` : ""}`} />)}
+          <DatabaseCard title="📮 报名意向库" helper="报名不再直接确认；管理员在这里查看孩子昵称、年级、项目包、联系方式，并更新人工跟进状态。">
+            {(workbench.registrationIntents || []).map((r) => (
+              <RegistrationIntentRow key={r.id} intent={r} saving={saving} onSave={updateRegistrationFollowUp} />
+            ))}
           </DatabaseCard>
           <DatabaseCard title="🙋 提问者问题数据库" helper="问题、年级、知识点、困惑类型、审核状态、认领状态、热度与回答数。">
             {(workbench.questions || []).map((q) => <Row key={q.id} title={q.title} meta={`${q.author?.name || "匿名"} · ${q.grade || "—"}年级 · ${q.topic || "未标知识点"} · ${q.reviewStatus}/${q.status}`} note={`困惑：${q.confusionType || "未填"} · 热度${q.heatCount || 0} · 回答${q._count?.answers || 0} · 认领：${q.claimedBy?.name || "未认领"}`} />)}
@@ -192,6 +215,32 @@ export default function AdminPage() {
 
 function DatabaseCard({ title, helper, children }: { title: string; helper: string; children: React.ReactNode }) {
   return <div className="sticker sticker-white min-h-[280px]"><h2 className="font-bold text-ink mb-1">{title}</h2><p className="text-xs text-ink-light mb-4 leading-relaxed">{helper}</p><div className="space-y-3 max-h-80 overflow-auto">{children || <p className="text-sm text-ink-light">暂无数据</p>}</div></div>;
+}
+
+function RegistrationIntentRow({ intent, saving, onSave }: { intent: any; saving: boolean; onSave: (id: string, status: string, note: string) => void }) {
+  const [status, setStatus] = useState(intent.followUpStatus || "PENDING");
+  const [note, setNote] = useState(intent.note || "");
+  const options = getRegistrationFollowUpOptions();
+
+  useEffect(() => {
+    setStatus(intent.followUpStatus || "PENDING");
+    setNote(intent.note || "");
+  }, [intent.id, intent.followUpStatus, intent.note]);
+
+  return (
+    <div className="rounded-2xl bg-paper border border-ink/5 p-3">
+      <p className="text-sm font-bold text-ink truncate">{intent.childName || intent.user?.name || "未命名孩子"} · {intent.project?.title || "未关联项目"}</p>
+      <p className="text-xs text-ink-light mt-1">报名：{intent.status} · 跟进：{getFollowUpStatusLabel(intent.followUpStatus || "PENDING")} · {intent.grade || "—"}年级 · {intent.packageName || "项目报名意向"}</p>
+      <p className="text-xs text-ink-light mt-1 line-clamp-2">家长/账号：{intent.user?.name || "—"} · 联系方式：{intent.contact || intent.user?.phone || "未留"}</p>
+      <div className="mt-3 grid gap-2">
+        <select value={status} onChange={(e) => setStatus(e.target.value)} className="rounded-xl border border-ink/15 bg-white px-3 py-2 text-xs text-ink">
+          {options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+        </select>
+        <textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={200} className="rounded-xl border border-ink/15 bg-white px-3 py-2 text-xs text-ink min-h-16" placeholder="跟进备注：例如已加企业微信、约定沟通时间、暂缓原因。" />
+        <button onClick={() => onSave(intent.id, status, note)} disabled={saving} className="hand-btn hand-btn-blue text-xs disabled:opacity-50">{saving ? "保存中..." : "保存跟进状态"}</button>
+      </div>
+    </div>
+  );
 }
 
 function Row({ title, meta, note }: { title: string; meta: string; note?: string }) {
