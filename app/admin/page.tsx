@@ -6,6 +6,7 @@ import Navbar from "@/components/navbar";
 import { getProjectAccessPackageOptions } from "@/lib/admin-teacher-workspace-rules.mjs";
 import { getAdminDataWorkbenchSections } from "@/lib/role-workspace-completeness-rules.mjs";
 import { getRegistrationFollowUpOptions, getFollowUpStatusLabel } from "@/lib/registration-followup-rules.mjs";
+import { buildAccessTodoFromRegistration } from "@/lib/project-access-linkage-rules.mjs";
 
 type ProjectAccess = { id: string; packageType: string; status: string; quotaTotal?: number | null; quotaUsed?: number | null; validUntil?: string | null; note?: string | null; project?: { id?: string; title: string } | null };
 type AdminUser = { id: string; name?: string | null; phone?: string | null; role: string; grade?: string | number | null; region?: string | null; isActive: boolean; projectAccesses?: ProjectAccess[] };
@@ -99,14 +100,14 @@ export default function AdminPage() {
     }
   };
 
-  const updateRegistrationFollowUp = async (registrationId: string, followUpStatus: string, followUpNote: string) => {
+  const updateRegistrationFollowUp = async (registrationId: string, followUpStatus: string, followUpNote: string, openProjectAccess = false) => {
     setSaving(true);
     setNotice("");
     try {
       const res = await fetch(`/math-young-lecturer/api/admin/registrations/${registrationId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ followUpStatus, note: followUpNote }),
+        body: JSON.stringify({ followUpStatus, note: followUpNote, openProjectAccess }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "更新失败");
@@ -326,27 +327,43 @@ function DatabaseCard({ title, helper, children }: { title: string; helper: stri
   return <div className="sticker sticker-white min-h-[280px]"><h2 className="font-bold text-ink mb-1">{title}</h2><p className="text-xs text-ink-light mb-4 leading-relaxed">{helper}</p><div className="space-y-3 max-h-80 overflow-auto">{children || <p className="text-sm text-ink-light">暂无数据</p>}</div></div>;
 }
 
-function RegistrationIntentRow({ intent, saving, onSave }: { intent: any; saving: boolean; onSave: (id: string, status: string, note: string) => void }) {
+function RegistrationIntentRow({ intent, saving, onSave }: { intent: any; saving: boolean; onSave: (id: string, status: string, note: string, openProjectAccess?: boolean) => void }) {
   const [status, setStatus] = useState(intent.followUpStatus || "PENDING");
   const [note, setNote] = useState(intent.note || "");
+  const [openProjectAccess, setOpenProjectAccess] = useState(false);
   const options = getRegistrationFollowUpOptions();
+  const accessTodo = buildAccessTodoFromRegistration(intent);
+  const canOpenAccess = status === "CONFIRMED" && accessTodo.needsAccessOpen;
 
   useEffect(() => {
     setStatus(intent.followUpStatus || "PENDING");
     setNote(intent.note || "");
+    setOpenProjectAccess(false);
   }, [intent.id, intent.followUpStatus, intent.note]);
 
   return (
     <div className="rounded-2xl bg-paper border border-ink/5 p-3">
-      <p className="text-sm font-bold text-ink truncate">{intent.childName || intent.user?.name || "未命名孩子"} · {intent.project?.title || "未关联项目"}</p>
-      <p className="text-xs text-ink-light mt-1">报名：{intent.status} · 跟进：{getFollowUpStatusLabel(intent.followUpStatus || "PENDING")} · {intent.grade || "—"}年级 · {intent.packageName || "项目报名意向"}</p>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-sm font-bold text-ink truncate">{intent.childName || intent.user?.name || "未命名孩子"} · {intent.project?.title || "未关联项目"}</p>
+          <p className="text-xs text-ink-light mt-1">报名：{intent.status} · 跟进：{getFollowUpStatusLabel(intent.followUpStatus || "PENDING")} · {intent.grade || "—"}年级 · {intent.packageName || "项目报名意向"}</p>
+        </div>
+        <span className={`text-[11px] px-2 py-1 rounded-full border ${accessTodo.needsAccessOpen ? "bg-crayon-yellow/30 border-crayon-yellow text-ink" : "bg-white border-ink/10 text-ink-light"}`}>{accessTodo.label}</span>
+      </div>
       <p className="text-xs text-ink-light mt-1 line-clamp-2">家长/账号：{intent.user?.name || "—"} · 联系方式：{intent.contact || intent.user?.phone || "未留"}</p>
+      <p className="text-[11px] text-ink-light mt-2">下一步：{accessTodo.nextAction}</p>
       <div className="mt-3 grid gap-2">
         <select value={status} onChange={(e) => setStatus(e.target.value)} className="rounded-xl border border-ink/15 bg-white px-3 py-2 text-xs text-ink">
           {options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
         </select>
         <textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={200} className="rounded-xl border border-ink/15 bg-white px-3 py-2 text-xs text-ink min-h-16" placeholder="跟进备注：例如已加企业微信、约定沟通时间、暂缓原因。" />
-        <button onClick={() => onSave(intent.id, status, note)} disabled={saving} className="hand-btn hand-btn-blue text-xs disabled:opacity-50">{saving ? "保存中..." : "保存跟进状态"}</button>
+        {canOpenAccess && (
+          <label className="flex items-start gap-2 rounded-xl bg-white/80 border border-ink/10 p-3 text-xs text-ink-light">
+            <input type="checkbox" checked={openProjectAccess} onChange={(e) => setOpenProjectAccess(e.target.checked)} className="mt-0.5" />
+            <span><b className="text-ink">确认后同步开通项目权益</b><br />为这个学习者开通「{intent.project?.title || "对应项目"}」指定项目权限；如已开通则不重复创建。</span>
+          </label>
+        )}
+        <button onClick={() => onSave(intent.id, status, note, canOpenAccess && openProjectAccess)} disabled={saving} className="hand-btn hand-btn-blue text-xs disabled:opacity-50">{saving ? "保存中..." : canOpenAccess && openProjectAccess ? "确认跟进并开通权益" : "保存跟进状态"}</button>
       </div>
     </div>
   );

@@ -5,14 +5,13 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Navbar from "@/components/navbar";
 import {
-  GROWTH_ENERGY_SOURCES,
-  GROWTH_ENERGY_USES,
   IDENTITY_PASSPORTS,
   formatGrowthEnergyTransaction,
   getGrowthEnergyCopy,
   getIdentityPassportCard,
   getPassportSafetyCopy,
 } from "@/lib/growth-passport-ui-rules.mjs";
+import { getLearnerProjectAccessCopy } from "@/lib/project-access-linkage-rules.mjs";
 
 interface GrowthEnergyTransaction {
   id: string;
@@ -63,7 +62,7 @@ interface ProfileData {
     recentTransactions: GrowthEnergyTransaction[];
   };
   identityProgress?: IdentityProgressItem[];
-  projectAccesses?: { id: string; packageType: string; status: string; quotaTotal?: number | null; quotaUsed?: number | null; validUntil?: string | null; note?: string | null; project?: { title: string } | null }[];
+  projectAccesses?: { id: string; packageType: string; status: string; quotaTotal?: number | null; quotaUsed?: number | null; validUntil?: string | null; note?: string | null; project?: { id?: string; title: string } | null }[];
 }
 
 export default function ProfilePage() {
@@ -138,13 +137,6 @@ export default function ProfilePage() {
 
   const recentTransactions = profile.growthEnergy?.recentTransactions || [];
   const projectAccesses = profile.projectAccesses || [];
-  const packageLabel = (type: string) => ({
-    BASIC_EXPERIENCE: "基础体验项目",
-    FIVE_SESSION_PACK: "5 次项目包",
-    TWENTY_WEEK_PACK: "20 周项目包",
-    SPECIFIC_PROJECT: "指定项目权限",
-    PAUSE_PROJECT_ACCESS: "暂停项目权限",
-  } as Record<string, string>)[type] || type;
 
   return (
     <main className="min-h-screen">
@@ -309,14 +301,18 @@ export default function ProfilePage() {
           </div>
           <div className="sticker sticker-yellow">
             <h2 className="font-bold text-ink mb-3">🎟️ 我的项目权限</h2>
-            {projectAccesses.length === 0 ? <p className="text-sm text-ink-light">还没有项目包记录。开通由管理员后台登记，老师不处理付费权益。</p> : projectAccesses.slice(0, 5).map((access) => (
-              <div key={access.id} className="rounded-xl bg-white/70 border border-ink/5 p-3 mb-2 text-xs text-ink-light">
-                <p className="font-bold text-ink">{packageLabel(access.packageType)} · {access.status}</p>
-                <p>次数：{access.quotaTotal == null ? "按周期/不限次" : `${access.quotaUsed || 0}/${access.quotaTotal}`}</p>
-                {access.project?.title && <p>项目：{access.project.title}</p>}
-                {access.validUntil && <p>有效至：{new Date(access.validUntil).toLocaleDateString()}</p>}
-              </div>
-            ))}
+            {projectAccesses.length === 0 ? <p className="text-sm text-ink-light">还没有项目包记录。开通由管理员后台登记，老师不处理付费权益。</p> : projectAccesses.slice(0, 5).map((access) => {
+              const copy = getLearnerProjectAccessCopy({ packageType: access.packageType, status: access.status, projectTitle: access.project?.title || "项目营" });
+              return (
+                <div key={access.id} className="rounded-xl bg-white/70 border border-ink/5 p-3 mb-2 text-xs text-ink-light">
+                  <p className="font-bold text-ink">{copy.title} · {copy.statusLabel}</p>
+                  <p>{copy.helper}</p>
+                  <p>次数：{access.quotaTotal == null ? "按周期/不限次" : `${access.quotaUsed || 0}/${access.quotaTotal}`}</p>
+                  {access.validUntil && <p>有效至：{new Date(access.validUntil).toLocaleDateString()}</p>}
+                  {access.status === "ACTIVE" && access.project?.id && <Link href={`/projects/${access.project.id}`} className="inline-block mt-2 text-crayon-blue font-bold">进入项目 →</Link>}
+                </div>
+              );
+            })}
           </div>
         </section>
       </section>

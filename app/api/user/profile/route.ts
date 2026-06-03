@@ -112,7 +112,7 @@ export async function GET() {
         quotaUsed: true,
         validUntil: true,
         note: true,
-        project: { select: { title: true } },
+        project: { select: { id: true, title: true } },
       },
     });
 
