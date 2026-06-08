@@ -25,6 +25,6 @@ test('profile lists tolerate incomplete historical records without client-side c
   assert.match(profilePage, /r\.project\?\.title \|\| "项目记录待补全"/, 'registration history should tolerate missing or stale project records');
 });
 
-test('project camp passport button keeps using the real profile route', () => {
-  assert.match(projectsPage, /<Link href="\/profile"[\s\S]*查看我的成长护照/, 'project camp passport CTA should link to the personal center route handled by Next basePath');
+test('project camp passport button keeps using a full document profile href on the deployed base path', () => {
+  assert.match(projectsPage, /<a href=\{PUBLIC_PROFILE_HREF\}[\s\S]*查看我的成长护照/, 'project camp passport CTA should full-load the deployed personal center route');
 });

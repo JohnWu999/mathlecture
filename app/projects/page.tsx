@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/navbar";
+import { PUBLIC_PROFILE_HREF } from "@/lib/public-entry-hrefs.mjs";
 import {
   PROJECT_CAMP_COPY,
   formatProjectValidity,
@@ -61,9 +62,9 @@ export default function ProjectsPage() {
             <p className="font-bold text-ink">项目卡怎么看？</p>
             <p className="text-sm text-ink-light mt-1">{PROJECT_CAMP_COPY.safetyNote}</p>
           </div>
-          <Link href="/profile" className="hand-btn bg-crayon-green text-ink text-center">
+          <a href={PUBLIC_PROFILE_HREF} className="hand-btn bg-crayon-green text-ink text-center">
             查看我的成长护照
-          </Link>
+          </a>
         </div>
 
         <hr className="infinity-divider mb-8" />

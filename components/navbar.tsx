@@ -5,12 +5,13 @@ import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { getPersonalCenterHrefForRole, getVisibleWorkspaceNavForRole } from "@/lib/role-access-boundary-rules.mjs";
+import { PUBLIC_PROFILE_HREF } from "@/lib/public-entry-hrefs.mjs";
 
 const mainLinks = [
   { href: "/qa", label: "你问我答" },
   { href: "/projects", label: "项目营" },
   { href: "/hall", label: "成果广场" },
-  { href: "/profile", label: "个人中心" },
+  { href: "/profile", label: "个人中心", publicHref: PUBLIC_PROFILE_HREF },
 ];
 
 function LogoMark() {
@@ -49,18 +50,30 @@ export default function Navbar() {
 
         <div className="forest-navlinks">
           {links.map((link) => (
-            <Link key={link.href} href={link.href} className={isActive(link.href) ? "active" : ""}>
-              {link.label}
-            </Link>
+            link.publicHref ? (
+              <a key={link.href} href={link.publicHref} className={isActive(link.href) ? "active" : ""}>
+                {link.label}
+              </a>
+            ) : (
+              <Link key={link.href} href={link.href} className={isActive(link.href) ? "active" : ""}>
+                {link.label}
+              </Link>
+            )
           ))}
         </div>
 
         <div className="mobile-quick-links" aria-label="手机分页导航">
           {mainLinks.map((link, index) => (
             <span className="mobile-quick-item" key={link.href}>
-              <Link href={link.href} className={isActive(link.href) ? "active" : ""}>
-                {link.label}
-              </Link>
+              {link.publicHref ? (
+                <a href={link.publicHref} className={isActive(link.href) ? "active" : ""}>
+                  {link.label}
+                </a>
+              ) : (
+                <Link href={link.href} className={isActive(link.href) ? "active" : ""}>
+                  {link.label}
+                </Link>
+              )}
               {index < mainLinks.length - 1 && <span className="mobile-separator" aria-hidden="true">｜</span>}
             </span>
           ))}
@@ -72,7 +85,11 @@ export default function Navbar() {
             <span className="login muted">加载中...</span>
           ) : session?.user ? (
             <>
-              <Link href={personalCenterHref} className="login">{session.user.name || session.user.phone}</Link>
+              {personalCenterHref === "/profile" ? (
+                <a href={PUBLIC_PROFILE_HREF} className="login">{session.user.name || session.user.phone}</a>
+              ) : (
+                <Link href={personalCenterHref} className="login">{session.user.name || session.user.phone}</Link>
+              )}
               <button className="logout" onClick={() => signOut({ callbackUrl: "/" })}>退出</button>
             </>
           ) : (
@@ -87,9 +104,15 @@ export default function Navbar() {
       {menuOpen && (
         <div className="mobile-menu">
           {links.map((link) => (
-            <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)} className={isActive(link.href) ? "active" : ""}>
-              {link.label}
-            </Link>
+            link.publicHref ? (
+              <a key={link.href} href={link.publicHref} onClick={() => setMenuOpen(false)} className={isActive(link.href) ? "active" : ""}>
+                {link.label}
+              </a>
+            ) : (
+              <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)} className={isActive(link.href) ? "active" : ""}>
+                {link.label}
+              </Link>
+            )
           ))}
           <Link href="/qa/ask" onClick={() => setMenuOpen(false)} className="mobile-ask">我要提问</Link>
         </div>
