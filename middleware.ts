@@ -25,7 +25,12 @@ function withBasePath(pathname: string) {
 
 function redirectTo(req: NextRequest, pathname: string, status = 307) {
   const url = req.nextUrl.clone();
-  url.pathname = withBasePath(pathname);
+  // In a Next.js app configured with basePath, `NextURL` already tracks
+  // `req.nextUrl.basePath`. Setting pathname to the app-relative path lets
+  // Next serialize the deploy prefix exactly once. Manually adding BASE_PATH
+  // here produces /math-young-lecturer/math-young-lecturer/login on protected
+  // routes in production.
+  url.pathname = pathname;
   url.search = "";
   return NextResponse.redirect(url, status);
 }
