@@ -962,16 +962,12 @@ p {
    ========================================== */
 .forest-page-shell {
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 8% 12%, rgba(165, 214, 167, 0.28), transparent 28%),
-    radial-gradient(circle at 92% 10%, rgba(255, 245, 157, 0.34), transparent 26%),
-    radial-gradient(circle at 88% 86%, rgba(144, 202, 249, 0.18), transparent 28%),
-    linear-gradient(180deg, #fbfbf2 0%, #f7f0df 100%);
+  background: none; /* Stage0-E: old Stage0-B background removed; Stage0-D V2 background below is authoritative. */
   position: relative;
   overflow-x: hidden;
 }
 .forest-page-shell::before {
-  content: "∞   △   +   7   ⟂   ○";
+  content: ""; /* Stage0-E: old fixed glyph background removed. */
   position: fixed;
   inset: auto 4vw 5vh auto;
   max-width: 46vw;
@@ -1358,4 +1354,76 @@ p {
 }
 @media (prefers-reduced-motion: reduce) {
   .forest-card, .forest-tabs button { transition: none !important; }
+}
+
+
+/* ==========================================
+   Stage0-E｜分页背景残留与按钮填充修正
+   目标：清除旧 Stage0-B 纸面/蜡笔背景残留；按钮颜色填满整个胶囊边框。
+   ========================================== */
+.forest-page-shell {
+  background:
+    radial-gradient(circle at 12% 9%, rgba(255,209,102,.40), transparent 25%),
+    radial-gradient(circle at 87% 14%, rgba(126,200,95,.30), transparent 28%),
+    linear-gradient(180deg, var(--v2-morning-paper) 0%, var(--v2-cream) 42%, #EEF9E8 100%) !important;
+  background-color: var(--v2-morning-paper) !important;
+}
+.forest-page-shell::before {
+  content: "" !important;
+  inset: 0 !important;
+  max-width: none !important;
+  font-size: 0 !important;
+  letter-spacing: 0 !important;
+  color: transparent !important;
+  background-image:
+    linear-gradient(rgba(33,72,58,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(33,72,58,.035) 1px, transparent 1px),
+    radial-gradient(circle at 18% 32%, rgba(59,130,246,.08), transparent 16%),
+    radial-gradient(circle at 72% 68%, rgba(126,200,95,.10), transparent 18%) !important;
+  background-size: 34px 34px, 34px 34px, 100% 100%, 100% 100% !important;
+}
+.hand-btn {
+  overflow: hidden !important;
+  background-clip: border-box !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(33,72,58,.12) !important;
+  box-shadow: 0 12px 28px rgba(33,72,58,.10) !important;
+  transform: none !important;
+}
+.hand-btn::before {
+  display: none !important;
+  content: none !important;
+}
+.hand-btn[class*="bg-crayon-green"],
+.hand-btn-green,
+.hand-btn.bg-green,
+.hand-btn.bg-crayon-green {
+  background: var(--v2-tree-green) !important;
+  color: #fff !important;
+}
+.hand-btn[class*="bg-crayon-yellow"],
+.hand-btn-yellow,
+.hand-btn.bg-crayon-yellow {
+  background: var(--v2-sunlit-yellow) !important;
+  color: var(--v2-forest-ink) !important;
+}
+.hand-btn[class*="bg-crayon-blue"],
+.hand-btn-blue,
+.hand-btn.bg-crayon-blue {
+  background: var(--v2-infinity-blue) !important;
+  color: #fff !important;
+}
+.hand-btn.bg-white,
+.hand-btn-white {
+  background: rgba(255,255,255,.92) !important;
+  color: var(--v2-forest-ink) !important;
+}
+.hand-btn:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 16px 34px rgba(33,72,58,.13) !important;
+}
+.hand-btn:disabled {
+  background: rgba(255,255,255,.72) !important;
+  color: rgba(33,72,58,.48) !important;
+  box-shadow: none !important;
 }
