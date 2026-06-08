@@ -4,247 +4,223 @@ import Link from "next/link";
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { InfinityLogo } from "@/components/brand/infinity-logo";
-import { NAV_LINKS } from "@/lib/product-copy";
-import { colors, fonts, handDrawn } from "@/lib/visual-tokens";
 import { getPersonalCenterHrefForRole, getVisibleWorkspaceNavForRole } from "@/lib/role-access-boundary-rules.mjs";
+
+const mainLinks = [
+  { href: "/qa", label: "你问我答" },
+  { href: "/projects", label: "项目营" },
+  { href: "/hall", label: "成果广场" },
+  { href: "/profile", label: "个人中心" },
+];
+
+function LogoMark() {
+  return (
+    <svg viewBox="0 0 140 86" aria-label="两个孩子握手形成无限符号">
+      <path
+        d="M20 43C36 10 62 11 70 43C78 75 104 76 120 43C104 10 78 11 70 43C62 75 36 76 20 43Z"
+        fill="none"
+        stroke="#2f8f67"
+        strokeWidth="9.5"
+        strokeLinecap="round"
+      />
+      <circle cx="48" cy="27" r="8" fill="#ffd166" />
+      <circle cx="92" cy="59" r="8" fill="#3b82f6" />
+      <path d="M58 39c7 7 17 7 24 0" fill="none" stroke="#f9733d" strokeWidth="5" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
-
-  const navLinks = NAV_LINKS;
   const workspaceLinks = getVisibleWorkspaceNavForRole(session?.user?.role);
   const personalCenterHref = getPersonalCenterHrefForRole(session?.user?.role);
-
-  const isActive = (href: string) => pathname === href;
+  const links = [...mainLinks, ...workspaceLinks];
+  const isActive = (href: string) => pathname === href || pathname?.startsWith(`${href}/`);
 
   return (
-    <nav
-      className="sticky top-0 z-50"
-      style={{
-        height: "56px",
-        background: "transparent",
-        borderBottom: "none",
-      }}
-    >
-      {/* 手绘波浪线分隔 - SVG虚线波浪 */}
-      <div
-        className="absolute bottom-0 left-0 right-0 pointer-events-none"
-        style={{
-          height: "4px",
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='4' viewBox='0 0 40 4'%3E%3Cpath d='M0 2 Q5 0 10 2 T20 2 T30 2 T40 2' fill='none' stroke='rgba(141,110,99,0.35)' stroke-width='2' stroke-dasharray='3,5' stroke-linecap='round'/%3E%3C/svg%3E")`,
-          backgroundRepeat: "repeat-x",
-          backgroundSize: "40px 4px",
-        }}
-      />
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-full">
-        <div className="flex items-center justify-between h-full">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <InfinityLogo size="sm" />
-          </Link>
+    <nav className="forest-site-nav" aria-label="主导航">
+      <div className="nav-inner">
+        <Link href="/" className="forest-brand" aria-label="数学小讲师联盟首页">
+          <LogoMark />
+          <span>数学小讲师联盟</span>
+        </Link>
 
-          {/* Desktop Nav - 中间菜单 */}
-          <div className="nav-show-desktop hidden items-center" style={{ gap: "32px" }}>
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="relative transition-colors"
-                style={{
-                  fontFamily: fonts.body,
-                  fontSize: "14px",
-                  color: isActive(link.href) ? colors.ink : colors.muted,
-                  borderBottom: isActive(link.href) ? `2px solid ${colors.ink}` : "none",
-                  paddingBottom: "2px",
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
-            {workspaceLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="transition-colors"
-                style={{
-                  fontFamily: fonts.body,
-                  fontSize: "14px",
-                  color: isActive(link.href) ? colors.ink : colors.muted,
-                  borderBottom: isActive(link.href) ? `2px solid ${colors.ink}` : "none",
-                  paddingBottom: "2px",
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
+        <div className="forest-navlinks">
+          {links.map((link) => (
+            <Link key={link.href} href={link.href} className={isActive(link.href) ? "active" : ""}>
+              {link.label}
+            </Link>
+          ))}
+        </div>
 
-          {/* Desktop 用户信息/登录 - 桌面端单独显示 */}
-          <div className="nav-show-desktop hidden items-center gap-3">
-            {status === "loading" ? (
-<span style={{ color: colors.muted, fontSize: "14px" }}>加载中...</span>
-            ) : session?.user ? (
-              <>
-                <Link
-                  href={personalCenterHref}
-                  className="hover:underline"
-                  style={{
-                    fontFamily: fonts.body,
-                    fontSize: "14px",
-                    color: colors.ink,
-                  }}
-                >
-                  {session.user.name || session.user.phone}
-                </Link>
-                <span
-                  className="px-2 py-0.5 text-xs font-medium"
-                  style={{
-                    background: session.user.role === "ADMIN" ? "#FFE0B2" : session.user.role === "TEACHER" ? "#BBDEFB" : "#C8E6C9",
-                    border: `1px solid ${colors.border}`,
-                    borderRadius: handDrawn.organicRadius,
-                    color: colors.ink,
-                  }}
-                >
-                  {session.user.role === "ADMIN" ? "管理员" : session.user.role === "TEACHER" ? "老师" : "学员"}
-                </span>
-                <button
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                  className="hover:underline"
-                  style={{
-                    fontFamily: fonts.body,
-                    fontSize: "14px",
-                    color: colors.muted,
-                  }}
-                >
-                  退出
-                </button>
-              </>
-            ) : (
-              <Link
-                href="/login"
-                className="btn-hand"
-                style={{
-                  padding: "6px 16px",
-                  fontSize: "14px",
-                  fontFamily: fonts.title,
-                }}
-              >
-                登录
-              </Link>
-            )}
-          </div>
-
-          {/* Mobile 右侧 - 登录按钮 + 汉堡 */}
-          <div className="nav-hide-desktop flex items-center gap-2">
-            {status === "loading" ? (
-<span style={{ color: colors.muted, fontSize: "14px" }}>加载中...</span>
-            ) : session?.user ? (
-              <Link
-                href={personalCenterHref}
-                className="hover:underline"
-                style={{
-                  fontFamily: fonts.body,
-                  fontSize: "14px",
-                  color: colors.ink,
-                }}
-              >
-                {session.user.name || session.user.phone}
-              </Link>
-            ) : (
-              <Link
-                href="/login"
-                className="btn-hand"
-                style={{
-                  padding: "6px 16px",
-                  fontSize: "14px",
-                  fontFamily: fonts.title,
-                }}
-              >
-                登录
-              </Link>
-            )}
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="flex flex-col items-center justify-center gap-1.5"
-              style={{
-                width: "40px",
-                height: "40px",
-                border: `2px solid ${colors.border}`,
-                borderRadius: handDrawn.organicRadius,
-              }}
-              aria-label="菜单"
-            >
-              <span
-                className="block w-5 h-0.5 transition-transform"
-                style={{
-                  background: colors.ink,
-                  transform: menuOpen ? "rotate(45deg) translateY(6px)" : "none",
-                }}
-              />
-              <span
-                className="block w-5 h-0.5 transition-opacity"
-                style={{ background: colors.ink, opacity: menuOpen ? 0 : 1 }}
-              />
-              <span
-                className="block w-5 h-0.5 transition-transform"
-                style={{
-                  background: colors.ink,
-                  transform: menuOpen ? "rotate(-45deg) translateY(-6px)" : "none",
-                }}
-              />
-            </button>
-          </div>
+        <div className="nav-actions">
+          <Link className="ask" href="/qa/ask">我要提问</Link>
+          {status === "loading" ? (
+            <span className="login muted">加载中...</span>
+          ) : session?.user ? (
+            <>
+              <Link href={personalCenterHref} className="login">{session.user.name || session.user.phone}</Link>
+              <button className="logout" onClick={() => signOut({ callbackUrl: "/" })}>退出</button>
+            </>
+          ) : (
+            <Link className="login" href="/login">登录</Link>
+          )}
+          <button className="menu-button" type="button" aria-label="菜单" aria-expanded={menuOpen} onClick={() => setMenuOpen((v) => !v)}>
+            <span /><span /><span />
+          </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {menuOpen && (
-        <div
-          className="nav-hide-desktop px-4 py-3 space-y-1"
-          style={{
-            background: "rgba(250,250,245,0.96)",
-            borderTop: "none",
-            backdropFilter: "blur(8px)",
-          }}
-        >
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              className="block px-4 py-2.5"
-              style={{
-                fontFamily: fonts.body,
-                fontSize: "14px",
-                color: isActive(link.href) ? colors.ink : colors.muted,
-                borderBottom: isActive(link.href) ? `2px solid ${colors.ink}` : "none",
-              }}
-            >
+        <div className="mobile-menu">
+          {links.map((link) => (
+            <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)} className={isActive(link.href) ? "active" : ""}>
               {link.label}
             </Link>
           ))}
-          {workspaceLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              className="block px-4 py-2.5"
-              style={{
-                fontFamily: fonts.body,
-                fontSize: "14px",
-                color: isActive(link.href) ? colors.ink : colors.muted,
-                borderBottom: isActive(link.href) ? `2px solid ${colors.ink}` : "none",
-              }}
-            >
-              {link.label}
-            </Link>
-          ))}
-
+          <Link href="/qa/ask" onClick={() => setMenuOpen(false)} className="mobile-ask">我要提问</Link>
         </div>
       )}
+
+      <style jsx>{`
+        .forest-site-nav {
+          position: sticky;
+          top: 0;
+          z-index: 80;
+          min-height: 76px;
+          background: rgba(255, 248, 232, 0.82);
+          backdrop-filter: blur(18px);
+          border-bottom: 1px solid rgba(24, 70, 56, 0.08);
+          color: #184638;
+        }
+        .nav-inner {
+          height: 76px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 24px;
+          padding: 0 56px;
+        }
+        .forest-brand {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-width: max-content;
+          font-weight: 950;
+          letter-spacing: -0.02em;
+          color: #184638;
+          text-decoration: none;
+        }
+        .forest-brand svg { width: 56px; height: 38px; }
+        .forest-navlinks {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 26px;
+          flex: 1;
+          font-size: 15px;
+          font-weight: 850;
+          color: rgba(24, 70, 56, 0.72);
+        }
+        .forest-navlinks a,
+        .mobile-menu a,
+        .login,
+        .logout {
+          color: inherit;
+          text-decoration: none;
+        }
+        .forest-navlinks a.active,
+        .forest-navlinks a:hover,
+        .mobile-menu a.active {
+          color: #184638;
+        }
+        .forest-navlinks a.active {
+          box-shadow: inset 0 -8px 0 rgba(255, 209, 102, 0.62);
+        }
+        .nav-actions {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-width: max-content;
+        }
+        .ask {
+          background: #184638;
+          color: #fff;
+          padding: 12px 18px;
+          border-radius: 999px;
+          box-shadow: 0 14px 38px rgba(24, 70, 56, 0.12);
+          font-size: 14px;
+          font-weight: 950;
+          text-decoration: none;
+        }
+        .login,
+        .logout {
+          border: 1px solid rgba(24, 70, 56, 0.12);
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.62);
+          padding: 10px 14px;
+          font-size: 14px;
+          font-weight: 850;
+          color: #184638;
+        }
+        .logout { cursor: pointer; }
+        .muted { color: #435f54; }
+        .menu-button {
+          display: none;
+          width: 44px;
+          height: 44px;
+          border: 1px solid rgba(24, 70, 56, 0.16);
+          border-radius: 16px;
+          background: rgba(255, 255, 255, 0.66);
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          gap: 5px;
+        }
+        .menu-button span {
+          display: block;
+          width: 20px;
+          height: 2px;
+          border-radius: 999px;
+          background: #184638;
+        }
+        .mobile-menu {
+          display: none;
+          padding: 8px 22px 18px;
+          background: rgba(255, 248, 232, 0.96);
+          border-top: 1px solid rgba(24, 70, 56, 0.08);
+        }
+        .mobile-menu a {
+          display: block;
+          padding: 12px 6px;
+          font-size: 15px;
+          font-weight: 850;
+          color: #435f54;
+        }
+        .mobile-menu .mobile-ask {
+          margin-top: 8px;
+          text-align: center;
+          color: #fff;
+          background: #f9733d;
+          border-radius: 999px;
+        }
+        @media (max-width: 1100px) {
+          .nav-inner { padding: 0 22px; }
+          .forest-navlinks { display: none; }
+          .ask { display: none; }
+          .menu-button { display: flex; }
+          .mobile-menu { display: block; }
+        }
+        @media (max-width: 620px) {
+          .forest-site-nav { min-height: 68px; }
+          .nav-inner { height: 68px; gap: 10px; }
+          .forest-brand svg { width: 46px; }
+          .forest-brand span { font-size: 16px; }
+          .login, .logout { padding: 8px 11px; font-size: 13px; }
+        }
+      `}</style>
     </nav>
   );
 }

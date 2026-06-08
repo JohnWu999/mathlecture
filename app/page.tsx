@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Navbar from "@/components/navbar";
 
 const stages = [
   { key: "seed", title: "问题发芽", note: "我敢问", badge: "今日问题种子" },
@@ -62,19 +63,7 @@ function StageGlyph({ type }: { type: string }) {
 export default function HomePage() {
   return (
     <main className="forest-home">
-      <nav className="forest-nav">
-        <Link href="/" className="brand" aria-label="数学小讲师联盟首页">
-          <LogoMark />
-          <span>数学小讲师联盟</span>
-        </Link>
-        <div className="navlinks" aria-label="主导航">
-          <Link href="/qa">你问我答</Link>
-          <Link href="/projects">项目营</Link>
-          <Link href="/hall">成果广场</Link>
-          <Link href="/profile">个人中心</Link>
-          <Link className="ask" href="/qa/ask">我要提问</Link>
-        </div>
-      </nav>
+      <Navbar />
 
       <div className="test-ribbon" role="note">
         <b>内部测试版</b>
