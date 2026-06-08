@@ -42,14 +42,14 @@ export default function ProjectsPage() {
   }, []);
 
   return (
-    <main className="min-h-screen">
+    <main className="forest-page-shell">
       <Navbar />
-      <section className="px-6 pt-8 pb-16 max-w-6xl mx-auto relative z-10">
-        <div className="text-center mb-8">
+      <section className="forest-page-content">
+        <div className="forest-page-hero text-center">
           <div className="inline-block sticker sticker-yellow mb-3">
             <span className="text-3xl">🌳</span>
           </div>
-          <h1 className="text-3xl font-bold handwritten-title infinity-title text-ink">{PROJECT_CAMP_COPY.title}</h1>
+          <h1 className="forest-page-title handwritten-title infinity-title">森林任务 · {PROJECT_CAMP_COPY.title}</h1>
           <p className="mt-2 max-w-2xl mx-auto text-ink-light leading-relaxed">
             {PROJECT_CAMP_COPY.subtitle}
           </p>
@@ -58,7 +58,7 @@ export default function ProjectsPage() {
           </p>
         </div>
 
-        <div className="sticker sticker-white mb-8 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+        <div className="forest-panel flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
           <div>
             <p className="font-bold text-ink">项目卡怎么看？</p>
             <p className="text-sm text-ink-light mt-1">{PROJECT_CAMP_COPY.safetyNote}</p>
@@ -73,13 +73,13 @@ export default function ProjectsPage() {
         {loading ? (
           <div className="text-center py-12 text-ink-light">加载项目森林中...</div>
         ) : projects.length === 0 ? (
-          <div className="sticker sticker-white text-center py-12">
+          <div className="forest-empty">
             <div className="text-4xl mb-3">🛣️</div>
             <p className="font-medium text-ink">暂时没有开放的项目</p>
             <p className="text-sm mt-1 text-ink-light">{PROJECT_CAMP_COPY.empty}</p>
           </div>
         ) : (
-          <div className="grid lg:grid-cols-2 gap-6">
+          <div className="forest-card-grid two">
             {projects.map((p) => {
               const type = getProjectTypeLabel(p.projectType);
               const readiness = getProjectReadiness(p);
@@ -93,7 +93,7 @@ export default function ProjectsPage() {
                 <Link
                   key={p.id}
                   href={`/projects/${p.id}`}
-                  className="sticker sticker-white hover:shadow-float transition-shadow block overflow-hidden"
+                  className="forest-card block overflow-hidden"
                 >
                   <div className="h-40 bg-crayon-yellow/30 flex items-center justify-center relative">
                     {p.coverImage ? (
@@ -117,7 +117,7 @@ export default function ProjectsPage() {
                       <span className="hand-badge hand-badge-yellow text-xs">{formatProjectValidity(p.validUntil)}</span>
                     </div>
 
-                    <div className="rounded-2xl bg-parchment/70 p-3 border border-ink/10">
+                    <div className="forest-mission-card">
                       <p className="text-xs font-bold text-ink mb-1">{readiness.title}</p>
                       <p className="text-xs text-ink-light leading-relaxed">{readiness.summary}</p>
                       <div className="flex flex-wrap gap-1 mt-2">

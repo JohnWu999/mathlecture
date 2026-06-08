@@ -59,34 +59,34 @@ export default function HallPage() {
   const detailSections = getOutcomeDetailSections({ type: activeType === "ALL" ? "LECTURE" : activeType });
 
   return (
-    <main className="min-h-screen">
+    <main className="forest-page-shell">
       <Navbar />
-      <section className="px-6 pt-8 pb-16 max-w-6xl mx-auto relative z-10">
-        <div className="sticker bg-crayon-green/45 text-center mb-8">
+      <section className="forest-page-content">
+        <div className="forest-page-hero text-center">
           <p className="text-sm text-ink-light">{OUTCOME_HALL_COPY.eyebrow}</p>
-          <h1 className="text-3xl font-bold handwritten-title infinity-title text-ink mt-1">{OUTCOME_HALL_COPY.title}</h1>
+          <h1 className="forest-page-title handwritten-title infinity-title">森林展墙 · {OUTCOME_HALL_COPY.title}</h1>
           <p className="mt-3 max-w-2xl mx-auto text-ink-light leading-relaxed">
             {OUTCOME_HALL_COPY.subtitle}
           </p>
           <p className="mt-2 text-xs text-ink-light">{OUTCOME_HALL_COPY.safetyNote}</p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-3 mb-6">
+        <div className="forest-card-grid three mb-6">
           {detailSections.map((section) => (
-            <div key={section.key} className="sticker bg-white">
+            <div key={section.key} className="forest-mission-card">
               <h2 className="font-bold text-ink text-sm">{section.title}</h2>
               <p className="text-xs text-ink-light leading-relaxed mt-1">{section.description}</p>
             </div>
           ))}
         </div>
 
-        <div className="sticker bg-white mb-6">
+        <div className="forest-panel">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="font-bold text-ink">🌿 选择想看的成果</h2>
               <p className="text-xs text-ink-light mt-1">{data?.authorizationRule || SHARE_AUTHORIZATION_COPY}</p>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="forest-tabs flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => setActiveType("ALL")}
@@ -107,16 +107,16 @@ export default function HallPage() {
         {loading ? (
           <div className="text-center py-12 text-ink-light">加载成果森林中...</div>
         ) : visibleOutcomes.length === 0 ? (
-          <div className="sticker bg-white text-center py-10">
+          <div className="forest-empty">
             <div className="text-4xl mb-3">🌱</div>
             <p className="text-ink-light">{getOutcomeEmptyCopy(activeType === "ALL" ? "LECTURE" : activeType)}</p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="forest-card-grid three">
             {visibleOutcomes.map((outcome) => {
               const card = buildOutcomeCard(outcome);
               return (
-                <article key={card.id} className="sticker bg-white flex flex-col">
+                <article key={card.id} className="forest-card flex flex-col">
                   <div className={`h-36 ${card.coverTone} rounded-2xl mb-3 flex items-center justify-center relative overflow-hidden`}>
                     <span className="text-5xl">{card.emoji}</span>
                     <span className="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-white/80 text-xs font-bold text-ink">{card.typeLabel}</span>

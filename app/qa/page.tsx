@@ -61,15 +61,15 @@ export default function QAPage() {
   };
 
   return (
-    <main className="min-h-screen">
+    <main className="forest-page-shell">
       <Navbar />
 
-      <section className="px-6 pt-8 pb-16 max-w-6xl mx-auto relative z-10">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+      <section className="forest-page-content">
+        <div className="forest-page-hero flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div>
-            <p className="text-sm text-ink-light mb-2">问题发芽 → 讲解长高</p>
-            <h1 className="text-3xl font-bold handwritten-title infinity-title" style={{ color: "#3E2723" }}>你问我答</h1>
-            <p className="mt-1" style={{ color: "#5D4E44" }}>
+            <p className="forest-page-eyebrow">🌱 问题种子 → 讲解长高</p>
+            <h1 className="forest-page-title handwritten-title infinity-title" style={{ color: "#3E2723" }}>你问我答</h1>
+            <p className="forest-page-subtitle" style={{ color: "#5D4E44" }}>
               把一个卡住的地方说出来，让同伴的讲解帮它长成清楚的思路。
             </p>
           </div>
@@ -83,30 +83,30 @@ export default function QAPage() {
           </div>
         </div>
 
-        <div className="sticker sticker-white mb-6">
+        <div className="forest-panel">
           <p className="text-sm text-ink font-medium">🌱 温暖提示</p>
           <p className="text-sm text-ink-light mt-1">{listRule}</p>
           <p className="text-xs text-ink-light mt-2">未审核问题不会公开；操作时需要登录，但浏览问题不需要。</p>
         </div>
-        {notice && <div className="sticker bg-crayon-green/20 mb-6 text-sm text-ink">{notice}</div>}
+        {notice && <div className="forest-panel bg-crayon-green/20 text-sm text-ink">{notice}</div>}
 
         <hr className="infinity-divider mb-8" />
 
         {loading ? (
           <div className="text-center py-12" style={{ color: "#8D7E72" }}>加载中...</div>
         ) : questions.length === 0 ? (
-          <div className="sticker sticker-white text-center py-12">
+          <div className="forest-empty">
             <div className="text-4xl mb-3">🌱</div>
             <p className="font-medium" style={{ color: "#3E2723" }}>暂时没有开放认领的问题</p>
             <p className="text-sm mt-1" style={{ color: "#8D7E72" }}>你可以先提出一个好问题，等老师审核后再开放给小讲师。</p>
           </div>
         ) : (
-          <div id="claimable" className="grid gap-4">
+          <div id="claimable" className="forest-card-grid">
             {questions.map((q) => {
               const statusBadge = getQuestionStatusBadge({ status: q.status, reviewStatus: q.reviewStatus || "APPROVED" });
               const heatPrompt = getHeatPrompt({ heatCount: q.heatCount || 0, hasHeated: false });
               return (
-                <article key={q.id} className="sticker sticker-white hover:shadow-float transition-shadow block">
+                <article key={q.id} className="forest-card block">
                   <Link href={`/qa/question/${q.id}`} className="block">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">

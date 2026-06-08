@@ -107,25 +107,25 @@ export default function AskPage() {
   };
 
   return (
-    <main className="min-h-screen">
+    <main className="forest-page-shell">
       <Navbar />
-      <section className="px-6 pt-8 pb-16 max-w-3xl mx-auto">
-        <div className="text-center mb-8">
+      <section className="forest-page-content forest-page-content-narrow">
+        <div className="forest-page-hero text-center">
           <div className="inline-block sticker bg-crayon-yellow mb-3"><span className="text-3xl">🌱</span></div>
-          <h1 className="text-2xl font-bold text-ink">我要提问</h1>
-          <p className="text-ink-light mt-1">谢谢你把问题说出来。一个好问题，会让很多同学一起长大。</p>
+          <h1 className="forest-page-title handwritten-title infinity-title">我要提问</h1>
+          <p className="text-ink-light mt-1">谢谢你把问题说出来。这里是问题种子站：先保护孩子的表达，再交给老师审核。</p>
         </div>
 
-        <div className="grid md:grid-cols-4 gap-3 mb-6">
+        <div className="forest-card-grid four mb-6">
           {QUESTION_FORM_STEPS.map((step, index) => (
-            <div key={step.key} className="sticker sticker-white p-3">
+            <div key={step.key} className="forest-mission-card">
               <p className="text-xs font-bold text-ink">{index + 1}. {step.title}</p>
               <p className="text-[11px] text-ink-light mt-1 leading-relaxed">{step.helper}</p>
             </div>
           ))}
         </div>
 
-        <div className="sticker bg-white">
+        <div className="forest-panel">
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && <div className="px-4 py-2 bg-crayon-pink/50 rounded-lg text-sm text-ink">{error}</div>}
             {successMessage && <div className="px-4 py-2 bg-crayon-green/30 rounded-lg text-sm text-ink">{successMessage}</div>}
