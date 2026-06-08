@@ -20,7 +20,10 @@ export async function GET() {
 
   try {
     const answers = await prisma.answer.findMany({
-      where: { status: "PENDING" },
+      where: {
+        status: "PENDING",
+        videoUrl: { not: "" },
+      },
       orderBy: { createdAt: "desc" },
       include: {
         lecturer: { select: { name: true, grade: true } },

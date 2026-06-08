@@ -24,7 +24,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     if (action === "approve") {
       const answer = await prisma.answer.update({
         where: { id: params.id },
-        data: { status: "APPROVED" },
+        data: { status: "APPROVED", reviewStatus: "APPROVED" },
       });
       // 给小讲师记录私密“讲解成长能量”，不直接兑换身份星级
       await prisma.$transaction([
@@ -57,7 +57,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     } else {
       await prisma.answer.update({
         where: { id: params.id },
-        data: { status: "REJECTED" },
+        data: { status: "REJECTED", reviewStatus: "REJECTED" },
       });
       return NextResponse.json({ message: "已拒绝" });
     }

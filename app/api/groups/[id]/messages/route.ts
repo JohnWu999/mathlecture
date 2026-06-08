@@ -6,27 +6,76 @@ import { buildProjectArtifactDraft, isProjectSubmissionContent } from "@/lib/rev
 
 export const dynamic = "force-dynamic";
 
+type SessionUser = {
+  id: string;
+  role?: string | null;
+};
+
+async function assertGroupAccess(groupId: string, sessionUser: SessionUser) {
+  const group = await prisma.group.findUnique({
+    where: { id: groupId },
+    include: {
+      project: {
+        select: {
+          id: true,
+          title: true,
+          durationDays: true,
+          knowledgeTags: true,
+          projectType: true,
+        },
+      },
+      _count: { select: { members: true } },
+    },
+  });
+
+  if (!group) {
+    return { error: "小组不存在", status: 404 as const };
+  }
+
+  if (sessionUser.role === "TEACHER" || sessionUser.role === "ADMIN") {
+    return { group };
+  }
+
+  const membership = await prisma.groupMember.findFirst({
+    where: { groupId, userId: sessionUser.id },
+    select: { id: true },
+  });
+  if (membership) {
+    return { group };
+  }
+
+  const activeProjectAccess = await prisma.userProjectAccess.findFirst({
+    where: {
+      userId: sessionUser.id,
+      status: "ACTIVE",
+      OR: [
+        { projectId: group.projectId },
+        { projectId: null },
+      ],
+    },
+    select: { id: true },
+  });
+  if (activeProjectAccess) {
+    return { group };
+  }
+
+  return { error: "无权访问这个小组协作空间", status: 403 as const };
+}
+
 // GET: 获取小组协作空间信息与消息
 export async function GET(req: Request, { params }: { params: { id: string } }) {
-  try {
-    const group = await prisma.group.findUnique({
-      where: { id: params.id },
-      include: {
-        project: {
-          select: {
-            id: true,
-            title: true,
-            durationDays: true,
-            knowledgeTags: true,
-            projectType: true,
-          },
-        },
-        _count: { select: { members: true } },
-      },
-    });
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "请先登录" }, { status: 401 });
+  }
 
-    if (!group) {
-      return NextResponse.json({ error: "小组不存在" }, { status: 404 });
+  try {
+    const access = await assertGroupAccess(params.id, {
+      id: session.user.id,
+      role: session.user.role,
+    });
+    if ("error" in access) {
+      return NextResponse.json({ error: access.error }, { status: access.status });
     }
 
     const messages = await prisma.message.findMany({
@@ -38,7 +87,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       take: 100,
     });
 
-    return NextResponse.json({ group, messages });
+    return NextResponse.json({ group: access.group, messages });
   } catch (error) {
     console.error("获取小组协作空间失败:", error);
     return NextResponse.json({ error: "获取失败" }, { status: 500 });
@@ -58,12 +107,12 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       return NextResponse.json({ error: "协作记录不能为空" }, { status: 400 });
     }
 
-    const group = await prisma.group.findUnique({
-      where: { id: params.id },
-      select: { id: true, projectId: true },
+    const access = await assertGroupAccess(params.id, {
+      id: session.user.id,
+      role: session.user.role,
     });
-    if (!group) {
-      return NextResponse.json({ error: "小组不存在" }, { status: 404 });
+    if ("error" in access) {
+      return NextResponse.json({ error: access.error }, { status: access.status });
     }
 
     const cleanContent = content.trim();
@@ -82,8 +131,8 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     if (isProjectSubmissionContent(cleanContent)) {
       const draft = buildProjectArtifactDraft({
         messageId: message.id,
-        groupId: group.id,
-        projectId: group.projectId,
+        groupId: access.group.id,
+        projectId: access.group.projectId,
         authorId: session.user.id,
         content: cleanContent,
       });

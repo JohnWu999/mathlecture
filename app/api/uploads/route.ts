@@ -29,6 +29,9 @@ export async function POST(req: Request) {
     if (!ALLOWED_KINDS.has(kind)) {
       return NextResponse.json({ error: "未知上传类型" }, { status: 400 });
     }
+    if (kind === "consultation-qr" && session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "只有管理员可以上传咨询二维码" }, { status: 403 });
+    }
     if (!(file instanceof File)) {
       return NextResponse.json({ error: "请选择要上传的文件" }, { status: 400 });
     }
