@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/navbar";
 import { getPostLoginRedirectPath } from "@/lib/login-redirect-rules";
+import { PUBLIC_PROFILE_HREF } from "@/lib/public-entry-hrefs.mjs";
 
 export default function LoginPage() {
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -36,7 +37,12 @@ export default function LoginPage() {
     }
 
     const session = await getSession();
-    router.push(getPostLoginRedirectPath(session?.user?.role));
+    const redirectPath = getPostLoginRedirectPath(session?.user?.role);
+    if (redirectPath === "/profile") {
+      window.location.assign(PUBLIC_PROFILE_HREF);
+      return;
+    }
+    router.push(redirectPath);
     router.refresh();
   };
 
