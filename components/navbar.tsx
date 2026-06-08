@@ -55,6 +55,17 @@ export default function Navbar() {
           ))}
         </div>
 
+        <div className="mobile-quick-links" aria-label="手机分页导航">
+          {mainLinks.map((link, index) => (
+            <span className="mobile-quick-item" key={link.href}>
+              <Link href={link.href} className={isActive(link.href) ? "active" : ""}>
+                {link.label}
+              </Link>
+              {index < mainLinks.length - 1 && <span className="mobile-separator" aria-hidden="true">｜</span>}
+            </span>
+          ))}
+        </div>
+
         <div className="nav-actions">
           <Link className="ask" href="/qa/ask">我要提问</Link>
           {status === "loading" ? (
@@ -126,6 +137,7 @@ export default function Navbar() {
         }
         .forest-navlinks a,
         .mobile-menu a,
+        .mobile-quick-links a,
         .login,
         .logout {
           color: inherit;
@@ -138,6 +150,34 @@ export default function Navbar() {
         }
         .forest-navlinks a.active {
           box-shadow: inset 0 -8px 0 rgba(255, 209, 102, 0.62);
+        }
+        .mobile-quick-links {
+          display: none;
+          align-items: center;
+          justify-content: center;
+          gap: 0;
+          flex: 1;
+          min-width: 0;
+          color: rgba(24, 70, 56, 0.74);
+          font-size: 13px;
+          font-weight: 900;
+          white-space: nowrap;
+        }
+        .mobile-quick-item {
+          display: inline-flex;
+          align-items: center;
+          min-width: 0;
+        }
+        .mobile-quick-links a.active {
+          color: #184638;
+          box-shadow: inset 0 -6px 0 rgba(255, 209, 102, 0.52);
+        }
+        .mobile-separator {
+          display: inline-flex;
+          align-items: center;
+          padding: 0 4px;
+          color: rgba(24, 70, 56, 0.32);
+          font-weight: 700;
         }
         .nav-actions {
           display: flex;
@@ -215,10 +255,13 @@ export default function Navbar() {
         }
         @media (max-width: 620px) {
           .forest-site-nav { min-height: 68px; }
-          .nav-inner { height: 68px; gap: 10px; }
-          .forest-brand svg { width: 46px; }
-          .forest-brand span { font-size: 16px; }
-          .login, .logout { padding: 8px 11px; font-size: 13px; }
+          .nav-inner { height: 68px; gap: 8px; padding: 0 12px; }
+          .forest-brand { gap: 7px; }
+          .forest-brand svg { width: 36px; height: 28px; }
+          .forest-brand span { display: none; }
+          .mobile-quick-links { display: flex; }
+          .login, .logout { display: none; }
+          .menu-button { width: 38px; height: 38px; border-radius: 14px; flex: 0 0 auto; }
         }
       `}</style>
     </nav>

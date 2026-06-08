@@ -27,14 +27,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen paper-grid relative">
-        {/* 数学涂鸦背景 - 30%面积，只在角落/边缘 */}
-        <div className="math-doodle-bg" aria-hidden="true" />
-        <div className="math-doodle-corner-bl" aria-hidden="true" />
-        <div className="math-doodle-corner-br" aria-hidden="true" />
-        <div className="math-doodle-mid-left" aria-hidden="true">+</div>
-        <div className="math-doodle-mid-right" aria-hidden="true">×</div>
-
+      <body className="min-h-screen relative">
         <SecurityGuard />
         <Providers>{children}</Providers>
 

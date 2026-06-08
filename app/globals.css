@@ -50,7 +50,7 @@
    全局基础
    ========================================== */
 body {
-  background-color: var(--paper-color);
+  background-color: var(--v2-morning-paper, #FFF8EA);
   color: var(--ink-color);
   font-family: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
   line-height: 1.6;
@@ -1426,4 +1426,22 @@ p {
   background: rgba(255,255,255,.72) !important;
   color: rgba(33,72,58,.48) !important;
   box-shadow: none !important;
+}
+
+
+/* ==========================================
+   Stage0-F｜清除 RootLayout 旧背景兜底
+   目标：旧 paper-grid / math-doodle 背景不再参与全站分页渲染。
+   ========================================== */
+.paper-grid {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+.math-doodle-bg,
+.math-doodle-corner-bl,
+.math-doodle-corner-br,
+.math-doodle-mid-left,
+.math-doodle-mid-right {
+  display: none !important;
+  background: none !important;
 }
