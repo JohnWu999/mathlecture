@@ -90,7 +90,7 @@ export default function Navbar() {
               ) : (
                 <Link href={personalCenterHref} className="login">{session.user.name || session.user.phone}</Link>
               )}
-              <button className="logout" onClick={() => signOut({ callbackUrl: "/" })}>退出</button>
+              <button className="logout" onClick={() => signOut({ callbackUrl: "/math-young-lecturer/login" })}>退出登录</button>
             </>
           ) : (
             <Link className="login" href="/login">登录</Link>

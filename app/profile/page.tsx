@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import Navbar from "@/components/navbar";
 import {
@@ -192,6 +192,11 @@ export default function ProfilePage() {
                   {user.region && <span className="hand-badge hand-badge-white text-xs">{user.region}</span>}
                   {!user.isActive && <span className="hand-badge hand-badge-pink text-xs">待老师开放权限</span>}
                 </div>
+                <button
+                  type="button"
+                  onClick={() => signOut({ callbackUrl: "/math-young-lecturer/login" })}
+                  className="hand-btn hand-btn-white text-xs mt-4 inline-flex"
+                >退出登录</button>
               </div>
             </div>
             <div className="forest-info-card bg-white/80 text-center min-w-[190px]">
