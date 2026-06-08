@@ -67,7 +67,7 @@ export default function QAPage() {
       <section className="forest-page-content">
         <div className="forest-page-hero flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div>
-            <p className="forest-page-eyebrow">🌱 问题种子 → 讲解长高</p>
+            <p className="forest-page-eyebrow"><span className="forest-v2-icon forest-icon-seed !w-8 !h-8" aria-hidden="true" />问题发芽 → 讲解长高</p>
             <h1 className="forest-page-title handwritten-title infinity-title" style={{ color: "#3E2723" }}>你问我答</h1>
             <p className="forest-page-subtitle" style={{ color: "#5D4E44" }}>
               把一个卡住的地方说出来，让同伴的讲解帮它长成清楚的思路。
@@ -75,20 +75,23 @@ export default function QAPage() {
           </div>
           <div className="flex gap-3 flex-wrap">
             <Link href="/qa/ask" className="hand-btn hand-btn-yellow">
-              🙋 我要提问
+              我要提问
             </Link>
             <a href="#claimable" className="hand-btn hand-btn-green">
-              🎤 去认领一道题
+              去认领一道题
             </a>
           </div>
         </div>
 
-        <div className="forest-panel">
-          <p className="text-sm text-ink font-medium">🌱 温暖提示</p>
-          <p className="text-sm text-ink-light mt-1">{listRule}</p>
-          <p className="text-xs text-ink-light mt-2">未审核问题不会公开；操作时需要登录，但浏览问题不需要。</p>
+        <div className="forest-info-card">
+          <span className="forest-v2-icon forest-icon-note" aria-hidden="true" />
+          <div>
+            <p className="text-sm text-ink font-medium">温暖提示</p>
+            <p className="text-sm text-ink-light mt-1">{listRule}</p>
+            <p className="text-xs text-ink-light mt-2">未审核问题不会公开；操作时需要登录，但浏览问题不需要。</p>
+          </div>
         </div>
-        {notice && <div className="forest-panel bg-crayon-green/20 text-sm text-ink">{notice}</div>}
+        {notice && <div className="forest-note-card mb-6 text-sm text-ink">{notice}</div>}
 
         <hr className="infinity-divider mb-8" />
 
@@ -96,7 +99,7 @@ export default function QAPage() {
           <div className="text-center py-12" style={{ color: "#8D7E72" }}>加载中...</div>
         ) : questions.length === 0 ? (
           <div className="forest-empty">
-            <div className="text-4xl mb-3">🌱</div>
+            <span className="forest-v2-icon forest-icon-seed mb-3" aria-hidden="true" />
             <p className="font-medium" style={{ color: "#3E2723" }}>暂时没有开放认领的问题</p>
             <p className="text-sm mt-1" style={{ color: "#8D7E72" }}>你可以先提出一个好问题，等老师审核后再开放给小讲师。</p>
           </div>
@@ -127,7 +130,7 @@ export default function QAPage() {
                   <div className="mt-3 flex items-center justify-between gap-3 flex-wrap border-t border-ink/10 pt-3">
                     <p className="text-xs text-ink-light max-w-xl">{heatPrompt.helper}</p>
                     <button onClick={() => handleHeat(q.id)} className="hand-btn hand-btn-white text-xs">
-                      🔥 {heatPrompt.label}
+                      {heatPrompt.label}
                     </button>
                   </div>
                 </article>

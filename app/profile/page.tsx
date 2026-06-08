@@ -101,7 +101,7 @@ export default function ProfilePage() {
       <main className="forest-page-shell">
         <Navbar />
         <div className="text-center py-20">
-          <div className="text-4xl mb-3">🚫</div>
+          <span className="forest-v2-icon forest-icon-note mb-3" aria-hidden="true" />
           <p className="text-ink font-medium">该页面只对学习者账号开放</p>
           <p className="text-ink-light text-sm mt-1">老师和管理员请使用各自工作台；如需切换身份，请退出后登录对应账号。</p>
         </div>
@@ -146,7 +146,7 @@ export default function ProfilePage() {
           <div className="absolute -right-8 -top-10 text-8xl opacity-20">∞</div>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 relative z-10">
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full bg-white/70 border-2 border-ink/10 flex items-center justify-center text-4xl shadow-soft">👤</div>
+              <span className="forest-v2-icon forest-icon-passport !w-20 !h-20" aria-hidden="true" />
               <div>
                 <p className="forest-page-eyebrow">成长护照 · 我的成长护照</p>
                 <h1 className="forest-page-title handwritten-title">{user.name || "小朋友"}</h1>
@@ -154,11 +154,11 @@ export default function ProfilePage() {
                 <div className="flex gap-2 mt-3 flex-wrap">
                   {user.grade && <span className="hand-badge hand-badge-white text-xs">{user.grade}年级</span>}
                   {user.region && <span className="hand-badge hand-badge-white text-xs">{user.region}</span>}
-                  {!user.isActive && <span className="hand-badge hand-badge-pink text-xs">⏳ 待老师开放权限</span>}
+                  {!user.isActive && <span className="hand-badge hand-badge-pink text-xs">待老师开放权限</span>}
                 </div>
               </div>
             </div>
-            <div className="forest-panel bg-white/80 text-center min-w-[190px]">
+            <div className="forest-info-card bg-white/80 text-center min-w-[190px]">
               <p className="text-xs text-ink-light">{energyCopy.title}</p>
               <p className="text-4xl font-bold text-ink handwritten-title my-1">{totalGrowthEnergy}</p>
               <p className="text-xs text-ink-light">只在成长护照里私密查看，不排名</p>
@@ -167,10 +167,10 @@ export default function ProfilePage() {
         </div>
 
         <div className="grid lg:grid-cols-[1.4fr_0.9fr] gap-6 mb-6">
-          <section className="forest-panel">
+          <section className="forest-info-card">
             <div className="flex items-start justify-between gap-4 mb-4">
               <div>
-                <h2 className="font-bold text-ink text-lg">⚡ {energyCopy.title}</h2>
+                <h2 className="font-bold text-ink text-lg">{energyCopy.title}</h2>
                 <p className="text-sm text-ink-light mt-1">{energyCopy.current}</p>
               </div>
               <span className="hand-badge hand-badge-green text-xs">私密记录</span>
@@ -180,20 +180,20 @@ export default function ProfilePage() {
               <div className="rounded-2xl bg-crayon-green/15 p-4 border border-ink/5">
                 <h3 className="text-sm font-bold text-ink mb-2">成长能量从哪里来</h3>
                 <ul className="space-y-2">
-                  {GROWTH_ENERGY_SOURCES.map((item) => <li key={item} className="text-xs text-ink-light leading-relaxed">🌿 {item}</li>)}
+                  {GROWTH_ENERGY_SOURCES.map((item) => <li key={item} className="text-xs text-ink-light leading-relaxed">{item}</li>)}
                 </ul>
               </div>
               <div className="rounded-2xl bg-crayon-blue/15 p-4 border border-ink/5">
                 <h3 className="text-sm font-bold text-ink mb-2">成长能量有什么用</h3>
                 <ul className="space-y-2">
-                  {GROWTH_ENERGY_USES.map((item) => <li key={item} className="text-xs text-ink-light leading-relaxed">✨ {item}</li>)}
+                  {GROWTH_ENERGY_USES.map((item) => <li key={item} className="text-xs text-ink-light leading-relaxed">{item}</li>)}
                 </ul>
               </div>
             </div>
           </section>
 
-          <section className="forest-panel bg-crayon-yellow/30">
-            <h2 className="font-bold text-ink mb-3">🧭 给孩子和家长看的说明</h2>
+          <section className="forest-note-card bg-crayon-yellow/30">
+            <h2 className="font-bold text-ink mb-3">给孩子和家长看的说明</h2>
             <div className="space-y-3 text-sm text-ink-light leading-relaxed">
               <p><strong className="text-ink">孩子：</strong>{safetyCopy.child}</p>
               <p><strong className="text-ink">家长：</strong>{safetyCopy.parent}</p>
@@ -204,7 +204,7 @@ export default function ProfilePage() {
 
         <section className="mb-6">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="font-bold text-ink text-lg">🌲 三棵成长小树</h2>
+            <h2 className="font-bold text-ink text-lg">三棵成长小树</h2>
             <p className="text-xs text-ink-light">星级来自有效行为与老师审核，不是积分兑换。</p>
           </div>
           <div className="grid md:grid-cols-3 gap-4">
@@ -228,10 +228,10 @@ export default function ProfilePage() {
 
         <section className="grid lg:grid-cols-[1fr_1fr] gap-6 mb-6">
           <div className="forest-panel">
-            <h2 className="font-bold text-ink mb-3">📒 最近成长能量记录</h2>
+            <h2 className="font-bold text-ink mb-3">最近成长能量记录</h2>
             {recentTransactions.length === 0 ? (
               <div className="text-center py-8">
-                <div className="text-4xl mb-2">🌱</div>
+                <span className="forest-v2-icon forest-icon-seed mb-2" aria-hidden="true" />
                 <p className="text-sm text-ink-light">还没有成长能量记录。提出一个清楚的问题，就是很好的开始。</p>
                 <Link href="/qa/ask" className="hand-btn hand-btn-green text-xs mt-4 inline-block">去提出一个问题</Link>
               </div>
@@ -260,7 +260,7 @@ export default function ProfilePage() {
           </div>
 
           <div className="forest-panel">
-            <h2 className="font-bold text-ink mb-3">🏅 能力徽章</h2>
+            <h2 className="font-bold text-ink mb-3">能力徽章</h2>
             {badges.length === 0 ? (
               <div className="text-center py-8 text-sm text-ink-light">
                 <div className="text-4xl mb-2">🪐</div>
@@ -282,25 +282,25 @@ export default function ProfilePage() {
 
         <section className="grid md:grid-cols-4 gap-4">
           <div className="forest-panel">
-            <h2 className="font-bold text-ink mb-3">🙋 我的提问</h2>
+            <h2 className="font-bold text-ink mb-3">我的提问</h2>
             {questions.length === 0 ? <p className="text-sm text-ink-light">还没有提问</p> : questions.slice(0, 5).map((q) => (
-              <Link key={q.id} href={`/qa/question/${q.id}`} className="block text-sm text-ink-light hover:text-ink mb-2 truncate">🌱 {q.title}</Link>
+              <Link key={q.id} href={`/qa/question/${q.id}`} className="block text-sm text-ink-light hover:text-ink mb-2 truncate">{q.title}</Link>
             ))}
           </div>
           <div className="forest-panel">
-            <h2 className="font-bold text-ink mb-3">🎤 我的小讲师视频</h2>
+            <h2 className="font-bold text-ink mb-3">我的小讲师视频</h2>
             {answers.length === 0 ? <p className="text-sm text-ink-light">还没有讲题视频</p> : answers.slice(0, 5).map((a) => (
-              <div key={a.id} className="text-sm text-ink-light mb-2 truncate">🎤 {a.question.title}</div>
+              <div key={a.id} className="text-sm text-ink-light mb-2 truncate">{a.question.title}</div>
             ))}
           </div>
           <div className="forest-panel">
-            <h2 className="font-bold text-ink mb-3">🎯 我的项目与作品</h2>
+            <h2 className="font-bold text-ink mb-3">我的项目与作品</h2>
             {registrations.length === 0 ? <p className="text-sm text-ink-light">还没有报名项目</p> : registrations.slice(0, 5).map((r) => (
-              <div key={r.id} className="text-sm text-ink-light mb-2 truncate">🌳 {r.project.title}</div>
+              <div key={r.id} className="text-sm text-ink-light mb-2 truncate">{r.project.title}</div>
             ))}
           </div>
-          <div className="forest-card sticker-yellow">
-            <h2 className="font-bold text-ink mb-3">🎟️ 我的项目权限</h2>
+          <div className="forest-note-card">
+            <h2 className="font-bold text-ink mb-3">我的项目权限</h2>
             {projectAccesses.length === 0 ? <p className="text-sm text-ink-light">还没有项目包记录。开通由管理员后台登记，老师不处理付费权益。</p> : projectAccesses.slice(0, 5).map((access) => {
               const copy = getLearnerProjectAccessCopy({ packageType: access.packageType, status: access.status, projectTitle: access.project?.title || "项目营" });
               return (

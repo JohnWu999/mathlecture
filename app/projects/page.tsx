@@ -46,19 +46,17 @@ export default function ProjectsPage() {
       <Navbar />
       <section className="forest-page-content">
         <div className="forest-page-hero text-center">
-          <div className="inline-block sticker sticker-yellow mb-3">
-            <span className="text-3xl">🌳</span>
-          </div>
+          <span className="forest-v2-icon forest-icon-grove mb-3" aria-hidden="true" />
           <h1 className="forest-page-title handwritten-title infinity-title">森林任务 · {PROJECT_CAMP_COPY.title}</h1>
           <p className="mt-2 max-w-2xl mx-auto text-ink-light leading-relaxed">
             {PROJECT_CAMP_COPY.subtitle}
           </p>
           <p className="mt-3 max-w-3xl mx-auto text-sm text-ink-light">
-            {PROJECT_CAMP_COPY.intro}
+            {PROJECT_CAMP_COPY.intro} 让项目成林，而不是把项目做成课程货架。
           </p>
         </div>
 
-        <div className="forest-panel flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+        <div className="forest-info-card flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
           <div>
             <p className="font-bold text-ink">项目卡怎么看？</p>
             <p className="text-sm text-ink-light mt-1">{PROJECT_CAMP_COPY.safetyNote}</p>
@@ -74,7 +72,7 @@ export default function ProjectsPage() {
           <div className="text-center py-12 text-ink-light">加载项目森林中...</div>
         ) : projects.length === 0 ? (
           <div className="forest-empty">
-            <div className="text-4xl mb-3">🛣️</div>
+            <span className="forest-v2-icon forest-icon-grove mb-3" aria-hidden="true" />
             <p className="font-medium text-ink">暂时没有开放的项目</p>
             <p className="text-sm mt-1 text-ink-light">{PROJECT_CAMP_COPY.empty}</p>
           </div>
@@ -99,7 +97,7 @@ export default function ProjectsPage() {
                     {p.coverImage ? (
                       <img src={p.coverImage} alt={p.title} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-5xl">🌲</span>
+                      <span className="forest-cover-glyph forest-cover-project" aria-hidden="true" />
                     )}
                     <span className={`absolute left-4 top-4 hand-badge ${type.badgeClass} text-xs`}>
                       {type.label}
@@ -117,7 +115,7 @@ export default function ProjectsPage() {
                       <span className="hand-badge hand-badge-yellow text-xs">{formatProjectValidity(p.validUntil)}</span>
                     </div>
 
-                    <div className="forest-mission-card">
+                    <div className="forest-note-card">
                       <p className="text-xs font-bold text-ink mb-1">{readiness.title}</p>
                       <p className="text-xs text-ink-light leading-relaxed">{readiness.summary}</p>
                       <div className="flex flex-wrap gap-1 mt-2">

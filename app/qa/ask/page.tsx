@@ -111,14 +111,14 @@ export default function AskPage() {
       <Navbar />
       <section className="forest-page-content forest-page-content-narrow">
         <div className="forest-page-hero text-center">
-          <div className="inline-block sticker bg-crayon-yellow mb-3"><span className="text-3xl">🌱</span></div>
+          <span className="forest-v2-icon forest-icon-seed mb-3" aria-hidden="true" />
           <h1 className="forest-page-title handwritten-title infinity-title">我要提问</h1>
           <p className="text-ink-light mt-1">谢谢你把问题说出来。这里是问题种子站：先保护孩子的表达，再交给老师审核。</p>
         </div>
 
         <div className="forest-card-grid four mb-6">
           {QUESTION_FORM_STEPS.map((step, index) => (
-            <div key={step.key} className="forest-mission-card">
+            <div key={step.key} className="forest-note-card">
               <p className="text-xs font-bold text-ink">{index + 1}. {step.title}</p>
               <p className="text-[11px] text-ink-light mt-1 leading-relaxed">{step.helper}</p>
             </div>
@@ -127,8 +127,8 @@ export default function AskPage() {
 
         <div className="forest-panel">
           <form onSubmit={handleSubmit} className="space-y-5">
-            {error && <div className="px-4 py-2 bg-crayon-pink/50 rounded-lg text-sm text-ink">{error}</div>}
-            {successMessage && <div className="px-4 py-2 bg-crayon-green/30 rounded-lg text-sm text-ink">{successMessage}</div>}
+            {error && <div className="forest-note-card text-sm text-ink">{error}</div>}
+            {successMessage && <div className="forest-note-card text-sm text-ink">{successMessage}</div>}
 
             <div>
               <label className="block text-sm font-medium text-ink mb-1">上传题目照片</label>
@@ -195,7 +195,7 @@ export default function AskPage() {
             <div className="space-y-3">
               <p className="text-sm font-medium text-ink">分享范围</p>
               {QUESTION_SHARE_OPTIONS.map((option) => (
-                <label key={option.value} className="block sticker sticker-white p-3 cursor-pointer border-2 border-ink/10">
+                <label key={option.value} className="block forest-note-card p-3 cursor-pointer">
                   <div className="flex gap-2 items-start">
                     <input type="radio" name="shareScope" value={option.value} checked={shareScope === option.value} onChange={(e) => setShareScope(e.target.value)} className="mt-1" />
                     <div>
@@ -214,7 +214,7 @@ export default function AskPage() {
             </label>
 
             <button type="submit" disabled={loading} className="hand-btn w-full bg-crayon-green text-ink disabled:opacity-50">
-              {uploadingImage ? "上传题目照片中..." : loading ? "提交给老师审核中..." : "✅ 提交问题，等待老师审核"}
+              {uploadingImage ? "上传题目照片中..." : loading ? "提交给老师审核中..." : "提交问题，等待老师审核"}
             </button>
           </form>
         </div>

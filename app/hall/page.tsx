@@ -63,7 +63,7 @@ export default function HallPage() {
       <Navbar />
       <section className="forest-page-content">
         <div className="forest-page-hero text-center">
-          <p className="text-sm text-ink-light">{OUTCOME_HALL_COPY.eyebrow}</p>
+          <p className="forest-page-eyebrow mx-auto"><span className="forest-v2-icon forest-icon-grove !w-8 !h-8" aria-hidden="true" />{OUTCOME_HALL_COPY.eyebrow}</p>
           <h1 className="forest-page-title handwritten-title infinity-title">森林展墙 · {OUTCOME_HALL_COPY.title}</h1>
           <p className="mt-3 max-w-2xl mx-auto text-ink-light leading-relaxed">
             {OUTCOME_HALL_COPY.subtitle}
@@ -73,17 +73,17 @@ export default function HallPage() {
 
         <div className="forest-card-grid three mb-6">
           {detailSections.map((section) => (
-            <div key={section.key} className="forest-mission-card">
+            <div key={section.key} className="forest-visual-card">
               <h2 className="font-bold text-ink text-sm">{section.title}</h2>
               <p className="text-xs text-ink-light leading-relaxed mt-1">{section.description}</p>
             </div>
           ))}
         </div>
 
-        <div className="forest-panel">
+        <div className="forest-info-card">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 className="font-bold text-ink">🌿 选择想看的成果</h2>
+              <h2 className="font-bold text-ink">选择想看的成果</h2>
               <p className="text-xs text-ink-light mt-1">{data?.authorizationRule || SHARE_AUTHORIZATION_COPY}</p>
             </div>
             <div className="forest-tabs flex flex-wrap gap-2">
@@ -98,7 +98,7 @@ export default function HallPage() {
                   type="button"
                   onClick={() => setActiveType(type.type as "QUESTION" | "LECTURE" | "PROJECT")}
                   className={`px-3 py-1.5 rounded-full text-sm border ${activeType === type.type ? "bg-ink text-paper border-ink" : "bg-parchment border-ink/10 text-ink"}`}
-                >{type.emoji} {type.label}</button>
+                >{type.label}</button>
               ))}
             </div>
           </div>
@@ -108,7 +108,7 @@ export default function HallPage() {
           <div className="text-center py-12 text-ink-light">加载成果森林中...</div>
         ) : visibleOutcomes.length === 0 ? (
           <div className="forest-empty">
-            <div className="text-4xl mb-3">🌱</div>
+            <span className="forest-v2-icon forest-icon-seed mb-3" aria-hidden="true" />
             <p className="text-ink-light">{getOutcomeEmptyCopy(activeType === "ALL" ? "LECTURE" : activeType)}</p>
           </div>
         ) : (
@@ -118,7 +118,7 @@ export default function HallPage() {
               return (
                 <article key={card.id} className="forest-card flex flex-col">
                   <div className={`h-36 ${card.coverTone} rounded-2xl mb-3 flex items-center justify-center relative overflow-hidden`}>
-                    <span className="text-5xl">{card.emoji}</span>
+                    <span className={`forest-cover-glyph forest-cover-${outcome.type.toLowerCase()}`} aria-hidden="true" />
                     <span className="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-white/80 text-xs font-bold text-ink">{card.typeLabel}</span>
                   </div>
                   <h3 className="font-bold text-ink leading-snug">{card.title}</h3>
