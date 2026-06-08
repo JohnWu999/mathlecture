@@ -6,6 +6,7 @@ import { useState } from "react";
 import Navbar from "@/components/navbar";
 import { growthMotifs } from "@/components/brand/growth-motifs";
 import { FlowArrow } from "@/components/home/flow-arrow";
+import { InternalTestBanner } from "@/components/home/internal-test-banner";
 import { TrustCard } from "@/components/home/trust-card";
 import { HOME_ACTIONS, PUBLIC_IDENTITIES, SITE, TRUST_ITEMS } from "@/lib/product-copy";
 import {
@@ -274,7 +275,7 @@ function FinalCta() {
           {HOME_ACTIONS.finalSubtitle}
         </p>
         <Link
-          href="/register"
+          href="/projects"
           className="btn-hand mt-6 inline-flex items-center justify-center"
           style={{
             padding: "12px 36px",
@@ -329,13 +330,17 @@ export default function HomePage() {
     <main className="min-h-screen relative">
       <MathDoodleLayer />
       <Navbar />
+      <InternalTestBanner />
 
-      <section className="relative z-10 px-4 pt-20 pb-20 text-center">
-        <h1 className="text-[40px] leading-tight" style={{ fontFamily: fonts.title, color: colors.ink }}>
-          {SITE.name}
+      <section className="relative z-10 px-4 pt-14 pb-20 text-center" id="growth-path">
+        <p className="mx-auto inline-flex items-center rounded-full px-4 py-2 text-[13px] font-bold" style={{ fontFamily: fonts.body, color: colors.green, background: "rgba(126, 200, 95, 0.16)", border: `1px dashed ${colors.border}` }}>
+          {SITE.audience} · {SITE.slogan}
+        </p>
+        <h1 className="mx-auto mt-5 max-w-4xl text-[42px] leading-tight md:text-[64px]" style={{ fontFamily: fonts.title, color: colors.ink }}>
+          {SITE.heroTitle}
         </h1>
-        <p className="mt-3 text-[12px]" style={{ fontFamily: fonts.body, color: colors.muted }}>
-          {SITE.audience}
+        <p className="mx-auto mt-4 max-w-2xl text-[16px] md:text-[19px]" style={{ fontFamily: fonts.body, color: colors.inkLight }}>
+          {SITE.heroSubtitle}
         </p>
         <StagePath expandedStage={expandedStage} onToggle={toggleStage} />
         <div className="mt-10 flex justify-center">

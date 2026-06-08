@@ -56,14 +56,14 @@ export const WARM_MICROCOPY = {
 
 
 export const HOME_ACTIONS = {
-  primary: { href: "/qa", label: "🙋 我要提问" },
-  secondary: { href: "/qa", label: "🎤 去认领一道题" },
+  primary: { href: "/qa/ask", label: "🙋 我要提问" },
+  secondary: { href: "#growth-path", label: "🌿 看孩子如何成长" },
   account: { login: "已有账号？", loginLabel: "登录", register: "新同学？", registerLabel: "注册" },
-  flowHints: ["先选身份", "家长放心", "加入吧！"],
+  flowHints: ["一个问题正在长大", "家长放心", "加入内测"],
   trustTitle: "家长最关心的三件事",
-  finalTitle: "准备好加入了吗？",
-  finalSubtitle: "小学一、二年级种子用户招募中",
-  finalCta: "立即报名",
+  finalTitle: "先用内测版把真实动线跑顺",
+  finalSubtitle: "当前阶段不追求更多占位，优先验证每个按钮是否有真实结果、后台是否能追踪。",
+  finalCta: "进入项目营看看",
 } as const;
 
 export const TRUST_ITEMS = [
