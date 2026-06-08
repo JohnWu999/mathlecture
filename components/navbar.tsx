@@ -15,7 +15,7 @@ const mainLinks = [
 
 function LogoMark() {
   return (
-    <svg viewBox="0 0 140 86" aria-label="两个孩子握手形成无限符号">
+    <svg className="brand-logo-mark" viewBox="0 0 140 86" aria-label="两个孩子握手形成无限符号">
       <path
         d="M20 43C36 10 62 11 70 43C78 75 104 76 120 43C104 10 78 11 70 43C62 75 36 76 20 43Z"
         fill="none"
@@ -124,7 +124,7 @@ export default function Navbar() {
           color: #184638;
           text-decoration: none;
         }
-        .forest-brand svg { width: 56px; height: 38px; }
+        .forest-brand :global(.brand-logo-mark) { width: 56px; height: 38px; }
         .forest-navlinks {
           display: flex;
           align-items: center;
@@ -279,12 +279,12 @@ export default function Navbar() {
             line-height: 1.05;
             text-align: right;
           }
-          .forest-brand svg {
-            width: 18px;
-            height: 12px;
-            max-width: 18px;
-            max-height: 12px;
-            flex: 0 0 18px;
+          .forest-brand :global(.brand-logo-mark) {
+            width: 14px;
+            height: 9px;
+            max-width: 14px;
+            max-height: 9px;
+            flex: 0 0 14px;
             display: block;
           }
           .forest-brand span {
