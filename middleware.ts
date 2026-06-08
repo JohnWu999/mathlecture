@@ -110,8 +110,6 @@ export const config = {
     "/admin",
     "/teacher/:path*",
     "/teacher",
-    "/profile/:path*",
-    "/profile",
     "/qa/:path*",
     "/projects/:path*",
     "/hall/:path*",

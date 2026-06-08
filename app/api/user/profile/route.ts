@@ -35,6 +35,10 @@ export async function GET() {
       },
     });
 
+    if (!user) {
+      return NextResponse.json({ error: "账号不存在或已被移除，请重新登录" }, { status: 404 });
+    }
+
     const questions = await prisma.question.findMany({
       where: { authorId: session.user.id },
       orderBy: { createdAt: "desc" },
