@@ -14,7 +14,8 @@ function phoneBlock() {
 
 test('profile page shell can open directly while profile API remains protected', () => {
   const matcherBlock = middleware.match(/matcher:\s*\[[\s\S]*?\]/)?.[0] ?? '';
-  assert.doesNotMatch(matcherBlock, /"\/profile(?::\/path\*)?"|"\/profile"/, 'middleware should not intercept /profile page shell; page itself shows login/role guidance');
+  assert.match(matcherBlock, /"\/profile"/, 'middleware may cover /profile shell for cache-control, but must not force-login redirect it');
+  assert.match(middleware, /NO_STORE_PAGE_PATHS[\s\S]*"\/profile"/, 'profile shell should be no-store so mobile browsers do not keep stale login/profile chunks');
   assert.match(matcherBlock, /"\/api\/:path\*"/, 'protected profile data API should still be covered by API middleware');
   assert.match(profileApi, /if \(!user\)\s*\{[\s\S]*?status:\s*404/, 'profile API should handle stale sessions whose user no longer exists instead of returning null data that crashes the page');
 });
