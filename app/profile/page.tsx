@@ -51,8 +51,8 @@ interface ProfileData {
     createdAt: string;
   };
   questions: { id: string; title: string; status: string; createdAt: string }[];
-  answers: { id: string; videoUrl: string; status: string; question: { title: string } }[];
-  registrations: { id: string; status: string; project: { title: string; status: string } }[];
+  answers: { id: string; videoUrl: string; status: string; question?: { title: string } | null }[];
+  registrations: { id: string; status: string; project?: { title: string; status: string } | null }[];
   badges: { id: string; awardedAt: string; badge: { name: string; description: string; iconUrl: string | null } }[];
   growthEnergy?: {
     total: number;
@@ -66,25 +66,47 @@ interface ProfileData {
 }
 
 export default function ProfilePage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileError, setProfileError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!session?.user) {
+    if (status === "loading") {
+      return;
+    }
+    if (status !== "authenticated" || !session?.user) {
+      setProfile(null);
+      setProfileError(null);
       setLoading(false);
       return;
     }
+    setLoading(true);
+    setProfileError(null);
     fetch("/math-young-lecturer/api/user/profile")
-      .then((r) => r.json())
+      .then(async (r) => {
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) {
+          throw new Error(typeof data?.error === "string" ? data.error : "个人中心资料暂时读取失败");
+        }
+        return data;
+      })
       .then((data) => {
         setProfile(data);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
-  }, [session]);
+      .catch((error) => {
+        setProfileError(error instanceof Error ? error.message : "个人中心资料暂时读取失败");
+        setProfile(null);
+        setLoading(false);
+      });
+  }, [session, status]);
 
-  if (!session?.user) {
+  if (status === "loading") {
+    return <main className="forest-page-shell"><Navbar /><div className="text-center py-20 text-ink-light">正在确认登录状态...</div></main>;
+  }
+
+  if (status !== "authenticated" || !session?.user) {
     return (
       <main className="forest-page-shell">
         <Navbar />
@@ -114,7 +136,19 @@ export default function ProfilePage() {
   }
 
   if (!profile) {
-    return <main className="forest-page-shell"><Navbar /><div className="text-center py-20 text-ink-light">获取失败</div></main>;
+    return (
+      <main className="forest-page-shell">
+        <Navbar />
+        <section className="forest-page-content">
+          <div className="forest-empty">
+            <span className="forest-v2-icon forest-icon-passport mb-3" aria-hidden="true" />
+            <p className="font-medium text-ink">个人中心暂时没有取到完整资料</p>
+            <p className="text-sm mt-1 text-ink-light">{profileError || "请稍后刷新重试；如果刚刚完成注册或权限调整，老师后台会继续核对。"}</p>
+            <Link href="/projects" className="hand-btn hand-btn-green text-xs mt-4 inline-block">先回项目营</Link>
+          </div>
+        </section>
+      </main>
+    );
   }
 
   const { user, questions, answers, registrations, badges } = profile;
@@ -290,13 +324,13 @@ export default function ProfilePage() {
           <div className="forest-panel">
             <h2 className="font-bold text-ink mb-3">我的小讲师视频</h2>
             {answers.length === 0 ? <p className="text-sm text-ink-light">还没有讲题视频</p> : answers.slice(0, 5).map((a) => (
-              <div key={a.id} className="text-sm text-ink-light mb-2 truncate">{a.question.title}</div>
+              <div key={a.id} className="text-sm text-ink-light mb-2 truncate">{a.question?.title || "讲题记录待补全"}</div>
             ))}
           </div>
           <div className="forest-panel">
             <h2 className="font-bold text-ink mb-3">我的项目与作品</h2>
             {registrations.length === 0 ? <p className="text-sm text-ink-light">还没有报名项目</p> : registrations.slice(0, 5).map((r) => (
-              <div key={r.id} className="text-sm text-ink-light mb-2 truncate">{r.project.title}</div>
+              <div key={r.id} className="text-sm text-ink-light mb-2 truncate">{r.project?.title || "项目记录待补全"}</div>
             ))}
           </div>
           <div className="forest-note-card">
