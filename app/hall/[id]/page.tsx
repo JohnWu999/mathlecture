@@ -51,21 +51,21 @@ export default function OutcomeDetailPage() {
   const sections = getOutcomeDetailSections({ type: outcome?.type || "LECTURE" });
 
   return (
-    <main className="min-h-screen">
+    <main className="forest-page-shell">
       <Navbar />
-      <section className="px-6 pt-8 pb-16 max-w-5xl mx-auto relative z-10">
+      <section className="forest-page-content relative z-10">
         <Link href="/hall" className="text-sm text-ink-light hover:text-ink">← 回到成果广场</Link>
 
         {loading ? (
           <div className="text-center py-12 text-ink-light">加载成果详情中...</div>
         ) : error || !outcome || !card ? (
-          <div className="sticker bg-white text-center py-10 mt-6">
+          <div className="forest-empty bg-white text-center py-10 mt-6">
             <div className="text-4xl mb-3">🌱</div>
             <p className="text-ink-light">{error || "成果暂时不可公开查看。"}</p>
           </div>
         ) : (
           <div className="mt-6 space-y-6">
-            <div className="sticker bg-crayon-green/45">
+            <div className="forest-detail-hero">
               <div className="flex flex-col md:flex-row gap-5 md:items-center">
                 <div className={`w-full md:w-56 h-40 ${card.coverTone} rounded-2xl flex items-center justify-center relative overflow-hidden`}>
                   <span className="text-6xl">{card.emoji}</span>
@@ -82,7 +82,7 @@ export default function OutcomeDetailPage() {
 
             <div className="grid md:grid-cols-3 gap-4">
               {sections.map((section) => (
-                <div key={section.key} className="sticker bg-white">
+                <div key={section.key} className="forest-card">
                   <h2 className="font-bold text-ink text-sm">{section.title}</h2>
                   <p className="text-xs text-ink-light leading-relaxed mt-1">{section.description}</p>
                 </div>

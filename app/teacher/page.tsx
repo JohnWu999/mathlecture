@@ -195,16 +195,17 @@ export default function TeacherPage() {
   const outcomeTabs = getTeacherOutcomeReviewTabs();
   const studentStatusCopy = getTeacherStudentStatusCopy();
 
-  if (!session?.user) return <main className="min-h-screen"><Navbar /><div className="text-center py-20"><p className="text-ink-light">请先登录</p></div></main>;
-  if (!isTeacher) return <main className="min-h-screen"><Navbar /><div className="text-center py-20"><div className="text-4xl mb-3">🚫</div><p className="text-ink font-medium">无权访问</p><p className="text-ink-light text-sm mt-1">该页面仅对老师开放</p></div></main>;
+  if (!session?.user) return <main className="forest-page-shell guardian-workbench-shell"><Navbar /><div className="text-center py-20"><p className="text-ink-light">请先登录</p></div></main>;
+  if (!isTeacher) return <main className="forest-page-shell guardian-workbench-shell"><Navbar /><div className="text-center py-20"><div className="text-4xl mb-3">🚫</div><p className="text-ink font-medium">无权访问</p><p className="text-ink-light text-sm mt-1">该页面仅对老师开放</p></div></main>;
 
   return (
-    <main className="min-h-screen">
+    <main className="forest-page-shell guardian-workbench-shell">
       <Navbar />
-      <section className="px-6 pt-8 pb-16 max-w-5xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-ink handwritten-title">📊 老师工作台</h1>
-          <p className="text-ink-light text-sm">先保护孩子表达，再守住数学与公开分享边界。</p>
+      <section className="forest-page-content guardian-workbench-shell">
+        <div className="guardian-workbench-hero">
+          <span className="forest-page-eyebrow">守林人工作台｜老师</span>
+          <h1 className="text-2xl font-bold text-ink handwritten-title mt-3">📊 老师工作台</h1>
+          <p className="text-ink-light text-sm mt-2">先保护孩子表达，再守住数学与公开分享边界。</p>
         </div>
 
         <div className="flex gap-2 mb-6 flex-wrap">
@@ -224,7 +225,7 @@ export default function TeacherPage() {
 
         {loading ? <div className="text-center py-12 text-ink-light">加载中...</div> : activeTab === "dashboard" ? (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 guardian-card">
               {[
                 { label: "总用户", value: dashboard?.totalUsers || 0, icon: "👤", color: "sticker-blue" },
                 { label: "总问题", value: dashboard?.totalQuestions || 0, icon: "🙋", color: "sticker-green" },
@@ -234,7 +235,7 @@ export default function TeacherPage() {
                 { label: "报名人数", value: dashboard?.totalRegistrations || 0, icon: "📖", color: "sticker-white" },
               ].map((card) => <div key={card.label} className={`sticker ${card.color} text-center py-5`}><div className="text-2xl mb-1">{card.icon}</div><p className="text-2xl font-bold text-ink handwritten-title">{card.value}</p><p className="text-xs text-ink-light">{card.label}</p></div>)}
             </div>
-            <div className="sticker sticker-white"><h3 className="font-bold text-ink mb-3">⚡ 快速操作</h3><div className="flex flex-wrap gap-3"><button onClick={() => setActiveTab("questions")} className="hand-btn hand-btn-yellow text-sm">🌱 去审核问题</button><button onClick={() => setActiveTab("answers")} className="hand-btn hand-btn-green text-sm">✅ 去审核讲题</button><button onClick={() => setActiveTab("outcomes")} className="hand-btn hand-btn-yellow text-sm">🌳 去成果审核</button><button onClick={() => setActiveTab("users")} className="hand-btn hand-btn-blue text-sm">👤 查看学生状态</button></div></div>
+            <div className="guardian-panel"><h3 className="font-bold text-ink mb-3">⚡ 快速操作</h3><div className="flex flex-wrap gap-3"><button onClick={() => setActiveTab("questions")} className="hand-btn hand-btn-yellow text-sm">🌱 去审核问题</button><button onClick={() => setActiveTab("answers")} className="hand-btn hand-btn-green text-sm">✅ 去审核讲题</button><button onClick={() => setActiveTab("outcomes")} className="hand-btn hand-btn-yellow text-sm">🌳 去成果审核</button><button onClick={() => setActiveTab("users")} className="hand-btn hand-btn-blue text-sm">👤 查看学生状态</button></div></div>
           </>
         ) : activeTab === "questions" ? (
           pendingQuestions.length === 0 ? <div className="sticker sticker-white text-center py-12"><div className="text-4xl mb-3">🌿</div><p className="text-ink font-medium">没有待审核的问题</p><p className="text-ink-light text-sm mt-1">审核通过的问题才会开放认领。</p></div> :

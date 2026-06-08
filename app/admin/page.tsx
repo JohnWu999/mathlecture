@@ -140,9 +140,9 @@ export default function AdminPage() {
     }
   };
 
-  if (status === "loading") return <main className="min-h-screen"><Navbar /><div className="text-center py-20 text-ink-light">加载中...</div></main>;
-  if (!session?.user) return <main className="min-h-screen"><Navbar /><div className="text-center py-20 text-ink-light">请先登录</div></main>;
-  if (session.user.role !== "ADMIN") return <main className="min-h-screen"><Navbar /><div className="text-center py-20"><div className="text-4xl mb-3">🚫</div><p className="text-ink font-medium">无权访问管理员工作台</p><p className="text-ink-light text-sm mt-1">老师工作台负责教学审核；项目包、付费权益和用户运营由管理员处理。</p></div></main>;
+  if (status === "loading") return <main className="forest-page-shell guardian-workbench-shell"><Navbar /><div className="text-center py-20 text-ink-light">加载中...</div></main>;
+  if (!session?.user) return <main className="forest-page-shell guardian-workbench-shell"><Navbar /><div className="text-center py-20 text-ink-light">请先登录</div></main>;
+  if (session.user.role !== "ADMIN") return <main className="forest-page-shell guardian-workbench-shell"><Navbar /><div className="text-center py-20"><div className="text-4xl mb-3">🚫</div><p className="text-ink font-medium">无权访问管理员工作台</p><p className="text-ink-light text-sm mt-1">老师工作台负责教学审核；项目包、付费权益和用户运营由管理员处理。</p></div></main>;
 
   const countCards = [
     { label: "学习者", value: students.length, icon: "👧", color: "sticker-blue" },
@@ -155,20 +155,21 @@ export default function AdminPage() {
   ];
 
   return (
-    <main className="min-h-screen">
+    <main className="forest-page-shell guardian-workbench-shell">
       <Navbar />
-      <section className="px-6 pt-8 pb-16 max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-ink handwritten-title">🛠️ 管理员工作台</h1>
-          <p className="text-ink-light text-sm">严格按三身份设计：学习者看个人成长护照，老师做教学审核，管理员管理全站数据库、项目包、付费与审计。</p>
+      <section className="forest-page-content guardian-workbench-shell" style={{ width: "min(1320px, calc(100% - 32px))" }}>
+        <div className="guardian-workbench-hero">
+          <span className="forest-page-eyebrow">守林人工作台｜管理员</span>
+          <h1 className="text-2xl font-bold text-ink handwritten-title mt-3">🛠️ 管理员工作台</h1>
+          <p className="text-ink-light text-sm mt-2">严格按三身份设计：学习者看个人成长护照，老师做教学审核，管理员管理全站数据库、项目包、付费与审计。</p>
         </div>
 
-        <div className="grid md:grid-cols-3 lg:grid-cols-7 gap-4 mb-8">
+        <div className="grid md:grid-cols-3 lg:grid-cols-7 gap-4 mb-8 guardian-card">
           {countCards.map((card) => <div key={card.label} className={`sticker ${card.color} text-center py-5`}><div className="text-2xl mb-1">{card.icon}</div><p className="text-2xl font-bold text-ink handwritten-title">{card.value}</p><p className="text-xs text-ink-light">{card.label}</p></div>)}
         </div>
         {notice && <div className="sticker bg-crayon-green/20 mb-8 text-sm text-ink">{notice}</div>}
 
-        <section className="sticker sticker-white mb-8">
+        <section className="guardian-panel mb-8">
           <h2 className="font-bold text-ink mb-3">🧭 后台模块总览</h2>
           <div className="grid md:grid-cols-3 gap-3">
             {sections.map((section) => <div key={section.key} className="rounded-2xl bg-paper border border-ink/5 p-3"><p className="text-sm font-bold text-ink">{section.label}</p><p className="text-xs text-ink-light mt-1 leading-relaxed">{section.helper}</p></div>)}

@@ -136,10 +136,10 @@ export default function GroupPage() {
   const isMyMessage = (msg: Message) => msg.author.name === session?.user?.name;
 
   return (
-    <main className="min-h-screen flex flex-col">
+    <main className="forest-page-shell flex flex-col">
       <Navbar />
-      <section className="flex-1 max-w-6xl mx-auto w-full px-4 pt-6 pb-8">
-        <div className="sticker bg-crayon-blue mb-5 text-center">
+      <section className="forest-page-content flex-1 w-full">
+        <div className="forest-detail-hero text-center">
           <p className="text-xs text-ink-light">{group?.project.title || "项目小组"}</p>
           <h1 className="text-2xl font-bold text-ink">👥 {PROJECT_COLLAB_COPY.title}</h1>
           <p className="text-sm text-ink-light mt-2">{PROJECT_COLLAB_COPY.subtitle}</p>
@@ -152,7 +152,7 @@ export default function GroupPage() {
 
         <div className="grid lg:grid-cols-[0.95fr_1.05fr] gap-5">
           <aside className="space-y-5">
-            <div className="sticker bg-white">
+            <div className="forest-card">
               <h2 className="font-bold text-ink mb-3">🗂️ 项目任务卡</h2>
               <div className="space-y-2">
                 {taskCards.map((card) => (

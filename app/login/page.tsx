@@ -4,6 +4,7 @@ import { useState } from "react";
 import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Navbar from "@/components/navbar";
 import { getPostLoginRedirectPath } from "@/lib/login-redirect-rules";
 
 export default function LoginPage() {
@@ -75,11 +76,15 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
-      <div className="sticker sticker-white w-full max-w-md">
-        <h1 className="text-2xl font-bold text-ink text-center mb-6 handwritten-title">
-          {mode === "login" ? "🔑 登录" : "✍️ 注册"}
-        </h1>
+    <main className="forest-page-shell">
+      <Navbar />
+      <section className="forest-page-content forest-page-content-narrow flex min-h-[calc(100vh-110px)] items-center justify-center">
+      <div className="forest-login-card forest-panel">
+        <div className="forest-page-hero text-center !mb-6">
+          <span className="forest-page-eyebrow">内部测试版｜身份入口验收</span>
+          <h1 className="forest-page-title !text-3xl">{mode === "login" ? "🔑 登录数学森林" : "✍️ 加入数学森林"}</h1>
+          <p className="forest-page-subtitle !text-sm !mx-auto">登录后进入成长护照、提问、项目营和守林人工作台；权限仍按学生、老师、管理员分开。</p>
+        </div>
 
         {error && (
           <p className="text-red-500 text-sm text-center mb-4 bg-red-50 py-2 rounded-lg">
@@ -203,6 +208,7 @@ export default function LoginPage() {
           </Link>
         </div>
       </div>
+      </section>
     </main>
   );
 }

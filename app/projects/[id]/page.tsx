@@ -115,7 +115,7 @@ export default function ProjectDetailPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen">
+      <main className="forest-page-shell">
         <Navbar />
         <div className="text-center py-20 text-ink-light">加载项目森林中...</div>
       </main>
@@ -124,7 +124,7 @@ export default function ProjectDetailPage() {
 
   if (!project || !detail) {
     return (
-      <main className="min-h-screen">
+      <main className="forest-page-shell">
         <Navbar />
         <div className="text-center py-20 text-ink-light">项目不存在或暂未开放</div>
       </main>
@@ -132,10 +132,10 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <main className="min-h-screen">
+    <main className="forest-page-shell">
       <Navbar />
-      <section className="px-6 pt-8 pb-16 max-w-4xl mx-auto">
-        <div className="sticker bg-crayon-yellow text-center mb-6">
+      <section className="forest-page-content">
+        <div className="forest-detail-hero text-center">
           <div className="text-5xl mb-3">🌳</div>
           <span className={`hand-badge ${detail.type.badgeClass} text-xs mb-3 inline-block`}>{detail.type.label}</span>
           <h1 className="text-2xl font-bold text-ink">{project.title}</h1>
@@ -148,7 +148,7 @@ export default function ProjectDetailPage() {
         </div>
 
         <div className="grid md:grid-cols-[1.2fr_0.8fr] gap-6 mb-6">
-          <div className="sticker bg-white">
+          <div className="forest-card">
             <h2 className="font-bold text-ink mb-3">📝 项目介绍</h2>
             <p className="text-ink-light leading-relaxed whitespace-pre-wrap">{project.description}</p>
           </div>
@@ -175,7 +175,7 @@ export default function ProjectDetailPage() {
           </div>
         </div>
 
-        <div className="sticker bg-crayon-green text-center mb-6">
+        <div className="forest-panel bg-crayon-green text-center mb-6">
           <p className="text-ink font-bold mb-1">{detail.enrollment.priceLabel}</p>
           <p className="text-sm text-ink-light mb-4 max-w-2xl mx-auto">{detail.enrollment.helper}</p>
           <form onSubmit={handleRegister} className="max-w-2xl mx-auto text-left space-y-3">

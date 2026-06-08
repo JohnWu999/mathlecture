@@ -156,20 +156,20 @@ export default function QuestionDetailPage() {
     return question.claimedById === session.user.id || question.answers.some((a) => a.lecturer.id === session.user.id && a.status === "PENDING");
   }, [question, session?.user?.id]);
 
-  if (loading) return <main className="min-h-screen"><Navbar /><div className="text-center py-20 text-ink-light">加载中...</div></main>;
-  if (!question) return <main className="min-h-screen"><Navbar /><div className="text-center py-20 text-ink-light">问题不存在或还在审核中</div></main>;
+  if (loading) return <main className="forest-page-shell"><Navbar /><div className="text-center py-20 text-ink-light">加载中...</div></main>;
+  if (!question) return <main className="forest-page-shell"><Navbar /><div className="text-center py-20 text-ink-light">问题不存在或还在审核中</div></main>;
 
   const statusBadge = getQuestionStatusBadge({ status: question.status, reviewStatus: question.reviewStatus || "APPROVED" });
   const heatPrompt = getHeatPrompt({ heatCount: question.heatCount || 0, hasHeated: false });
   const claimCopy = formatClaimDeadline({ claimExpiresAt: question.claimExpiresAt || undefined });
 
   return (
-    <main className="min-h-screen">
+    <main className="forest-page-shell">
       <Navbar />
-      <section className="px-6 pt-8 pb-16 max-w-3xl mx-auto">
-        {message && <div className="sticker bg-crayon-green/20 mb-4 text-sm text-ink">{message}</div>}
+      <section className="forest-page-content forest-page-content-narrow">
+        {message && <div className="forest-panel bg-crayon-green/20 mb-4 text-sm text-ink">{message}</div>}
 
-        <div className="sticker bg-white mb-6">
+        <div className="forest-detail-hero">
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             {question.grade && <span className="px-2 py-0.5 bg-crayon-green/20 rounded-full text-xs font-medium">{question.grade}年级</span>}
             {question.topic && <span className="px-2 py-0.5 bg-crayon-blue/20 rounded-full text-xs font-medium">{question.topic}</span>}
