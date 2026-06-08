@@ -5,6 +5,8 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Navbar from "@/components/navbar";
 import {
+  GROWTH_ENERGY_SOURCES,
+  GROWTH_ENERGY_USES,
   IDENTITY_PASSPORTS,
   formatGrowthEnergyTransaction,
   getGrowthEnergyCopy,
