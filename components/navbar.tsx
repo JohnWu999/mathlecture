@@ -279,7 +279,14 @@ export default function Navbar() {
             line-height: 1.05;
             text-align: right;
           }
-          .forest-brand svg { width: 24px; height: 16px; }
+          .forest-brand svg {
+            width: 18px;
+            height: 12px;
+            max-width: 18px;
+            max-height: 12px;
+            flex: 0 0 18px;
+            display: block;
+          }
           .forest-brand span {
             display: block;
             font-size: 11px;
