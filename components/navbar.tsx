@@ -254,14 +254,59 @@ export default function Navbar() {
           .mobile-menu { display: block; }
         }
         @media (max-width: 620px) {
-          .forest-site-nav { min-height: 68px; }
-          .nav-inner { height: 68px; gap: 8px; padding: 0 12px; }
-          .forest-brand { gap: 7px; }
-          .forest-brand svg { width: 36px; height: 28px; }
-          .forest-brand span { display: none; }
-          .mobile-quick-links { display: flex; }
+          .forest-site-nav { min-height: 104px; }
+          .nav-inner {
+            height: auto;
+            min-height: 104px;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            grid-template-rows: auto auto;
+            align-items: center;
+            justify-items: center;
+            row-gap: 8px;
+            column-gap: 0;
+            padding: 10px 12px 9px;
+            position: relative;
+          }
+          .forest-brand {
+            grid-column: 1 / -1;
+            grid-row: 1;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2px;
+            min-width: 0;
+            line-height: 1.05;
+            text-align: center;
+          }
+          .forest-brand svg { width: 30px; height: 20px; }
+          .forest-brand span {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+          }
+          .mobile-quick-links {
+            display: flex;
+            grid-column: 1 / -1;
+            grid-row: 2;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            justify-content: center;
+            padding: 0 44px;
+            scrollbar-width: none;
+          }
+          .mobile-quick-links::-webkit-scrollbar { display: none; }
           .login, .logout { display: none; }
-          .menu-button { width: 38px; height: 38px; border-radius: 14px; flex: 0 0 auto; }
+          .nav-actions {
+            position: absolute;
+            right: 12px;
+            top: 14px;
+            z-index: 2;
+          }
+          .menu-button { width: 34px; height: 34px; border-radius: 13px; flex: 0 0 auto; }
+          .menu-button span { width: 17px; }
         }
       `}</style>
     </nav>

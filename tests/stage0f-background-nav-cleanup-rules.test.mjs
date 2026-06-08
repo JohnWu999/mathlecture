@@ -48,3 +48,13 @@ test('mobile navbar exposes compact page-title links separated by vertical bars'
   assert.match(navbar, /<span className="mobile-separator" aria-hidden="true">｜<\/span>/, 'mobile page titles should be separated by fullwidth vertical bars');
   assert.match(navbar, /@media \(max-width: 620px\)[\s\S]*?\.mobile-quick-links\s*\{[\s\S]*?display:\s*flex/, 'mobile quick links should be visible on phones');
 });
+
+test('phone navbar stacks the brand vertically and gives page titles their own row to prevent overlap', () => {
+  const phoneBlock = navbar.match(/@media \(max-width: 620px\) \{[\s\S]*?\n        \}/)?.[0] ?? '';
+  assert.match(phoneBlock, /\.nav-inner\s*\{[^}]*grid-template-rows:\s*auto auto/, 'phone nav should use two rows: brand row and page-title row');
+  assert.match(phoneBlock, /\.forest-brand\s*\{[^}]*flex-direction:\s*column/, 'phone brand should place title directly below the Logo');
+  assert.match(phoneBlock, /\.forest-brand span\s*\{[^}]*display:\s*block/, 'phone brand text 数学小讲师联盟 should be visible under the Logo');
+  assert.match(phoneBlock, /\.forest-brand svg\s*\{[^}]*width:\s*30px[^}]*height:\s*20px/, 'phone Logo should be smaller than previous 36x28 size');
+  assert.match(phoneBlock, /\.mobile-quick-links\s*\{[^}]*grid-column:\s*1 \/ -1/, 'phone page-title links should occupy a full-width row instead of sharing cramped space with the Logo');
+  assert.match(phoneBlock, /\.mobile-quick-links\s*\{[^}]*overflow-x:\s*auto/, 'phone page-title row should allow horizontal scroll rather than text overlap on narrow screens');
+});
