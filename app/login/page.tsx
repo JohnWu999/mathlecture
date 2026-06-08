@@ -8,6 +8,15 @@ import Navbar from "@/components/navbar";
 import { getPostLoginRedirectPath } from "@/lib/login-redirect-rules";
 import { PUBLIC_PROFILE_HREF } from "@/lib/public-entry-hrefs.mjs";
 
+async function waitForPostLoginSession() {
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const session = await getSession();
+    if (session?.user?.role) return session;
+    await new Promise((resolve) => setTimeout(resolve, 150));
+  }
+  return getSession();
+}
+
 export default function LoginPage() {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [phone, setPhone] = useState("");
@@ -36,9 +45,9 @@ export default function LoginPage() {
       return;
     }
 
-    const session = await getSession();
+    const session = await waitForPostLoginSession();
     const redirectPath = getPostLoginRedirectPath(session?.user?.role);
-    if (redirectPath === "/profile") {
+    if (redirectPath === "/profile" || !session?.user?.role) {
       window.location.assign(PUBLIC_PROFILE_HREF);
       return;
     }
