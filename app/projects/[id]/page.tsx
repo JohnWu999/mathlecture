@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Navbar from "@/components/navbar";
@@ -42,9 +42,7 @@ interface ProjectDetail {
 
 export default function ProjectDetailPage() {
   const { id } = useParams();
-  const router = useRouter();
-  const pathname = usePathname();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [project, setProject] = useState<ProjectDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState(false);
@@ -56,6 +54,8 @@ export default function ProjectDetailPage() {
   const [packageName, setPackageName] = useState("项目报名意向");
   const [contact, setContact] = useState("");
   const [note, setNote] = useState("");
+  const isLoggedIn = !!session?.user;
+  const loginToProjectHref = `/math-young-lecturer/login?callbackUrl=/math-young-lecturer/projects/${id}`;
 
   useEffect(() => {
     fetch(`/math-young-lecturer/api/projects/${id}`)
@@ -87,7 +87,7 @@ export default function ProjectDetailPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session?.user) {
-      router.push(`/login?callbackUrl=${encodeURIComponent(pathname || `/projects/${id}`)}`);
+      setMessage("请先登录，再提交项目报名意向。登录后报名、项目权益和成果提交都会记录到孩子账号，方便老师跟进反馈。");
       return;
     }
     setRegistering(true);
@@ -106,7 +106,7 @@ export default function ProjectDetailPage() {
         setConsultation(data.consultation || null);
         setEnterpriseWechat(data.enterpriseWechat || "报名意向已记录，管理员会在后台跟进状态。");
       } else if (res.status === 401) {
-        router.push(`/login?callbackUrl=${encodeURIComponent(pathname || `/projects/${id}`)}`);
+        setMessage("登录状态已过期，请重新登录后继续报名。");
       } else {
         setMessage(data.error || "报名意向提交失败，请稍后再试。");
       }
@@ -184,40 +184,68 @@ export default function ProjectDetailPage() {
           {project.publicPricingNote && (
             <p className="text-xs text-ink-light mb-4 max-w-2xl mx-auto">{project.publicPricingNote}</p>
           )}
-          <form onSubmit={handleRegister} className="max-w-2xl mx-auto text-left space-y-3">
-            <div className="grid sm:grid-cols-2 gap-3">
-              <input value={childName} onChange={(e) => setChildName(e.target.value)} required placeholder="孩子昵称" className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none" />
-              <input value={grade} onChange={(e) => setGrade(e.target.value)} required type="number" min="1" max="3" placeholder="年级，如 3" className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none" />
-            </div>
-            <div className="grid sm:grid-cols-2 gap-3">
-              <select value={packageName} onChange={(e) => setPackageName(e.target.value)} className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none">
-                <option>项目报名意向</option>
-                <option>5 次项目包</option>
-                <option>20 周项目包</option>
-                <option>先咨询再决定</option>
-              </select>
-              <input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="联系方式（可选）" className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none" />
-            </div>
-            <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder="想让老师了解的情况（可选）" className="w-full px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none resize-none" />
-            <div className="text-center">
-              <button type="submit" disabled={registering} className="hand-btn bg-white text-ink disabled:opacity-50">
-                {registering ? "提交中..." : detail.enrollment.cta}
-              </button>
-            </div>
-          </form>
-          {message && <p className="text-sm text-ink mt-3">{message}</p>}
-          {consultation ? (
-            <div className="mt-4 mx-auto max-w-xl rounded-3xl bg-white/90 border border-ink/10 p-5 text-sm text-ink leading-relaxed grid sm:grid-cols-[150px_1fr] gap-4 items-center text-left">
-              <img src={consultation.qrImageUrl} alt="企业微信咨询二维码" className="h-36 w-36 rounded-2xl object-cover bg-paper border border-ink/10 mx-auto" />
+          <div className="mb-4 mx-auto max-w-2xl rounded-2xl bg-white/75 border border-ink/10 p-4 text-left">
+            <p className="text-sm font-bold text-ink">公开浏览不需要登录</p>
+            <p className="text-xs text-ink-light mt-1 leading-relaxed">
+              项目介绍、适合年级、学习目标、体验说明可以直接浏览；报名和加入项目需要登录，因为项目权益、作品提交和老师反馈都要记录到孩子账号，方便运营追踪和成长档案沉淀。
+            </p>
+          </div>
+          {status === "loading" && (
+            <div className="max-w-2xl mx-auto rounded-2xl bg-white/80 border border-ink/10 p-4 text-sm text-ink-light">正在确认登录状态...</div>
+          )}
+          {!isLoggedIn && status !== "loading" && (
+            <div className="max-w-2xl mx-auto rounded-3xl bg-white/90 border border-ink/10 p-5 text-left space-y-4">
               <div>
-                <p className="font-bold text-ink">{consultation.title}</p>
-                <p className="text-xs text-ink-light mt-1">{consultation.contactTitle}</p>
-                <p className="text-sm text-ink-light mt-3 leading-relaxed">{consultation.description}</p>
-                <p className="text-xs text-ink-light mt-3">{consultation.helper}</p>
+                <p className="font-bold text-ink">报名和加入项目需要登录</p>
+                <p className="text-sm text-ink-light mt-2 leading-relaxed">
+                  登录后报名、查看项目权益、提交项目成果都会绑定到孩子账号。老师才能确认名额、跟进小组进度、推送反馈，并把项目过程写入成长记录。
+                </p>
+              </div>
+              <div className="grid sm:grid-cols-3 gap-3 text-center">
+                <Link href={loginToProjectHref} className="hand-btn bg-crayon-yellow text-ink text-xs">登录后报名</Link>
+                <Link href={loginToProjectHref} className="hand-btn bg-white text-ink text-xs">登录后查看项目权益</Link>
+                <Link href={loginToProjectHref} className="hand-btn bg-white text-ink text-xs">登录后提交项目成果</Link>
               </div>
             </div>
-          ) : enterpriseWechat ? (
-            <div className="mt-3 mx-auto max-w-xl rounded-2xl bg-white/80 border border-ink/10 p-4 text-sm text-ink leading-relaxed">{enterpriseWechat}</div>
+          )}
+          {isLoggedIn ? (
+            <>
+              <form onSubmit={handleRegister} className="max-w-2xl mx-auto text-left space-y-3">
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <input value={childName} onChange={(e) => setChildName(e.target.value)} required placeholder="孩子昵称" className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none" />
+                  <input value={grade} onChange={(e) => setGrade(e.target.value)} required type="number" min="1" max="3" placeholder="年级，如 3" className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none" />
+                </div>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <select value={packageName} onChange={(e) => setPackageName(e.target.value)} className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none">
+                    <option>项目报名意向</option>
+                    <option>5 次项目包</option>
+                    <option>20 周项目包</option>
+                    <option>先咨询再决定</option>
+                  </select>
+                  <input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="联系方式（可选）" className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none" />
+                </div>
+                <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder="想让老师了解的情况（可选）" className="w-full px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none resize-none" />
+                <div className="text-center">
+                  <button type="submit" disabled={registering} className="hand-btn bg-white text-ink disabled:opacity-50">
+                    {registering ? "提交中..." : detail.enrollment.cta}
+                  </button>
+                </div>
+              </form>
+              {message && <p className="text-sm text-ink mt-3">{message}</p>}
+              {consultation ? (
+                <div className="mt-4 mx-auto max-w-xl rounded-3xl bg-white/90 border border-ink/10 p-5 text-sm text-ink leading-relaxed grid sm:grid-cols-[150px_1fr] gap-4 items-center text-left">
+                  <img src={consultation.qrImageUrl} alt="企业微信咨询二维码" className="h-36 w-36 rounded-2xl object-cover bg-paper border border-ink/10 mx-auto" />
+                  <div>
+                    <p className="font-bold text-ink">{consultation.title}</p>
+                    <p className="text-xs text-ink-light mt-1">{consultation.contactTitle}</p>
+                    <p className="text-sm text-ink-light mt-3 leading-relaxed">{consultation.description}</p>
+                    <p className="text-xs text-ink-light mt-3">{consultation.helper}</p>
+                  </div>
+                </div>
+              ) : enterpriseWechat ? (
+                <div className="mt-3 mx-auto max-w-xl rounded-2xl bg-white/80 border border-ink/10 p-4 text-sm text-ink leading-relaxed">{enterpriseWechat}</div>
+              ) : null}
+            </>
           ) : null}
         </div>
 
