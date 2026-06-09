@@ -12,6 +12,7 @@ import {
   getProjectReadiness,
   getProjectTeamStatus,
   getProjectTypeLabel,
+  normalizeProjectForPublicListing,
 } from "@/lib/project-camp-ui-rules.mjs";
 
 interface ProjectDetail {
@@ -27,6 +28,8 @@ interface ProjectDetail {
   validUntil: string | null;
   durationDays: number;
   coverImage: string | null;
+  publicPricingState?: "FREE_TRIAL" | "GUIDED_SERVICE";
+  publicPricingNote?: string;
   status: string;
   _count: { registrations: number; groups: number };
   groups: {
@@ -58,7 +61,7 @@ export default function ProjectDetailPage() {
     fetch(`/math-young-lecturer/api/projects/${id}`)
       .then((r) => r.json())
       .then((data) => {
-        setProject(data?.id ? data : null);
+        setProject(data?.id ? normalizeProjectForPublicListing(data) : null);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -67,7 +70,7 @@ export default function ProjectDetailPage() {
   const detail = useMemo(() => {
     if (!project) return null;
     return {
-      type: getProjectTypeLabel(project.projectType),
+      type: getProjectTypeLabel(project.projectType, project),
       readiness: getProjectReadiness(project),
       team: getProjectTeamStatus({
         registrations: project._count.registrations,
@@ -177,7 +180,10 @@ export default function ProjectDetailPage() {
 
         <div className="forest-panel bg-crayon-green text-center mb-6">
           <p className="text-ink font-bold mb-1">{detail.enrollment.priceLabel}</p>
-          <p className="text-sm text-ink-light mb-4 max-w-2xl mx-auto">{detail.enrollment.helper}</p>
+          <p className="text-sm text-ink-light mb-2 max-w-2xl mx-auto">{detail.enrollment.helper}</p>
+          {project.publicPricingNote && (
+            <p className="text-xs text-ink-light mb-4 max-w-2xl mx-auto">{project.publicPricingNote}</p>
+          )}
           <form onSubmit={handleRegister} className="max-w-2xl mx-auto text-left space-y-3">
             <div className="grid sm:grid-cols-2 gap-3">
               <input value={childName} onChange={(e) => setChildName(e.target.value)} required placeholder="孩子昵称" className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none" />

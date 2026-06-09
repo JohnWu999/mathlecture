@@ -7,9 +7,11 @@ import { PUBLIC_PROFILE_HREF } from "@/lib/public-entry-hrefs.mjs";
 import {
   PROJECT_CAMP_COPY,
   formatProjectValidity,
+  getProjectPriceDisplay,
   getProjectReadiness,
   getProjectTeamStatus,
   getProjectTypeLabel,
+  normalizeProjectForPublicListing,
 } from "@/lib/project-camp-ui-rules.mjs";
 
 interface Project {
@@ -24,6 +26,8 @@ interface Project {
   groupSizeMax: number;
   validUntil: string | null;
   durationDays: number;
+  publicPricingState?: "FREE_TRIAL" | "GUIDED_SERVICE";
+  publicPricingNote?: string;
   coverImage: string | null;
   _count: { registrations: number; groups: number };
 }
@@ -36,7 +40,7 @@ export default function ProjectsPage() {
     fetch("/math-young-lecturer/api/projects")
       .then((r) => r.json())
       .then((data) => {
-        setProjects(Array.isArray(data) ? data : []);
+        setProjects(Array.isArray(data) ? data.map(normalizeProjectForPublicListing) : []);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -80,7 +84,8 @@ export default function ProjectsPage() {
         ) : (
           <div className="forest-card-grid two">
             {projects.map((p) => {
-              const type = getProjectTypeLabel(p.projectType);
+              const type = getProjectTypeLabel(p.projectType, p);
+              const priceDisplay = getProjectPriceDisplay(p);
               const readiness = getProjectReadiness(p);
               const team = getProjectTeamStatus({
                 registrations: p._count.registrations,
@@ -129,7 +134,7 @@ export default function ProjectsPage() {
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-ink-light">{type.helper}</span>
                       <span className="font-bold text-crayon-orange whitespace-nowrap">
-                        {p.projectType === "FREE" || p.price === 0 ? "免费体验" : "主题服务"}
+                        {priceDisplay.label}
                       </span>
                     </div>
                   </div>

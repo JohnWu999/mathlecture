@@ -67,7 +67,15 @@ const PUBLIC_PATHS = [
   "/api/hall",
 ];
 
+function isPublicProjectReadPath(pathname: string): boolean {
+  if (pathname === "/api/projects") return true;
+  return /^\/api\/projects\/[^\/]+$/.test(pathname);
+}
+
 export function isProtectedPath(pathname: string): boolean {
+  if (isPublicProjectReadPath(pathname)) {
+    return false;
+  }
   // 先检查是否是公开路径
   if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
     return false;
