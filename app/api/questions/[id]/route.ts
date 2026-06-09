@@ -24,7 +24,7 @@ export async function GET(
         answers: {
           where: canReviewQuestions(session)
             ? undefined
-            : { reviewStatus: "APPROVED" },
+            : { status: "APPROVED", reviewStatus: "APPROVED" },
           include: {
             lecturer: { select: { id: true, name: true } },
           },

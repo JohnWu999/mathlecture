@@ -32,7 +32,10 @@ export async function GET(req: Request) {
     orderBy: [{ heatCount: "desc" }, { createdAt: "desc" }],
     include: {
       author: { select: { name: true, region: true } },
-      answers: { select: { id: true, status: true, reviewStatus: true, shareScope: true } },
+      answers: {
+        where: { status: "APPROVED", reviewStatus: "APPROVED" },
+        select: { id: true, status: true, reviewStatus: true, shareScope: true },
+      },
       claimedBy: { select: { id: true, name: true } },
     },
   });
