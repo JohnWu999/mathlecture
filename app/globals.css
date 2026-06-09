@@ -1496,20 +1496,20 @@ p {
 
 /* ==========================================
    Stage1-F｜导航即时可见兜底覆盖
-   目标：让 Logo / 站名 / 登录按钮即使遇到旧 JS 样式缓存，也由新 CSS 文件强制呈现。
+   目标：让确认后的方案 B Logo / 站名即使遇到旧 JS 样式缓存，也由新 CSS 文件强制呈现；不再恢复导航栏【登录】按钮。
    ========================================== */
 .forest-site-nav .forest-brand {
-  width: 76px !important;
-  min-width: 76px !important;
-  max-width: 76px !important;
+  width: 78px !important;
+  min-width: 78px !important;
+  max-width: 78px !important;
   gap: 0 !important;
   align-items: center !important;
   justify-content: center !important;
   text-align: center !important;
 }
 .forest-site-nav .forest-brand .brand-logo-mark {
-  width: 22px !important;
-  height: 14px !important;
+  width: 57px !important;
+  height: 35px !important;
   display: block !important;
   margin: 0 auto !important;
   flex: 0 0 auto !important;
@@ -1519,33 +1519,35 @@ p {
   width: 100% !important;
   margin-top: 0 !important;
   text-align: center !important;
-  line-height: 1 !important;
-  letter-spacing: -0.04em !important;
-  font-size: 8.5px !important;
+  line-height: 1.05 !important;
+  letter-spacing: -0.02em !important;
+  font-size: 9px !important;
 }
-.forest-site-nav .login {
-  border: 2px solid #184638 !important;
-  box-shadow: 0 0 0 4px rgba(255, 209, 102, 0.32) !important;
-  background: rgba(255, 255, 255, 0.96) !important;
+.forest-site-nav .account-link {
+  border: 1.5px solid rgba(24, 70, 56, 0.18) !important;
+  background: rgba(255, 255, 255, 0.72) !important;
   color: #184638 !important;
 }
 @media (min-width: 621px) {
   .forest-site-nav .forest-brand .brand-logo-mark {
-    width: 24px !important;
-    height: 15px !important;
+    width: 70px !important;
+    height: 43px !important;
+  }
+  .forest-site-nav .forest-brand .brand-title {
+    font-size: 10px !important;
   }
 }
 @media (max-width: 620px) {
   .forest-site-nav .forest-brand {
-    width: 72px !important;
-    min-width: 72px !important;
-    max-width: 72px !important;
+    width: 76px !important;
+    min-width: 76px !important;
+    max-width: 76px !important;
   }
   .forest-site-nav .forest-brand .brand-logo-mark {
-    width: 20px !important;
-    height: 13px !important;
+    width: 57px !important;
+    height: 35px !important;
   }
   .forest-site-nav .forest-brand .brand-title {
-    font-size: 8px !important;
+    font-size: 9px !important;
   }
 }

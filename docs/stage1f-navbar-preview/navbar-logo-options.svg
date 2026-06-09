@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1280" viewBox="0 0 1500 1280">
+<rect width="100%" height="100%" fill="#FFF8EA"/>
+<defs><filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#184638" flood-opacity="0.10"/></filter></defs>
+<text x="70" y="70" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif" font-size="34" font-weight="900" fill="#184638">导航栏 Logo 视觉预览（不部署版）</text>
+<text x="70" y="108" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif" font-size="18" fill="#47695d">共同规则：删除导航栏【登录】按钮；Logo 与“数学小讲师联盟”上下居中，Logo 横向长度对齐站名字宽。</text>
+<g font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif" filter="url(#shadow)">
+<rect x="54" y="120" width="1392" height="320" rx="38" fill="#FFFDF3" stroke="rgba(24,70,56,.10)"/>
+<text x="90" y="160" font-size="24" font-weight="900" fill="#184638">方案 A｜等宽对应</text>
+<text x="90" y="192" font-size="15" fill="#47695d">Logo 宽度≈站名字宽；最稳妥，品牌识别更清楚。</text>
+
+    <g>
+      <rect x="90" y="222" width="1260" height="96" rx="28" fill="rgba(255,255,255,.66)" stroke="rgba(24,70,56,.12)"/>
+      <g transform="translate(134,0)">
+        
+    <g transform="translate(3.0,239.5) scale(0.5571428571428572,0.5581395348837209)">
+      <path d="M20 43C36 10 62 11 70 43C78 75 104 76 120 43C104 10 78 11 70 43C62 75 36 76 20 43Z" fill="none" stroke="#2F8F67" stroke-width="9.5" stroke-linecap="round"/>
+      <circle cx="48" cy="27" r="8" fill="#FFD166"/>
+      <circle cx="92" cy="59" r="8" fill="#3B82F6"/>
+      <path d="M58 39c7 7 17 7 24 0" fill="none" stroke="#F9733D" stroke-width="5" stroke-linecap="round"/>
+    </g>
+        <text x="42.0" y="298.5" font-size="11" font-weight="900" letter-spacing="-0.25" fill="#184638" text-anchor="middle">数学小讲师联盟</text>
+        <line x1="3.0" y1="306.5" x2="81.0" y2="306.5" stroke="#2F8F67" stroke-width="1" opacity="0.25"/>
+      </g>
+      <text x="340" y="280" font-size="19" font-weight="800" fill="#184638" text-anchor="middle">首页</text><rect x="318" y="285" width="44" height="8" rx="4" fill="#FFD166" opacity="0.7"/><text x="468" y="280" font-size="19" font-weight="800" fill="#47695d" text-anchor="middle">你问我答</text><text x="596" y="280" font-size="19" font-weight="800" fill="#47695d" text-anchor="middle">项目营</text><text x="724" y="280" font-size="19" font-weight="800" fill="#47695d" text-anchor="middle">成果广场</text><text x="852" y="280" font-size="19" font-weight="800" fill="#47695d" text-anchor="middle">个人中心</text><text x="1294" y="280" font-size="13" fill="#8BA99E" text-anchor="end">登录按钮已移除</text>
+    </g>
+
+    <g>
+      <rect x="90" y="340" width="430" height="160" rx="28" fill="rgba(255,255,255,.66)" stroke="rgba(24,70,56,.12)"/>
+      <g transform="translate(267.0,0)">
+        
+    <g transform="translate(6.020000000000003,358) scale(0.4568571428571428,0.45767441860465113)">
+      <path d="M20 43C36 10 62 11 70 43C78 75 104 76 120 43C104 10 78 11 70 43C62 75 36 76 20 43Z" fill="none" stroke="#2F8F67" stroke-width="9.5" stroke-linecap="round"/>
+      <circle cx="48" cy="27" r="8" fill="#FFD166"/>
+      <circle cx="92" cy="59" r="8" fill="#3B82F6"/>
+      <path d="M58 39c7 7 17 7 24 0" fill="none" stroke="#F9733D" stroke-width="5" stroke-linecap="round"/>
+    </g>
+        <text x="38.0" y="407.26" font-size="9.9" font-weight="900" letter-spacing="-0.25" fill="#184638" text-anchor="middle">数学小讲师联盟</text>
+        <line x1="6.020000000000003" y1="415.26" x2="69.97999999999999" y2="415.26" stroke="#2F8F67" stroke-width="1" opacity="0.25"/>
+      </g>
+      <text x="305.0" y="448" font-size="16" font-weight="850" fill="#47695d" text-anchor="middle">首页 ｜ 你问我答 ｜ 项目营 ｜ 成果广场 ｜ 个人中心</text><text x="305.0" y="476" font-size="12" fill="#8BA99E" text-anchor="middle">无登录按钮，页面内触发登录</text>
+    </g>
+<text x="570" y="366" font-size="15" fill="#47695d">手机版预览：品牌独占第一行居中；导航链接第二行，不再挤登录按钮。</text>
+</g>
+<g font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif" filter="url(#shadow)">
+<rect x="54" y="480" width="1392" height="320" rx="38" fill="#FFFDF3" stroke="rgba(24,70,56,.10)"/>
+<text x="90" y="520" font-size="24" font-weight="900" fill="#184638">方案 B｜轻巧平衡（推荐）</text>
+<text x="90" y="552" font-size="15" fill="#47695d">Logo 略小但长度仍对齐一行站名；导航最清爽。</text>
+
+    <g>
+      <rect x="90" y="582" width="1260" height="96" rx="28" fill="rgba(255,255,255,.66)" stroke="rgba(24,70,56,.12)"/>
+      <g transform="translate(134,0)">
+        
+    <g transform="translate(4.0,602.5) scale(0.5,0.5)">
+      <path d="M20 43C36 10 62 11 70 43C78 75 104 76 120 43C104 10 78 11 70 43C62 75 36 76 20 43Z" fill="none" stroke="#2F8F67" stroke-width="9.5" stroke-linecap="round"/>
+      <circle cx="48" cy="27" r="8" fill="#FFD166"/>
+      <circle cx="92" cy="59" r="8" fill="#3B82F6"/>
+      <path d="M58 39c7 7 17 7 24 0" fill="none" stroke="#F9733D" stroke-width="5" stroke-linecap="round"/>
+    </g>
+        <text x="39.0" y="655.5" font-size="10" font-weight="900" letter-spacing="-0.25" fill="#184638" text-anchor="middle">数学小讲师联盟</text>
+        <line x1="4.0" y1="663.5" x2="74.0" y2="663.5" stroke="#2F8F67" stroke-width="1" opacity="0.25"/>
+      </g>
+      <text x="340" y="640" font-size="19" font-weight="800" fill="#184638" text-anchor="middle">首页</text><rect x="318" y="645" width="44" height="8" rx="4" fill="#FFD166" opacity="0.7"/><text x="468" y="640" font-size="19" font-weight="800" fill="#47695d" text-anchor="middle">你问我答</text><text x="596" y="640" font-size="19" font-weight="800" fill="#47695d" text-anchor="middle">项目营</text><text x="724" y="640" font-size="19" font-weight="800" fill="#47695d" text-anchor="middle">成果广场</text><text x="852" y="640" font-size="19" font-weight="800" fill="#47695d" text-anchor="middle">个人中心</text><text x="1294" y="640" font-size="13" fill="#8BA99E" text-anchor="end">登录按钮已移除</text>
+    </g>
+
+    <g>
+      <rect x="90" y="700" width="430" height="160" rx="28" fill="rgba(255,255,255,.66)" stroke="rgba(24,70,56,.12)"/>
+      <g transform="translate(270.0,0)">
+        
+    <g transform="translate(6.300000000000001,718) scale(0.41,0.41)">
+      <path d="M20 43C36 10 62 11 70 43C78 75 104 76 120 43C104 10 78 11 70 43C62 75 36 76 20 43Z" fill="none" stroke="#2F8F67" stroke-width="9.5" stroke-linecap="round"/>
+      <circle cx="48" cy="27" r="8" fill="#FFD166"/>
+      <circle cx="92" cy="59" r="8" fill="#3B82F6"/>
+      <path d="M58 39c7 7 17 7 24 0" fill="none" stroke="#F9733D" stroke-width="5" stroke-linecap="round"/>
+    </g>
+        <text x="35.0" y="762.26" font-size="9.0" font-weight="900" letter-spacing="-0.25" fill="#184638" text-anchor="middle">数学小讲师联盟</text>
+        <line x1="6.300000000000001" y1="770.26" x2="63.7" y2="770.26" stroke="#2F8F67" stroke-width="1" opacity="0.25"/>
+      </g>
+      <text x="305.0" y="808" font-size="16" font-weight="850" fill="#47695d" text-anchor="middle">首页 ｜ 你问我答 ｜ 项目营 ｜ 成果广场 ｜ 个人中心</text><text x="305.0" y="836" font-size="12" fill="#8BA99E" text-anchor="middle">无登录按钮，页面内触发登录</text>
+    </g>
+<text x="570" y="726" font-size="15" fill="#47695d">手机版预览：品牌独占第一行居中；导航链接第二行，不再挤登录按钮。</text>
+</g>
+<g font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif" filter="url(#shadow)">
+<rect x="54" y="840" width="1392" height="320" rx="38" fill="#FFFDF3" stroke="rgba(24,70,56,.10)"/>
+<text x="90" y="880" font-size="24" font-weight="900" fill="#184638">方案 C｜极简紧凑</text>
+<text x="90" y="912" font-size="15" fill="#47695d">Logo 再收小，移动端最省空间；品牌存在感弱一点。</text>
+
+    <g>
+      <rect x="90" y="942" width="1260" height="96" rx="28" fill="rgba(255,255,255,.66)" stroke="rgba(24,70,56,.12)"/>
+      <g transform="translate(134,0)">
+        
+    <g transform="translate(4.0,964.9) scale(0.45714285714285713,0.45348837209302323)">
+      <path d="M20 43C36 10 62 11 70 43C78 75 104 76 120 43C104 10 78 11 70 43C62 75 36 76 20 43Z" fill="none" stroke="#2F8F67" stroke-width="9.5" stroke-linecap="round"/>
+      <circle cx="48" cy="27" r="8" fill="#FFD166"/>
+      <circle cx="92" cy="59" r="8" fill="#3B82F6"/>
+      <path d="M58 39c7 7 17 7 24 0" fill="none" stroke="#F9733D" stroke-width="5" stroke-linecap="round"/>
+    </g>
+        <text x="36.0" y="1013.1" font-size="9.2" font-weight="900" letter-spacing="-0.25" fill="#184638" text-anchor="middle">数学小讲师联盟</text>
+        <line x1="4.0" y1="1021.1" x2="68.0" y2="1021.1" stroke="#2F8F67" stroke-width="1" opacity="0.25"/>
+      </g>
+      <text x="340" y="1000" font-size="19" font-weight="800" fill="#184638" text-anchor="middle">首页</text><rect x="318" y="1005" width="44" height="8" rx="4" fill="#FFD166" opacity="0.7"/><text x="468" y="1000" font-size="19" font-weight="800" fill="#47695d" text-anchor="middle">你问我答</text><text x="596" y="1000" font-size="19" font-weight="800" fill="#47695d" text-anchor="middle">项目营</text><text x="724" y="1000" font-size="19" font-weight="800" fill="#47695d" text-anchor="middle">成果广场</text><text x="852" y="1000" font-size="19" font-weight="800" fill="#47695d" text-anchor="middle">个人中心</text><text x="1294" y="1000" font-size="13" fill="#8BA99E" text-anchor="end">登录按钮已移除</text>
+    </g>
+
+    <g>
+      <rect x="90" y="1060" width="430" height="160" rx="28" fill="rgba(255,255,255,.66)" stroke="rgba(24,70,56,.12)"/>
+      <g transform="translate(273.0,0)">
+        
+    <g transform="translate(5.760000000000002,1078) scale(0.37485714285714283,0.371860465116279)">
+      <path d="M20 43C36 10 62 11 70 43C78 75 104 76 120 43C104 10 78 11 70 43C62 75 36 76 20 43Z" fill="none" stroke="#2F8F67" stroke-width="9.5" stroke-linecap="round"/>
+      <circle cx="48" cy="27" r="8" fill="#FFD166"/>
+      <circle cx="92" cy="59" r="8" fill="#3B82F6"/>
+      <path d="M58 39c7 7 17 7 24 0" fill="none" stroke="#F9733D" stroke-width="5" stroke-linecap="round"/>
+    </g>
+        <text x="32.0" y="1118.26" font-size="8.28" font-weight="900" letter-spacing="-0.25" fill="#184638" text-anchor="middle">数学小讲师联盟</text>
+        <line x1="5.760000000000002" y1="1126.26" x2="58.239999999999995" y2="1126.26" stroke="#2F8F67" stroke-width="1" opacity="0.25"/>
+      </g>
+      <text x="305.0" y="1168" font-size="16" font-weight="850" fill="#47695d" text-anchor="middle">首页 ｜ 你问我答 ｜ 项目营 ｜ 成果广场 ｜ 个人中心</text><text x="305.0" y="1196" font-size="12" fill="#8BA99E" text-anchor="middle">无登录按钮，页面内触发登录</text>
+    </g>
+<text x="570" y="1086" font-size="15" fill="#47695d">手机版预览：品牌独占第一行居中；导航链接第二行，不再挤登录按钮。</text>
+</g>
+<text x="70" y="1226" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif" font-size="18" fill="#47695d">我的建议：选方案 B，Logo 与站名比例更协调，同时不会压缩导航链接。</text>
+</svg>

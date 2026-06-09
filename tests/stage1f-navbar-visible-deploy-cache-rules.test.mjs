@@ -18,20 +18,25 @@ test("public pages that carry the navbar are no-store so users do not keep stale
   );
 });
 
-test("global css carries a cache-busted navbar override for the visible login border and compact brand", () => {
+test("global css carries a cache-busted navbar override for confirmed option-B brand without resurrecting Login", () => {
   assert.match(
     css,
-    /\.forest-site-nav\s+\.forest-brand\s*\{[\s\S]*width:\s*76px\s*!important[\s\S]*gap:\s*0\s*!important[\s\S]*text-align:\s*center\s*!important/,
-    "global css should force the brand block to stay compact and centered even if an old JS nav style is cached",
+    /\.forest-site-nav\s+\.forest-brand\s*\{[\s\S]*width:\s*78px\s*!important[\s\S]*gap:\s*0\s*!important[\s\S]*text-align:\s*center\s*!important/,
+    "global css should force the option-B brand block to stay centered even if an old JS nav style is cached",
   );
   assert.match(
     css,
-    /\.forest-site-nav\s+\.forest-brand\s+\.brand-logo-mark\s*\{[\s\S]*width:\s*22px\s*!important[\s\S]*height:\s*14px\s*!important/,
-    "global css should force an obviously smaller logo size",
+    /\.forest-site-nav\s+\.forest-brand\s+\.brand-logo-mark\s*\{[\s\S]*width:\s*57px\s*!important[\s\S]*height:\s*35px\s*!important/,
+    "global css should force option-B phone/default logo proportions",
   );
   assert.match(
     css,
-    /\.forest-site-nav\s+\.login\s*\{[\s\S]*border:\s*2px solid #184638\s*!important[\s\S]*box-shadow:\s*0 0 0 4px rgba\(255, 209, 102, 0\.32\)\s*!important/,
-    "global css should make the logged-out login button border visible independent of shared logout styles",
+    /@media \(min-width:\s*621px\)\s*\{[\s\S]*\.forest-site-nav\s+\.forest-brand\s+\.brand-logo-mark\s*\{[\s\S]*width:\s*70px\s*!important[\s\S]*height:\s*43px\s*!important/,
+    "global css should force option-B desktop logo proportions",
+  );
+  assert.doesNotMatch(
+    css,
+    /\.forest-site-nav\s+\.login\s*\{[\s\S]*border:\s*2px solid #184638\s*!important/,
+    "cache-busting CSS should not keep a visual rule for the removed logged-out Login pill",
   );
 });

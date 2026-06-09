@@ -25,8 +25,8 @@ test('phone navbar removes the folding menu button and centers the compact brand
   assert.match(block, /\.menu-button\s*\{[^}]*display:\s*none/, 'phone navbar should remove the folding menu button');
   assert.match(block, /\.mobile-menu\s*\{[^}]*display:\s*none/, 'phone dropdown menu should not appear on phones when page-title links are visible');
   assert.match(navbar, /<svg\s+className="brand-logo-mark"/, 'Logo SVG must carry an explicit class so styled-jsx can target the child component');
-  assert.match(block, /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*width:\s*22px[^}]*height:\s*14px/, 'phone Logo should stay compact and visible through a global logo selector');
-  assert.match(block, /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*max-width:\s*22px[^}]*max-height:\s*14px[^}]*flex:\s*0 0 22px/, 'phone Logo should lock max size and flex basis so it cannot be stretched');
+  assert.match(block, /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*width:\s*57px[^}]*height:\s*35px/, 'phone option-B Logo should stay visible through a global logo selector');
+  assert.match(block, /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*max-width:\s*57px[^}]*max-height:\s*35px[^}]*flex:\s*0 0 35px/, 'phone option-B Logo should lock max size and flex basis so it cannot be stretched');
   assert.match(block, /\.mobile-quick-links\s*\{[^}]*justify-content:\s*center/, 'phone page-title text should align with the centered compact brand block');
   assert.match(block, /\.mobile-quick-links\s*\{[^}]*text-align:\s*center/, 'phone page-title text should use centered text alignment');
 });

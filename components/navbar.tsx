@@ -32,7 +32,7 @@ function LogoMark() {
 }
 
 export default function Navbar() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const personalCenterHref = getPersonalCenterHrefForRole(session?.user?.role);
@@ -48,7 +48,7 @@ export default function Navbar() {
       <div className="nav-inner">
         <Link href="/" className="forest-brand" aria-label="数学小讲师联盟首页">
           <LogoMark />
-          <span>数学小讲师联盟</span>
+          <span className="brand-title">数学小讲师联盟</span>
         </Link>
 
         <div className="forest-navlinks">
@@ -83,19 +83,15 @@ export default function Navbar() {
         </div>
 
         <div className="nav-actions">
-          {status === "loading" ? (
-            <span className="login muted">加载中...</span>
-          ) : session?.user ? (
+          {session?.user && (
             <>
               {personalCenterHref === "/profile" ? (
-                <a href={PUBLIC_PROFILE_HREF} className="login">{session.user.name || session.user.phone}</a>
+                <a href={PUBLIC_PROFILE_HREF} className="account-link">{session.user.name || session.user.phone}</a>
               ) : (
-                <Link href={personalCenterHref} className="login">{session.user.name || session.user.phone}</Link>
+                <Link href={personalCenterHref} className="account-link">{session.user.name || session.user.phone}</Link>
               )}
               <button className="logout" onClick={() => signOut({ callbackUrl: "/math-young-lecturer/login" })}>退出登录</button>
             </>
-          ) : (
-            <Link className="login" href="/login">登录</Link>
           )}
           <button className="menu-button" type="button" aria-label="菜单" aria-expanded={menuOpen} onClick={() => setMenuOpen((v) => !v)}>
             <span /><span /><span />
@@ -144,10 +140,10 @@ export default function Navbar() {
           align-items: center;
           justify-content: center;
           gap: 0;
-          width: 76px;
-          max-width: 76px;
-          min-width: 76px;
-          min-height: 44px;
+          width: 78px;
+          max-width: 78px;
+          min-width: 78px;
+          min-height: 58px;
           overflow: hidden;
           font-weight: 950;
           letter-spacing: -0.02em;
@@ -157,16 +153,16 @@ export default function Navbar() {
           text-decoration: none;
         }
         .forest-brand :global(.brand-logo-mark) {
-          width: 26px;
-          height: 16px;
-          max-width: 26px;
-          max-height: 16px;
-          flex: 0 0 26px;
+          width: 70px;
+          height: 43px;
+          max-width: 70px;
+          max-height: 43px;
+          flex: 0 0 43px;
           display: block;
         }
-        .forest-brand span {
+        .forest-brand .brand-title {
           display: block;
-          font-size: 12px;
+          font-size: 10px;
           line-height: 1.05;
           white-space: nowrap;
         }
@@ -183,7 +179,7 @@ export default function Navbar() {
         .forest-navlinks a,
         .mobile-menu a,
         .mobile-quick-links a,
-        .login,
+        .account-link,
         .logout {
           color: inherit;
           text-decoration: none;
@@ -230,7 +226,7 @@ export default function Navbar() {
           gap: 12px;
           min-width: max-content;
         }
-        .login,
+        .account-link,
         .logout {
           border-radius: 999px;
           background: rgba(255, 255, 255, 0.72);
@@ -239,11 +235,7 @@ export default function Navbar() {
           font-weight: 850;
           color: #184638;
         }
-        .login {
-          border: 2px solid #184638;
-          background: #fffdf5;
-          box-shadow: 0 0 0 4px rgba(255, 209, 102, 0.28);
-        }
+        .account-link { border: 1.5px solid rgba(24, 70, 56, 0.18); }
         .logout {
           border: 1.5px solid rgba(24, 70, 56, 0.34);
           box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.18);
@@ -314,21 +306,21 @@ export default function Navbar() {
             width: 76px;
             max-width: 76px;
             min-width: 76px;
-            min-height: 38px;
+            min-height: 48px;
             line-height: 1.05;
             text-align: center;
           }
           .forest-brand :global(.brand-logo-mark) {
-            width: 22px;
-            height: 14px;
-            max-width: 22px;
-            max-height: 14px;
-            flex: 0 0 22px;
+            width: 57px;
+            height: 35px;
+            max-width: 57px;
+            max-height: 35px;
+            flex: 0 0 35px;
             display: block;
           }
-          .forest-brand span {
+          .forest-brand .brand-title {
             display: block;
-            font-size: 11px;
+            font-size: 9px;
             line-height: 1.05;
             letter-spacing: 0.02em;
             white-space: nowrap;
@@ -347,7 +339,7 @@ export default function Navbar() {
             scrollbar-width: none;
           }
           .mobile-quick-links::-webkit-scrollbar { display: none; }
-          .login, .logout { display: none; }
+          .account-link, .logout { display: none; }
           .nav-actions {
             display: none;
           }

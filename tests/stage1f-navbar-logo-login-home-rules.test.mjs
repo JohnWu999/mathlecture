@@ -13,21 +13,26 @@ test("navbar adds 首页 before 你问我答 for returning from subpages", () =>
   );
 });
 
-test("brand logo and title are a compact stacked unit on desktop and phone", () => {
+test("brand logo uses confirmed option B proportions above the centered title", () => {
   assert.match(
     navbar,
-    /\.forest-brand\s*\{[^}]*flex-direction:\s*column[^}]*align-items:\s*center[^}]*gap:\s*0[^}]*max-width:\s*76px/s,
-    "desktop brand should stack logo exactly above title as one tighter centered unit inside nav",
+    /<span className="brand-title">数学小讲师联盟<\/span>/,
+    "brand title should have a stable class for global cache-busting CSS overrides",
   );
   assert.match(
     navbar,
-    /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*width:\s*26px[^}]*height:\s*16px[^}]*max-width:\s*26px[^}]*max-height:\s*16px[^}]*flex:\s*0 0 26px/s,
-    "desktop logo should be locked smaller than the previous 34x21 size",
+    /\.forest-brand\s*\{[^}]*flex-direction:\s*column[^}]*align-items:\s*center[^}]*gap:\s*0[^}]*width:\s*78px[^}]*max-width:\s*78px/s,
+    "desktop brand should stack logo exactly above title as one centered option-B unit",
   );
   assert.match(
     navbar,
-    /\.forest-brand span\s*\{[^}]*font-size:\s*12px[^}]*line-height:\s*1\.05[^}]*white-space:\s*nowrap/s,
-    "desktop brand title should stay compact under the logo",
+    /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*width:\s*70px[^}]*height:\s*43px[^}]*max-width:\s*70px[^}]*max-height:\s*43px[^}]*flex:\s*0 0 43px/s,
+    "desktop option-B logo should visually match the one-line brand title width",
+  );
+  assert.match(
+    navbar,
+    /\.forest-brand\s+\.brand-title\s*\{[^}]*font-size:\s*10px[^}]*line-height:\s*1\.05[^}]*white-space:\s*nowrap/s,
+    "desktop brand title should sit tightly centered under the option-B logo",
   );
   assert.match(
     phoneBlock,
@@ -36,20 +41,25 @@ test("brand logo and title are a compact stacked unit on desktop and phone", () 
   );
   assert.match(
     phoneBlock,
-    /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*width:\s*22px[^}]*height:\s*14px[^}]*max-width:\s*22px[^}]*max-height:\s*14px[^}]*flex:\s*0 0 22px/s,
-    "phone logo should be smaller than the previous 28x17 size and locked so the brand does not overflow",
+    /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*width:\s*57px[^}]*height:\s*35px[^}]*max-width:\s*57px[^}]*max-height:\s*35px[^}]*flex:\s*0 0 35px/s,
+    "phone option-B logo should remain aligned with the title while saving vertical space",
   );
 });
 
-test("logged-out login button has its own obvious border, not only the logout button", () => {
+test("logged-out navbar removes the Login button while keeping real login routes reachable elsewhere", () => {
+  assert.doesNotMatch(
+    navbar,
+    /<Link className="login" href="\/login">登录<\/Link>/,
+    "logged-out navbar should not render the ugly standalone Login pill",
+  );
   assert.match(
     navbar,
-    /\.login\s*\{[^}]*border:\s*2px solid #184638[^}]*box-shadow:\s*0 0 0 4px rgba\(255, 209, 102, 0\.28\)/s,
-    "logged-out login pill should have an explicit, highly visible border of its own",
+    /callbackUrl:\s*"\/math-young-lecturer\/login"/,
+    "auth flow should still keep the real login page route for protected-entry redirects and logout callback",
   );
   assert.match(
     navbar,
     /\.logout\s*\{[^}]*border:\s*1\.5px solid rgba\(24, 70, 56, 0\.34\)/s,
-    "logout may remain visually consistent but should not be the only bordered account button",
+    "logout may remain visible for signed-in users, but the logged-out Login pill is removed",
   );
 });
