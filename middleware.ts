@@ -11,7 +11,7 @@ import {
 } from "./lib/role-access-boundary-rules";
 
 const BASE_PATH = "/math-young-lecturer";
-const NO_STORE_PAGE_PATHS = new Set(["/login", "/profile"]);
+const NO_STORE_PAGE_PATHS = new Set(["/", "/qa", "/projects", "/hall", "/login", "/profile"]);
 const NO_STORE_CACHE_CONTROL = "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
 
 function stripBasePath(pathname: string) {
@@ -111,6 +111,7 @@ export async function middleware(req: NextRequest) {
 export const config = {
   matcher: [
     "/api/:path*",
+    "/",
     "/login",
     "/profile",
     "/register",
