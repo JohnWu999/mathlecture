@@ -303,10 +303,11 @@ export default function Navbar() {
             justify-content: center;
             align-items: center;
             gap: 0;
-            width: 76px;
-            max-width: 76px;
-            min-width: 76px;
+            width: 70px;
+            max-width: 70px;
+            min-width: 70px;
             min-height: 48px;
+            overflow: visible;
             line-height: 1.05;
             text-align: center;
           }
@@ -322,7 +323,7 @@ export default function Navbar() {
             display: block;
             font-size: 9px;
             line-height: 1.05;
-            letter-spacing: 0.02em;
+            letter-spacing: -0.02em;
             white-space: nowrap;
           }
           .mobile-quick-links {

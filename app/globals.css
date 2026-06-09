@@ -1502,6 +1502,7 @@ p {
   width: 78px !important;
   min-width: 78px !important;
   max-width: 78px !important;
+  overflow: visible !important;
   gap: 0 !important;
   align-items: center !important;
   justify-content: center !important;
@@ -1539,9 +1540,10 @@ p {
 }
 @media (max-width: 620px) {
   .forest-site-nav .forest-brand {
-    width: 76px !important;
-    min-width: 76px !important;
-    max-width: 76px !important;
+    width: 70px !important;
+    min-width: 70px !important;
+    max-width: 70px !important;
+    overflow: visible !important;
   }
   .forest-site-nav .forest-brand .brand-logo-mark {
     width: 57px !important;
