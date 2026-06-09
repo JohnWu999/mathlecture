@@ -176,7 +176,7 @@ export default function QuestionDetailPage() {
   const heatPrompt = getHeatPrompt({ heatCount: question.heatCount || 0, hasHeated: false });
   const claimCopy = formatClaimDeadline({ claimExpiresAt: question.claimExpiresAt || undefined });
   const isLoggedIn = Boolean(session?.user);
-  const loginToQuestionHref = `/math-young-lecturer/login?callbackUrl=/math-young-lecturer/qa/question/${id}`;
+  const loginToQuestionHref = `/login?callbackUrl=/math-young-lecturer/qa/question/${id}`;
 
   return (
     <main className="forest-page-shell">

@@ -19,7 +19,8 @@ test('stage1g P0-3 project detail keeps public introduction open but gates regis
   assert.match(source, /登录后报名/, 'unauthenticated registration CTA should be labeled as login-bound');
   assert.match(source, /登录后查看项目权益/, 'unauthenticated rights/access CTA should be labeled as login-bound');
   assert.match(source, /登录后提交项目成果/, 'unauthenticated artifact CTA should be labeled as login-bound');
-  assert.match(source, /\/math-young-lecturer\/login\?callbackUrl=\/math-young-lecturer\/projects\//, 'login CTAs should preserve callback to the current project');
+  assert.match(source, /\/login\?callbackUrl=\/math-young-lecturer\/projects\//, 'login CTAs should use app-relative login path and preserve callback to the current project');
+  assert.doesNotMatch(source, /\/math-young-lecturer\/login\?callbackUrl=\/math-young-lecturer\/projects\//, 'Next Link should not include basePath in project login href because Next will prefix basePath and create double-base URLs');
   const gateIndex = source.indexOf('{!isLoggedIn && status !== "loading" && (');
   const formIndex = source.indexOf('<form onSubmit={handleRegister}');
   assert.ok(gateIndex >= 0 && formIndex >= 0 && gateIndex < formIndex, 'unauthenticated login gate should appear before the full registration form branch');

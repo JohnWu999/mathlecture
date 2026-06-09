@@ -59,7 +59,7 @@ export default function QAPage() {
   };
 
   const isLoggedIn = Boolean(session?.user);
-  const loginToQaHref = "/math-young-lecturer/login?callbackUrl=/math-young-lecturer/qa";
+  const loginToQaHref = "/login?callbackUrl=/math-young-lecturer/qa";
 
   return (
     <main className="forest-page-shell">
@@ -75,7 +75,7 @@ export default function QAPage() {
             </p>
           </div>
           <div className="flex gap-3 flex-wrap">
-            <Link href={isLoggedIn ? "/qa/ask" : "/math-young-lecturer/login?callbackUrl=/math-young-lecturer/qa/ask"} className="hand-btn hand-btn-yellow">
+            <Link href={isLoggedIn ? "/qa/ask" : "/login?callbackUrl=/math-young-lecturer/qa/ask"} className="hand-btn hand-btn-yellow">
               {isLoggedIn ? "我要提问" : "登录后提问"}
             </Link>
             <a href="#claimable" className="hand-btn hand-btn-green">

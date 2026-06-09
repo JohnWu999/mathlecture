@@ -19,7 +19,8 @@ test('stage1g P0-2 qa public page keeps browsing open but labels interactions as
   assert.match(source, /登录后提问/, 'ask CTA should be labeled as login-bound for unauthenticated users');
   assert.match(source, /登录后认领/, 'claim CTA should be labeled as login-bound for unauthenticated users');
   assert.match(source, /登录后加热度/, 'heat CTA should be labeled as login-bound for unauthenticated users');
-  assert.match(source, /\/math-young-lecturer\/login\?callbackUrl=\/math-young-lecturer\/qa/, 'qa login CTA should preserve callback to qa page');
+  assert.match(source, /\/login\?callbackUrl=\/math-young-lecturer\/qa/, 'qa login CTA should use app-relative login path and preserve deployed callback to qa page');
+  assert.doesNotMatch(source, /\/math-young-lecturer\/login\?callbackUrl=\/math-young-lecturer\/qa/, 'Next Link should not include basePath in its login href because Next will prefix basePath and create double-base URLs');
   assert.doesNotMatch(source, /router\.push\(`\/login\?callbackUrl=\$\{encodeURIComponent\(pathname \|\| "\/qa"\)\}`\)/, 'qa page should not silently redirect unauthenticated heat clicks without explaining the login boundary');
 });
 
@@ -36,7 +37,8 @@ test('stage1g P0-2 question detail page separates public reading from login-boun
   assert.match(source, /登录后加热度/, 'heat action should show a login-bound CTA for unauthenticated users');
   assert.match(source, /登录后认领这道题/, 'claim action should show a login-bound CTA for unauthenticated users');
   assert.match(source, /登录后提交讲解/, 'answer submission should show a login-bound CTA for unauthenticated users');
-  assert.match(source, /\/math-young-lecturer\/login\?callbackUrl=\/math-young-lecturer\/qa\/question\//, 'detail login CTAs should preserve callback to the current question');
+  assert.match(source, /\/login\?callbackUrl=\/math-young-lecturer\/qa\/question\//, 'detail login CTAs should use app-relative login path and preserve callback to the current question');
+  assert.doesNotMatch(source, /\/math-young-lecturer\/login\?callbackUrl=\/math-young-lecturer\/qa\/question\//, 'Next Link should not include basePath in detail login href because Next will prefix basePath and create double-base URLs');
   assert.doesNotMatch(source, /router\.push\(`\/login\?callbackUrl=\$\{encodeURIComponent\(pathname \|\| `\/qa\/question\/\$\{id\}`\)\}`\)/, 'detail page should not silently redirect unauthenticated heat or claim clicks without explaining the login boundary');
 });
 

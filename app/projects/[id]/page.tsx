@@ -55,7 +55,7 @@ export default function ProjectDetailPage() {
   const [contact, setContact] = useState("");
   const [note, setNote] = useState("");
   const isLoggedIn = !!session?.user;
-  const loginToProjectHref = `/math-young-lecturer/login?callbackUrl=/math-young-lecturer/projects/${id}`;
+  const loginToProjectHref = `/login?callbackUrl=/math-young-lecturer/projects/${id}`;
 
   useEffect(() => {
     fetch(`/math-young-lecturer/api/projects/${id}`)
