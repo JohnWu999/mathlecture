@@ -20,13 +20,13 @@ test('profile page shell can open directly while profile API remains protected',
   assert.match(profileApi, /if \(!user\)\s*\{[\s\S]*?status:\s*404/, 'profile API should handle stale sessions whose user no longer exists instead of returning null data that crashes the page');
 });
 
-test('phone navbar removes the folding menu button and right-aligns page-title text', () => {
+test('phone navbar removes the folding menu button and centers the compact brand/navigation block', () => {
   const block = phoneBlock();
   assert.match(block, /\.menu-button\s*\{[^}]*display:\s*none/, 'phone navbar should remove the folding menu button');
   assert.match(block, /\.mobile-menu\s*\{[^}]*display:\s*none/, 'phone dropdown menu should not appear on phones when page-title links are visible');
   assert.match(navbar, /<svg\s+className="brand-logo-mark"/, 'Logo SVG must carry an explicit class so styled-jsx can target the child component');
-  assert.match(block, /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*width:\s*14px[^}]*height:\s*9px/, 'phone Logo should be materially smaller and locked to 14x9 through a global logo selector');
-  assert.match(block, /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*max-width:\s*14px[^}]*max-height:\s*9px[^}]*flex:\s*0 0 14px/, 'phone Logo should lock max size and flex basis so it cannot be stretched');
-  assert.match(block, /\.mobile-quick-links\s*\{[^}]*justify-content:\s*flex-end/, 'phone page-title text should align to the right');
-  assert.match(block, /\.mobile-quick-links\s*\{[^}]*text-align:\s*right/, 'phone page-title text should use right text alignment');
+  assert.match(block, /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*width:\s*28px[^}]*height:\s*17px/, 'phone Logo should stay compact and visible through a global logo selector');
+  assert.match(block, /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*max-width:\s*28px[^}]*max-height:\s*17px[^}]*flex:\s*0 0 28px/, 'phone Logo should lock max size and flex basis so it cannot be stretched');
+  assert.match(block, /\.mobile-quick-links\s*\{[^}]*justify-content:\s*center/, 'phone page-title text should align with the centered compact brand block');
+  assert.match(block, /\.mobile-quick-links\s*\{[^}]*text-align:\s*center/, 'phone page-title text should use centered text alignment');
 });

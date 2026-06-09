@@ -8,6 +8,7 @@ import { getPersonalCenterHrefForRole } from "@/lib/role-access-boundary-rules.m
 import { PUBLIC_PROFILE_HREF } from "@/lib/public-entry-hrefs.mjs";
 
 const baseLinks = [
+  { href: "/", label: "首页" },
   { href: "/qa", label: "你问我答" },
   { href: "/projects", label: "项目营" },
   { href: "/hall", label: "成果广场" },
@@ -123,36 +124,57 @@ export default function Navbar() {
           position: sticky;
           top: 0;
           z-index: 80;
-          min-height: 76px;
+          min-height: 72px;
           background: rgba(255, 248, 232, 0.82);
           backdrop-filter: blur(18px);
           border-bottom: 1px solid rgba(24, 70, 56, 0.08);
           color: #184638;
         }
         .nav-inner {
-          height: 76px;
+          height: 72px;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 24px;
-          padding: 0 56px;
+          gap: 20px;
+          padding: 0 48px;
         }
         .forest-brand {
           display: flex;
+          flex-direction: column;
           align-items: center;
-          gap: 12px;
-          min-width: max-content;
+          justify-content: center;
+          gap: 2px;
+          width: 84px;
+          max-width: 84px;
+          min-width: 84px;
+          min-height: 54px;
+          overflow: hidden;
           font-weight: 950;
           letter-spacing: -0.02em;
+          line-height: 1.05;
           color: #184638;
+          text-align: center;
           text-decoration: none;
         }
-        .forest-brand :global(.brand-logo-mark) { width: 56px; height: 38px; }
+        .forest-brand :global(.brand-logo-mark) {
+          width: 34px;
+          height: 21px;
+          max-width: 34px;
+          max-height: 21px;
+          flex: 0 0 34px;
+          display: block;
+        }
+        .forest-brand span {
+          display: block;
+          font-size: 12px;
+          line-height: 1.05;
+          white-space: nowrap;
+        }
         .forest-navlinks {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 26px;
+          gap: 22px;
           flex: 1;
           font-size: 15px;
           font-weight: 850;
@@ -210,9 +232,10 @@ export default function Navbar() {
         }
         .login,
         .logout {
-          border: 1px solid rgba(24, 70, 56, 0.12);
+          border: 1.5px solid rgba(24, 70, 56, 0.34);
           border-radius: 999px;
-          background: rgba(255, 255, 255, 0.62);
+          background: rgba(255, 255, 255, 0.72);
+          box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.18);
           padding: 10px 14px;
           font-size: 14px;
           font-weight: 850;
@@ -259,10 +282,10 @@ export default function Navbar() {
           .mobile-menu { display: block; }
         }
         @media (max-width: 620px) {
-          .forest-site-nav { min-height: 94px; }
+          .forest-site-nav { min-height: 96px; }
           .nav-inner {
             height: auto;
-            min-height: 94px;
+            min-height: 96px;
             display: grid;
             grid-template-columns: 1fr;
             grid-template-rows: auto auto;
@@ -276,25 +299,30 @@ export default function Navbar() {
           .forest-brand {
             grid-column: 1 / -1;
             grid-row: 1;
+            justify-self: center;
             flex-direction: column;
             justify-content: center;
-            align-items: flex-end;
-            gap: 1px;
-            min-width: 0;
+            align-items: center;
+            gap: 2px;
+            width: 84px;
+            max-width: 84px;
+            min-width: 84px;
+            min-height: 48px;
             line-height: 1.05;
-            text-align: right;
+            text-align: center;
           }
           .forest-brand :global(.brand-logo-mark) {
-            width: 14px;
-            height: 9px;
-            max-width: 14px;
-            max-height: 9px;
-            flex: 0 0 14px;
+            width: 28px;
+            height: 17px;
+            max-width: 28px;
+            max-height: 17px;
+            flex: 0 0 28px;
             display: block;
           }
           .forest-brand span {
             display: block;
             font-size: 11px;
+            line-height: 1.05;
             letter-spacing: 0.02em;
             white-space: nowrap;
           }
@@ -306,8 +334,8 @@ export default function Navbar() {
             max-width: 100%;
             overflow-x: auto;
             overflow-y: hidden;
-            justify-content: flex-end;
-            text-align: right;
+            justify-content: center;
+            text-align: center;
             padding: 0;
             scrollbar-width: none;
           }

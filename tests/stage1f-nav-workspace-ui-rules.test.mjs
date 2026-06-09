@@ -10,7 +10,7 @@ const admin = read("../app/admin/page.tsx");
 const css = read("../app/globals.css");
 
 test("global navbar stays concise and removes the duplicate standalone ask CTA", () => {
-  assert.match(navbar, /const baseLinks = \[[\s\S]*你问我答[\s\S]*项目营[\s\S]*成果广场[\s\S]*\]/, "navbar should keep the three shared primary page links");
+  assert.match(navbar, /const baseLinks = \[[\s\S]*首页[\s\S]*你问我答[\s\S]*项目营[\s\S]*成果广场[\s\S]*\]/, "navbar should keep 首页 plus the shared primary page links");
   assert.match(navbar, /label:\s*"个人中心"[\s\S]*href:\s*personalCenterHref/, "navbar should keep one role-aware personal center entry");
   assert.doesNotMatch(navbar, /className="ask"[^>]*>我要提问<\/Link>/, "desktop nav should not add a separate 我要提问 pill beside login");
   assert.doesNotMatch(navbar, /className="mobile-ask"[^>]*>我要提问<\/Link>/, "mobile menu should not duplicate 我要提问 when 你问我答 already leads to the question flow");
