@@ -13,7 +13,7 @@ import {
 
 export default function AskPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [title, setTitle] = useState("");
   const [suggestedTitle, setSuggestedTitle] = useState("");
   const [content, setContent] = useState("");
@@ -50,7 +50,7 @@ export default function AskPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session?.user) {
-      setError("请先登录。登录后，我们才能把这个问题放进你的成长记录里。");
+      setError("请先登录。登录后，我们才能把这个问题放进你的成长记录里，并在老师讲解完成后收到反馈。");
       return;
     }
 
@@ -105,6 +105,74 @@ export default function AskPage() {
       setUploadingImage(false);
     }
   };
+
+  if (status === "loading") {
+    return (
+      <main className="forest-page-shell">
+        <Navbar />
+        <section className="forest-page-content forest-page-content-narrow">
+          <div className="forest-page-hero text-center">
+            <span className="forest-v2-icon forest-icon-seed mb-3" aria-hidden="true" />
+            <h1 className="forest-page-title handwritten-title infinity-title">我要提问</h1>
+            <p className="text-ink-light mt-1">正在确认登录状态...</p>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  if (status !== "loading" && !session?.user) {
+    return (
+      <main className="forest-page-shell">
+        <Navbar />
+        <section className="forest-page-content forest-page-content-narrow">
+          <div className="forest-page-hero text-center">
+            <span className="forest-v2-icon forest-icon-seed mb-3" aria-hidden="true" />
+            <h1 className="forest-page-title handwritten-title infinity-title">登录后提问</h1>
+            <p className="text-ink-light mt-1">
+              你可以先浏览公开问题；如果想把自己的问题交给老师和小讲师，需要先登录或注册。
+            </p>
+          </div>
+
+          <div className="forest-panel text-center space-y-5" role="status">
+            <div className="forest-info-card text-left">
+              <span className="forest-v2-icon forest-icon-note" aria-hidden="true" />
+              <div>
+                <p className="text-sm font-bold text-ink">为什么提问需要登录？</p>
+                <p className="text-sm text-ink-light mt-1 leading-relaxed">
+                  提问需要登录后进行。这样老师讲解完成后，我们才能把讲解视频和反馈准确推送给你，也能把这个问题放进你的成长记录里。
+                </p>
+              </div>
+            </div>
+
+            <div className="forest-card-grid three text-left">
+              <div className="forest-note-card">
+                <p className="text-xs font-bold text-ink">可以先浏览</p>
+                <p className="text-[11px] text-ink-light mt-1 leading-relaxed">首页、成果广场、公开问题和项目介绍都可以先看。</p>
+              </div>
+              <div className="forest-note-card">
+                <p className="text-xs font-bold text-ink">互动要绑定账号</p>
+                <p className="text-[11px] text-ink-light mt-1 leading-relaxed">提问、讲解、采纳和报名会产生真实记录，需要可追踪身份。</p>
+              </div>
+              <div className="forest-note-card">
+                <p className="text-xs font-bold text-ink">反馈能送回来</p>
+                <p className="text-[11px] text-ink-light mt-1 leading-relaxed">老师审核、讲解视频和后续提醒才能准确回到提问者。</p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-3">
+              <a href="/math-young-lecturer/login?callbackUrl=/math-young-lecturer/qa/ask" className="hand-btn hand-btn-yellow">
+                去登录 / 注册
+              </a>
+              <a href="/math-young-lecturer/qa" className="hand-btn hand-btn-white">
+                先浏览公开问题
+              </a>
+            </div>
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="forest-page-shell">
@@ -210,7 +278,7 @@ export default function AskPage() {
 
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={isAnonymous} onChange={(e) => setIsAnonymous(e.target.checked)} className="w-4 h-4 rounded border-ink/30 text-crayon-green focus:ring-crayon-green" />
-              <span className="text-sm text-ink-light">匿名提问（保护提问安全感）</span>
+              <span className="text-sm text-ink-light">公开展示时隐藏孩子姓名（后台仍会记录账号，方便老师反馈）</span>
             </label>
 
             <button type="submit" disabled={loading} className="hand-btn w-full bg-crayon-green text-ink disabled:opacity-50">
