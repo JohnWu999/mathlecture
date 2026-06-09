@@ -143,11 +143,11 @@ export default function Navbar() {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          gap: 2px;
-          width: 84px;
-          max-width: 84px;
-          min-width: 84px;
-          min-height: 54px;
+          gap: 0;
+          width: 76px;
+          max-width: 76px;
+          min-width: 76px;
+          min-height: 44px;
           overflow: hidden;
           font-weight: 950;
           letter-spacing: -0.02em;
@@ -157,11 +157,11 @@ export default function Navbar() {
           text-decoration: none;
         }
         .forest-brand :global(.brand-logo-mark) {
-          width: 34px;
-          height: 21px;
-          max-width: 34px;
-          max-height: 21px;
-          flex: 0 0 34px;
+          width: 26px;
+          height: 16px;
+          max-width: 26px;
+          max-height: 16px;
+          flex: 0 0 26px;
           display: block;
         }
         .forest-brand span {
@@ -232,16 +232,23 @@ export default function Navbar() {
         }
         .login,
         .logout {
-          border: 1.5px solid rgba(24, 70, 56, 0.34);
           border-radius: 999px;
           background: rgba(255, 255, 255, 0.72);
-          box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.18);
           padding: 10px 14px;
           font-size: 14px;
           font-weight: 850;
           color: #184638;
         }
-        .logout { cursor: pointer; }
+        .login {
+          border: 2px solid #184638;
+          background: #fffdf5;
+          box-shadow: 0 0 0 4px rgba(255, 209, 102, 0.28);
+        }
+        .logout {
+          border: 1.5px solid rgba(24, 70, 56, 0.34);
+          box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.18);
+          cursor: pointer;
+        }
         .muted { color: #435f54; }
         .menu-button {
           display: none;
@@ -303,20 +310,20 @@ export default function Navbar() {
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 2px;
-            width: 84px;
-            max-width: 84px;
-            min-width: 84px;
-            min-height: 48px;
+            gap: 0;
+            width: 76px;
+            max-width: 76px;
+            min-width: 76px;
+            min-height: 38px;
             line-height: 1.05;
             text-align: center;
           }
           .forest-brand :global(.brand-logo-mark) {
-            width: 28px;
-            height: 17px;
-            max-width: 28px;
-            max-height: 17px;
-            flex: 0 0 28px;
+            width: 22px;
+            height: 14px;
+            max-width: 22px;
+            max-height: 14px;
+            flex: 0 0 22px;
             display: block;
           }
           .forest-brand span {

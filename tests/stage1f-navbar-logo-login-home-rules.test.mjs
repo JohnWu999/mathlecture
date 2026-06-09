@@ -16,13 +16,13 @@ test("navbar adds 首页 before 你问我答 for returning from subpages", () =>
 test("brand logo and title are a compact stacked unit on desktop and phone", () => {
   assert.match(
     navbar,
-    /\.forest-brand\s*\{[^}]*flex-direction:\s*column[^}]*align-items:\s*center[^}]*gap:\s*2px[^}]*max-width:\s*84px/s,
-    "desktop brand should stack logo above title as one compact unit inside nav",
+    /\.forest-brand\s*\{[^}]*flex-direction:\s*column[^}]*align-items:\s*center[^}]*gap:\s*0[^}]*max-width:\s*76px/s,
+    "desktop brand should stack logo exactly above title as one tighter centered unit inside nav",
   );
   assert.match(
     navbar,
-    /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*width:\s*34px[^}]*height:\s*21px[^}]*max-width:\s*34px[^}]*max-height:\s*21px[^}]*flex:\s*0 0 34px/s,
-    "desktop logo should be locked to a smaller non-overflowing size",
+    /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*width:\s*26px[^}]*height:\s*16px[^}]*max-width:\s*26px[^}]*max-height:\s*16px[^}]*flex:\s*0 0 26px/s,
+    "desktop logo should be locked smaller than the previous 34x21 size",
   );
   assert.match(
     navbar,
@@ -36,15 +36,20 @@ test("brand logo and title are a compact stacked unit on desktop and phone", () 
   );
   assert.match(
     phoneBlock,
-    /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*width:\s*28px[^}]*height:\s*17px[^}]*max-width:\s*28px[^}]*max-height:\s*17px[^}]*flex:\s*0 0 28px/s,
-    "phone logo should be small but visible and locked so the brand does not overflow",
+    /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*width:\s*22px[^}]*height:\s*14px[^}]*max-width:\s*22px[^}]*max-height:\s*14px[^}]*flex:\s*0 0 22px/s,
+    "phone logo should be smaller than the previous 28x17 size and locked so the brand does not overflow",
   );
 });
 
-test("login button has a more visible small border", () => {
+test("logged-out login button has its own obvious border, not only the logout button", () => {
   assert.match(
     navbar,
-    /\.login,\s*\n\s*\.logout\s*\{[^}]*border:\s*1\.5px solid rgba\(24, 70, 56, 0\.34\)[^}]*box-shadow:\s*0 0 0 3px rgba\(255, 209, 102, 0\.18\)/s,
-    "login/logout pills should have a clearer small border and subtle halo",
+    /\.login\s*\{[^}]*border:\s*2px solid #184638[^}]*box-shadow:\s*0 0 0 4px rgba\(255, 209, 102, 0\.28\)/s,
+    "logged-out login pill should have an explicit, highly visible border of its own",
+  );
+  assert.match(
+    navbar,
+    /\.logout\s*\{[^}]*border:\s*1\.5px solid rgba\(24, 70, 56, 0\.34\)/s,
+    "logout may remain visually consistent but should not be the only bordered account button",
   );
 });

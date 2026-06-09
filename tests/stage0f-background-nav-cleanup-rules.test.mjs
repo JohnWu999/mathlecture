@@ -54,7 +54,7 @@ test('phone navbar stacks the brand vertically and gives page titles their own r
   assert.match(phoneBlock, /\.nav-inner\s*\{[^}]*grid-template-rows:\s*auto auto/, 'phone nav should use two rows: brand row and page-title row');
   assert.match(phoneBlock, /\.forest-brand\s*\{[^}]*flex-direction:\s*column/, 'phone brand should place title directly below the Logo');
   assert.match(phoneBlock, /\.forest-brand span\s*\{[^}]*display:\s*block/, 'phone brand text 数学小讲师联盟 should be visible under the Logo');
-  assert.match(phoneBlock, /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*width:\s*28px[^}]*height:\s*17px/, 'phone Logo should be compact, visible, and target the child SVG globally');
+  assert.match(phoneBlock, /\.forest-brand\s+:global\(\.brand-logo-mark\)\s*\{[^}]*width:\s*22px[^}]*height:\s*14px/, 'phone Logo should be compact, visible, and target the child SVG globally');
   assert.match(phoneBlock, /\.mobile-quick-links\s*\{[^}]*grid-column:\s*1 \/ -1/, 'phone page-title links should occupy a full-width row instead of sharing cramped space with the Logo');
   assert.match(phoneBlock, /\.mobile-quick-links\s*\{[^}]*overflow-x:\s*auto/, 'phone page-title row should allow horizontal scroll rather than text overlap on narrow screens');
 });
