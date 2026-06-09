@@ -1,0 +1,7 @@
+{
+  "commit": "7254c29",
+  "branch": "batch9/review-authorization",
+  "stage": "stage1g-p05-anonymous-display-identity-copy",
+  "deployedAt": "2026-06-09T11:13:20Z",
+  "note": "No secrets included. P0-5 anonymous public display copy and identity-tracked author display deployment."
+}
