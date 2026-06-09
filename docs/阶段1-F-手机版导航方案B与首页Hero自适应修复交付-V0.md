@@ -2,7 +2,7 @@
 
 时间：2026-06-09 10:25 CST  
 线上地址：http://159.75.144.28/math-young-lecturer  
-当前状态：本地代码修复、规则测试、构建已完成；公网部署待恢复服务器 SSH/部署凭据后执行。
+当前状态：已完成本地代码修复、规则测试、生产构建、公网部署、PM2 reload 与移动端公网复验。
 
 ## 1. 用户反馈
 
@@ -95,32 +95,38 @@ node --test tests/stage1f-mobile-navbar-home-hero-fit-rules.test.mjs tests/stage
 - 相关规则测试：`24/24` 通过；
 - `npm run build`：通过，Next.js 生产构建成功。
 
-## 6. 部署状态说明
+## 6. 部署状态
 
-本轮我已完成本地代码修复、失败测试验证、修复后测试与生产构建。
+本轮已完成公网部署：
 
-但当前会话内尝试连接生产服务器 `159.75.144.28` 时，现有可用 SSH 身份均返回：
+- 远端目录：`/var/www/math-young-lecturer`
+- PM2 应用：`math-young-lecturer`
+- PM2 状态：online
+- script path：`/var/www/math-young-lecturer/server.js`
+- exec cwd：`/var/www/math-young-lecturer`
+- unstable restarts：0
 
-```text
-Permission denied (publickey,password)
-```
+部署后使用 iPhone/Safari UA 完成公网复验。
 
-因此本轮尚未完成公网部署与 PM2 reload。为避免误报，我不把“本地修复已完成”说成“线上已部署”。
+## 7. 公网验证结果
 
-待服务器部署权限恢复后，需要执行：
+| 验证项 | 结果 |
+| --- | --- |
+| `/math-young-lecturer` | 200，no-store |
+| `/math-young-lecturer/login` | 200，no-store |
+| `/math-young-lecturer/qa` | 200，no-store |
+| `/math-young-lecturer/projects` | 200，no-store |
+| `/math-young-lecturer/hall` | 200，no-store |
+| `/math-young-lecturer/teacher` 未登录 | 307 → `/math-young-lecturer/login` |
+| `/math-young-lecturer/admin` 未登录 | 307 → `/math-young-lecturer/login` |
+| `/math-young-lecturer/profile` 未登录 | 307 → `/math-young-lecturer/login` |
+| 首页未登录导航 | 不含【登录】文字 |
+| 线上 CSS | 已含手机品牌容器 `70px`、`overflow:visible`、Logo `57px × 35px` |
+| 线上 JS | 已含 Hero 手机自适应规则：标题 `clamp(32px,10.4vw,40px)`、`.hi white-space:normal`、`.world max-width:100%`、问题卡片 `max-width:calc(100% - 24px)` |
 
-1. 同步 standalone build 到 `/var/www/math-young-lecturer`；
-2. 同步 `.next/static`、`public`、必要根目录 `node_modules`；
-3. reload PM2 应用 `math-young-lecturer`；
-4. 用手机 UA 公网验证首页、CSS/JS 内容与 no-store 缓存头。
+## 8. 保留边界
 
-## 7. 尚待公网验证清单
-
-恢复部署权限后必须验证：
-
-- `/math-young-lecturer`：200，no-store；
-- 手机端首页 HTML/JS/CSS 含方案 B 手机规则：品牌容器 `70px`、Logo `57px × 35px`、`overflow: visible`；
-- 首页 Hero 手机规则生效：`clamp(32px,10.4vw,40px)`、`.hi white-space: normal`、`.world width/max-width:100%`、`.question-card max-width:calc(100% - 24px)`；
-- 导航栏未登录态仍不恢复【登录】按钮；
+- 未恢复导航栏未登录态【登录】按钮；
 - `/login` 页面仍保留真实登录能力；
-- `/teacher`、`/admin`、`/profile` 未登录仍 307 到 `/math-young-lecturer/login`。
+- `/teacher`、`/admin`、`/profile` 未登录仍跳转到登录页；
+- 本轮仅处理用户反馈的手机版方案 B 与首页 Hero 自适应，不展开处理阶段1-F剩余的数据语义冲突、成果广场空状态、历史答案状态清理与 alert 替换。
