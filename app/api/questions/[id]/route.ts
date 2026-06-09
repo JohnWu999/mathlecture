@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { maskQuestionAuthorForPublicDisplay, getQuestionPublicAuthorDisplay } from "@/lib/identity-display-rules.mjs";
 
 export const dynamic = "force-dynamic";
 
@@ -37,12 +38,21 @@ export async function GET(
     }
 
     const isOwner = session?.user?.id === question.authorId;
+    const canSeePrivateAuthor = isOwner || canReviewQuestions(session);
     if (question.reviewStatus !== "APPROVED" && !isOwner && !canReviewQuestions(session)) {
       return NextResponse.json({ error: "问题还在老师审核中" }, { status: 403 });
     }
 
+    const viewer = { sessionUserId: session?.user?.id, sessionRole: session?.user?.role };
+    const publicAuthorDisplayName = getQuestionPublicAuthorDisplay(question, viewer);
+    const safeQuestion = {
+      ...maskQuestionAuthorForPublicDisplay(question, viewer),
+      publicAuthorDisplayName,
+    };
+
     return NextResponse.json({
-      question,
+      question: safeQuestion,
+      canSeePrivateAuthor,
       sharingRule: "只有审核通过且获得授权的内容，才会进入成果广场。",
     });
   } catch (error) {

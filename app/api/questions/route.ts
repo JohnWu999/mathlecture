@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { normalizeQuestionDraft } from "@/lib/qa-flow-rules.mjs";
+import { maskQuestionAuthorForPublicDisplay, getQuestionPublicAuthorDisplay } from "@/lib/identity-display-rules.mjs";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +31,19 @@ export async function GET(req: Request) {
   const questions = await prisma.question.findMany({
     where,
     orderBy: [{ heatCount: "desc" }, { createdAt: "desc" }],
-    include: {
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      grade: true,
+      topic: true,
+      confusionType: true,
+      heatCount: true,
+      reviewStatus: true,
+      status: true,
+      createdAt: true,
+      isAnonymous: true,
+      authorId: true,
       author: { select: { name: true, region: true } },
       answers: {
         where: { status: "APPROVED", reviewStatus: "APPROVED" },
@@ -40,8 +53,17 @@ export async function GET(req: Request) {
     },
   });
 
+  const safeQuestions = questions.map((question) => {
+    const viewer = { sessionUserId: session?.user?.id, sessionRole: session?.user?.role };
+    const publicAuthorDisplayName = getQuestionPublicAuthorDisplay(question, viewer);
+    return {
+      ...maskQuestionAuthorForPublicDisplay(question, viewer),
+      publicAuthorDisplayName,
+    };
+  });
+
   return NextResponse.json({
-    questions,
+    questions: safeQuestions,
     listRule: "热度只帮助待讲题目排序，不是点赞榜，也不显示排名。",
   });
 }

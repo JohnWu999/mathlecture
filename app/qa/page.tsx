@@ -17,6 +17,7 @@ interface Question {
   reviewStatus?: string;
   status: string;
   createdAt: string;
+  publicAuthorDisplayName: string;
   author: { name: string | null; region: string | null };
   answers: { id: string; status?: string; reviewStatus?: string; shareScope?: string }[];
 }
@@ -127,7 +128,7 @@ export default function QAPage() {
                         <h3 className="font-bold mb-1" style={{ color: "#3E2723" }}>{q.title}</h3>
                         <p className="text-sm line-clamp-2" style={{ color: "#5D4E44" }}>{q.content}</p>
                         <p className="text-xs mt-2" style={{ color: "#8D7E72" }}>
-                          提问人：{q.author.name || "匿名小朋友"} {q.author.region ? `· ${q.author.region}` : ""}
+                          提问人：{q.publicAuthorDisplayName} {q.author.region ? `· ${q.author.region}` : ""}
                         </p>
                       </div>
                     </div>

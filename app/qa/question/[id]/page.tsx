@@ -30,6 +30,7 @@ interface QuestionDetail {
   isAnonymous: boolean;
   createdAt: string;
   authorId: string;
+  publicAuthorDisplayName: string;
   claimedById?: string | null;
   claimedAt?: string | null;
   claimExpiresAt?: string | null;
@@ -207,7 +208,7 @@ export default function QuestionDetailPage() {
           {question.imageUrl && <a href={question.imageUrl} target="_blank" rel="noopener noreferrer" className="text-crayon-blue text-sm underline">📷 查看题目图片</a>}
           {question.recognizedText && <div className="mt-3 p-3 rounded-xl bg-paper text-sm text-ink-light whitespace-pre-wrap">{question.recognizedText}</div>}
           <p className="text-ink-light leading-relaxed whitespace-pre-wrap mt-3">{question.content}</p>
-          <p className="text-xs text-ink-light mt-3">提问人：{question.isAnonymous ? "匿名小朋友" : question.author.name || "小朋友"}</p>
+          <p className="text-xs text-ink-light mt-3">提问人：{question.publicAuthorDisplayName}</p>
           <div className="mt-4 border-t border-ink/10 pt-3 flex items-center justify-between gap-3 flex-wrap">
             <p className="text-xs text-ink-light max-w-xl">{heatPrompt.helper}</p>
             {isLoggedIn ? (

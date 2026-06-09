@@ -10,6 +10,7 @@ import {
   QUESTION_FORM_STEPS,
   QUESTION_SHARE_OPTIONS,
 } from "@/lib/qa-ui-rules.mjs";
+import { PUBLIC_ANONYMOUS_DISPLAY_COPY } from "@/lib/identity-display-rules.mjs";
 
 export default function AskPage() {
   const router = useRouter();
@@ -278,7 +279,8 @@ export default function AskPage() {
 
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={isAnonymous} onChange={(e) => setIsAnonymous(e.target.checked)} className="w-4 h-4 rounded border-ink/30 text-crayon-green focus:ring-crayon-green" />
-              <span className="text-sm text-ink-light">公开展示时隐藏孩子姓名（后台仍会记录账号，方便老师反馈）</span>
+              {/* 统一文案：公开展示时隐藏孩子姓名（后台仍会记录账号，方便老师反馈） */}
+              <span className="text-sm text-ink-light">{PUBLIC_ANONYMOUS_DISPLAY_COPY}</span>
             </label>
 
             <button type="submit" disabled={loading} className="hand-btn w-full bg-crayon-green text-ink disabled:opacity-50">
