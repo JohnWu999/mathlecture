@@ -61,6 +61,7 @@ export default function QuestionDetailPage() {
   const [description, setDescription] = useState("");
   const [answerShareScope, setAnswerShareScope] = useState("QUESTION_AUTHOR_ONLY");
   const [submitting, setSubmitting] = useState(false);
+  const [acceptingAnswerId, setAcceptingAnswerId] = useState<string | null>(null);
 
   const loadQuestion = () => {
     setLoading(true);
@@ -149,6 +150,18 @@ export default function QuestionDetailPage() {
     }
     setSubmitting(false);
     setUploadingVideo(false);
+  };
+
+  const handleAcceptAnswer = async (answerId: string) => {
+    const res = await fetch(`/math-young-lecturer/api/answers/${answerId}/approve`, { method: "POST" });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) {
+      setMessage(data.growthEnergy?.userMessage || "采纳成功，小讲师会收到讲解成长能量。");
+      setAcceptingAnswerId(null);
+      loadQuestion();
+    } else {
+      setMessage(data.error || "采纳失败");
+    }
   };
 
   const isClaimedByMe = useMemo(() => {
@@ -248,17 +261,23 @@ export default function QuestionDetailPage() {
                 {answer.videoUrl && <a href={answer.videoUrl} target="_blank" rel="noopener noreferrer" className="text-crayon-blue hover:underline text-sm">📹 观看讲题视频</a>}
                 {answer.description && <p className="text-sm text-ink-light mt-1">{answer.description}</p>}
                 {session?.user?.id === question.authorId && answer.status === "PENDING" && question.status !== "RESOLVED" && (
-                  <button
-                    onClick={async () => {
-                      if (!confirm("确认采纳这个回答？采纳后会给小讲师记录私密讲解成长能量。")) return;
-                      const res = await fetch(`/math-young-lecturer/api/answers/${answer.id}/approve`, { method: "POST" });
-                      const data = await res.json().catch(() => ({}));
-                      if (res.ok) { setMessage(data.growthEnergy?.userMessage || "采纳成功，小讲师会收到讲解成长能量。"); loadQuestion(); } else { setMessage(data.error || "采纳失败"); }
-                    }}
-                    className="hand-btn hand-btn-green text-xs mt-3"
-                  >
-                    ✅ 采纳这个讲解
-                  </button>
+                  acceptingAnswerId === answer.id ? (
+                    <div className="forest-note-card p-3 mt-3 text-xs text-ink" role="status">
+                      <p className="font-bold mb-2">确认采纳这个讲解？</p>
+                      <p className="text-ink-light mb-3">采纳会给小讲师记录私密讲解成长能量；老师审核仍是公开展示的前置条件。</p>
+                      <div className="flex flex-wrap gap-2">
+                        <button onClick={() => handleAcceptAnswer(answer.id)} className="hand-btn hand-btn-green text-xs">确认采纳这个讲解</button>
+                        <button onClick={() => setAcceptingAnswerId(null)} className="hand-btn hand-btn-white text-xs">取消</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setAcceptingAnswerId(answer.id)}
+                      className="hand-btn hand-btn-green text-xs mt-3"
+                    >
+                      ✅ 采纳这个讲解
+                    </button>
+                  )
                 )}
               </div>
             ))}

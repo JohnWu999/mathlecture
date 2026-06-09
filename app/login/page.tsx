@@ -25,6 +25,7 @@ export default function LoginPage() {
   const [grade, setGrade] = useState("");
   const [region, setRegion] = useState("海岸城");
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -32,6 +33,7 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setNotice("");
 
     const result = await signIn("credentials", {
       phone,
@@ -59,6 +61,7 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setNotice("");
 
     if (!/^1[3-9]\d{9}$/.test(phone)) {
       setError("请输入正确的手机号");
@@ -81,7 +84,7 @@ export default function LoginPage() {
         return;
       }
 
-      alert("注册成功！请等待老师开放权限后登录");
+      setNotice("注册成功！请等待老师开放权限后登录");
       setMode("login");
       setLoading(false);
     } catch {
@@ -104,6 +107,12 @@ export default function LoginPage() {
         {error && (
           <p className="text-red-500 text-sm text-center mb-4 bg-red-50 py-2 rounded-lg">
             {error}
+          </p>
+        )}
+
+        {notice && (
+          <p role="status" className={`text-sm text-center mb-4 py-2 rounded-lg border ${mode === "login" ? "login" : "register"} ${mode === "login" ? "text-ink bg-crayon-green/20 border-crayon-green/30" : "text-ink bg-crayon-yellow/20 border-crayon-yellow/40"}`}>
+            {notice}
           </p>
         )}
 
@@ -198,7 +207,7 @@ export default function LoginPage() {
             <p className="text-ink-light">
               还没有账号？
               <button
-                onClick={() => { setMode("register"); setError(""); }}
+                onClick={() => { setMode("register"); setError(""); setNotice(""); }}
                 className="text-ink hover:underline font-medium ml-1"
               >
                 立即注册
@@ -208,7 +217,7 @@ export default function LoginPage() {
             <p className="text-ink-light">
               已有账号？
               <button
-                onClick={() => { setMode("login"); setError(""); }}
+                onClick={() => { setMode("login"); setError(""); setNotice(""); }}
                 className="text-ink hover:underline font-medium ml-1"
               >
                 去登录

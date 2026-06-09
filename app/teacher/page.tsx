@@ -66,6 +66,11 @@ interface UserItem {
   createdAt: string;
 }
 
+type TeacherNotice = {
+  message: string;
+  type: "success" | "error" | "info";
+} | null;
+
 export default function TeacherPage() {
   const { data: session } = useSession();
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
@@ -76,6 +81,11 @@ export default function TeacherPage() {
   const [users, setUsers] = useState<UserItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"dashboard" | "questions" | "answers" | "outcomes" | "users">("dashboard");
+  const [notice, setNotice] = useState<TeacherNotice>(null);
+
+  const showTeacherNotice = (message: string, type: TeacherNotice["type"] = "success") => {
+    setNotice({ message, type });
+  };
 
   const isTeacher = session?.user?.role === "TEACHER";
 
@@ -115,9 +125,9 @@ export default function TeacherPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "操作失败");
       setPendingQuestions((prev) => prev.filter((q) => q.id !== id));
-      alert(action === "approve" ? data.growthEnergy?.userMessage || TEACHER_QUESTION_REVIEW_COPY.approveMessage : data.reviewNote || TEACHER_QUESTION_REVIEW_COPY.rejectMessage);
+      showTeacherNotice(action === "approve" ? data.growthEnergy?.userMessage || TEACHER_QUESTION_REVIEW_COPY.approveMessage : data.reviewNote || TEACHER_QUESTION_REVIEW_COPY.rejectMessage);
     } catch (e: any) {
-      alert(e.message || "操作失败");
+      showTeacherNotice(e.message || "操作失败", "error");
     }
   };
 
@@ -131,9 +141,9 @@ export default function TeacherPage() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "操作失败");
       setPendingAnswers((prev) => prev.filter((a) => a.id !== id));
-      alert(action === "approve" ? data.growthEnergy?.userMessage || "已通过，孩子会收到私密讲解成长能量。" : "已退回修改");
+      showTeacherNotice(action === "approve" ? data.growthEnergy?.userMessage || "已通过，孩子会收到私密讲解成长能量。" : "已退回修改");
     } catch (e: any) {
-      alert(e.message || "操作失败");
+      showTeacherNotice(e.message || "操作失败", "error");
     }
   };
 
@@ -153,9 +163,9 @@ export default function TeacherPage() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "操作失败");
       setOutcomes((prev) => prev.filter((item) => item.id !== outcome.id || item.sourceType !== outcome.sourceType));
-      alert(action === "approve" ? "成果审核已完成。" : "已退回成果，作品记录仍保留。");
+      showTeacherNotice(action === "approve" ? "成果审核已完成。" : "已退回成果，作品记录仍保留。");
     } catch (e: any) {
-      alert(e.message || "操作失败");
+      showTeacherNotice(e.message || "操作失败", "error");
     }
   };
 
@@ -169,9 +179,9 @@ export default function TeacherPage() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "操作失败");
       setOutcomes((prev) => prev.filter((item) => item.id !== outcome.id || item.sourceType !== outcome.sourceType));
-      alert(data.message || "公开授权已撤回。");
+      showTeacherNotice(data.message || "公开授权已撤回。");
     } catch (e: any) {
-      alert(e.message || "操作失败");
+      showTeacherNotice(e.message || "操作失败", "error");
     }
   };
 
@@ -184,10 +194,14 @@ export default function TeacherPage() {
       });
       if (res.ok) {
         setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, isActive: activate } : u)));
-        alert(activate ? "已开放基础参与" : "已暂停基础参与");
+        setActiveTab("users");
+        showTeacherNotice(activate ? "已开放基础参与" : "已暂停基础参与");
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showTeacherNotice(data.error || "操作失败", "error");
       }
     } catch (e) {
-      alert("操作失败");
+      showTeacherNotice("操作失败", "error");
     }
   };
 
@@ -207,6 +221,12 @@ export default function TeacherPage() {
           <h1 className="forest-page-title">老师工作台</h1>
           <p className="forest-page-subtitle">先保护孩子表达，再守住数学与公开分享边界。</p>
         </div>
+
+        {notice && (
+          <div role="status" className={`forest-panel mb-4 text-sm text-ink ${notice.type === "error" ? "bg-red-50 border-red-200" : notice.type === "info" ? "bg-crayon-blue/15" : "bg-crayon-green/20"}`}>
+            {notice.message}
+          </div>
+        )}
 
         <div className="forest-workspace-tabs flex gap-2 mb-6 flex-wrap">
           {[
