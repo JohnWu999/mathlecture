@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { canEnterOutcomeHall } from "@/lib/review-authorization-rules.mjs";
+import { getOutcomeHallEmptyState } from "@/lib/outcome-hall-ui-rules.mjs";
 
 export const dynamic = "force-dynamic";
 
@@ -94,6 +95,7 @@ export async function GET() {
 
     return NextResponse.json({
       outcomes,
+      emptyState: getOutcomeHallEmptyState({ totalPublicOutcomes: outcomes.length }),
       authorizationRule: "只有老师审核通过，并获得孩子/家长授权公开的内容，才会进入成果广场。公开授权撤回后，作品会从成果广场下架，但学习记录仍保留。",
       rankingEnabled: false,
     });

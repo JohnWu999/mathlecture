@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Navbar from "@/components/navbar";
 import {
+  OUTCOME_HALL_EMPTY_STATE,
   OUTCOME_HALL_COPY,
   OUTCOME_TYPES,
   SHARE_AUTHORIZATION_COPY,
@@ -27,8 +28,18 @@ interface Outcome {
   createdAt?: string;
 }
 
+interface OutcomeHallEmptyState {
+  state: string;
+  title: string;
+  description: string;
+  primaryActionLabel: string;
+  primaryActionHref: string;
+  secondaryNote?: string;
+}
+
 interface HallData {
   outcomes: Outcome[];
+  emptyState?: OutcomeHallEmptyState;
   authorizationRule: string;
   rankingEnabled: boolean;
 }
@@ -44,6 +55,7 @@ export default function HallPage() {
       .then((d) => {
         setData({
           outcomes: Array.isArray(d.outcomes) ? d.outcomes : [],
+          emptyState: d.emptyState || OUTCOME_HALL_EMPTY_STATE,
           authorizationRule: d.authorizationRule || SHARE_AUTHORIZATION_COPY,
           rankingEnabled: Boolean(d.rankingEnabled),
         });
@@ -53,6 +65,7 @@ export default function HallPage() {
   }, []);
 
   const publicOutcomes = useMemo(() => filterPublicOutcomes(data?.outcomes || []), [data]);
+  const emptyState = data?.emptyState || OUTCOME_HALL_EMPTY_STATE;
   const visibleOutcomes = activeType === "ALL"
     ? publicOutcomes
     : publicOutcomes.filter((item) => item.type === activeType);
@@ -80,7 +93,7 @@ export default function HallPage() {
           ))}
         </div>
 
-        <div className="forest-info-card">
+        <div id="outcome-tabs" className="forest-info-card">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="font-bold text-ink">选择想看的成果</h2>
@@ -109,7 +122,12 @@ export default function HallPage() {
         ) : visibleOutcomes.length === 0 ? (
           <div className="forest-empty">
             <span className="forest-v2-icon forest-icon-seed mb-3" aria-hidden="true" />
-            <p className="text-ink-light">{getOutcomeEmptyCopy(activeType === "ALL" ? "LECTURE" : activeType)}</p>
+            <h2 className="text-xl font-bold text-ink">{emptyState.title}</h2>
+            <p className="text-ink-light leading-relaxed mt-2 max-w-2xl mx-auto">{emptyState.description}</p>
+            <p className="text-sm text-ink-light mt-3">{activeType === "ALL" ? emptyState.secondaryNote : getOutcomeEmptyCopy(activeType)}</p>
+            <a href={emptyState.primaryActionHref} className="hand-btn bg-crayon-yellow text-ink text-sm px-4 py-2 mt-5 inline-flex">
+              {emptyState.primaryActionLabel}
+            </a>
           </div>
         ) : (
           <div className="forest-card-grid three">
