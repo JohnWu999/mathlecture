@@ -195,20 +195,20 @@ export default function TeacherPage() {
   const outcomeTabs = getTeacherOutcomeReviewTabs();
   const studentStatusCopy = getTeacherStudentStatusCopy();
 
-  if (!session?.user) return <main className="forest-page-shell guardian-workbench-shell"><Navbar /><div className="text-center py-20"><p className="text-ink-light">请先登录</p></div></main>;
-  if (!isTeacher) return <main className="forest-page-shell guardian-workbench-shell"><Navbar /><div className="text-center py-20"><div className="text-4xl mb-3">🚫</div><p className="text-ink font-medium">无权访问</p><p className="text-ink-light text-sm mt-1">该页面仅对老师开放</p></div></main>;
+  if (!session?.user) return <main className="forest-page-shell forest-workspace-shell"><Navbar /><div className="text-center py-20"><p className="text-ink-light">请先登录</p></div></main>;
+  if (!isTeacher) return <main className="forest-page-shell forest-workspace-shell"><Navbar /><div className="text-center py-20"><span className="forest-v2-icon forest-icon-question mx-auto mb-3" aria-hidden="true" /><p className="text-ink font-medium">无权访问</p><p className="text-ink-light text-sm mt-1">该页面仅对老师开放</p></div></main>;
 
   return (
-    <main className="forest-page-shell guardian-workbench-shell">
+    <main className="forest-page-shell forest-workspace-shell">
       <Navbar />
-      <section className="forest-page-content guardian-workbench-shell">
-        <div className="guardian-workbench-hero">
+      <section className="forest-page-content forest-workspace-content">
+        <div className="forest-page-hero forest-workspace-hero">
           <span className="forest-page-eyebrow">守林人工作台｜老师</span>
-          <h1 className="text-2xl font-bold text-ink handwritten-title mt-3">📊 老师工作台</h1>
-          <p className="text-ink-light text-sm mt-2">先保护孩子表达，再守住数学与公开分享边界。</p>
+          <h1 className="forest-page-title">老师工作台</h1>
+          <p className="forest-page-subtitle">先保护孩子表达，再守住数学与公开分享边界。</p>
         </div>
 
-        <div className="flex gap-2 mb-6 flex-wrap">
+        <div className="forest-workspace-tabs flex gap-2 mb-6 flex-wrap">
           {[
             { key: "dashboard", label: "📊 数据看板", count: 0 },
             { key: "questions", label: "🌱 审核问题", count: pendingQuestions.length },
@@ -225,7 +225,7 @@ export default function TeacherPage() {
 
         {loading ? <div className="text-center py-12 text-ink-light">加载中...</div> : activeTab === "dashboard" ? (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 guardian-card">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 forest-card-grid three">
               {[
                 { label: "总用户", value: dashboard?.totalUsers || 0, icon: "👤", color: "sticker-blue" },
                 { label: "总问题", value: dashboard?.totalQuestions || 0, icon: "🙋", color: "sticker-green" },
@@ -233,23 +233,23 @@ export default function TeacherPage() {
                 { label: "待处理", value: (dashboard?.pendingAnswers || 0) + pendingQuestions.length, icon: "⏳", color: "sticker-pink" },
                 { label: "项目数", value: dashboard?.totalProjects || 0, icon: "🎯", color: "sticker-orange" },
                 { label: "报名人数", value: dashboard?.totalRegistrations || 0, icon: "📖", color: "sticker-white" },
-              ].map((card) => <div key={card.label} className={`sticker ${card.color} text-center py-5`}><div className="text-2xl mb-1">{card.icon}</div><p className="text-2xl font-bold text-ink handwritten-title">{card.value}</p><p className="text-xs text-ink-light">{card.label}</p></div>)}
+              ].map((card) => <div key={card.label} className={`forest-dashboard-card ${card.color} text-center py-5`}><div className="text-2xl mb-1">{card.icon}</div><p className="text-2xl font-bold text-ink handwritten-title">{card.value}</p><p className="text-xs text-ink-light">{card.label}</p></div>)}
             </div>
-            <div className="guardian-panel"><h3 className="font-bold text-ink mb-3">⚡ 快速操作</h3><div className="flex flex-wrap gap-3"><button onClick={() => setActiveTab("questions")} className="hand-btn hand-btn-yellow text-sm">🌱 去审核问题</button><button onClick={() => setActiveTab("answers")} className="hand-btn hand-btn-green text-sm">✅ 去审核讲题</button><button onClick={() => setActiveTab("outcomes")} className="hand-btn hand-btn-yellow text-sm">🌳 去成果审核</button><button onClick={() => setActiveTab("users")} className="hand-btn hand-btn-blue text-sm">👤 查看学生状态</button></div></div>
+            <div className="forest-panel forest-workspace-panel"><h3 className="font-bold text-ink mb-3">⚡ 快速操作</h3><div className="flex flex-wrap gap-3"><button onClick={() => setActiveTab("questions")} className="hand-btn hand-btn-yellow text-sm">🌱 去审核问题</button><button onClick={() => setActiveTab("answers")} className="hand-btn hand-btn-green text-sm">✅ 去审核讲题</button><button onClick={() => setActiveTab("outcomes")} className="hand-btn hand-btn-yellow text-sm">🌳 去成果审核</button><button onClick={() => setActiveTab("users")} className="hand-btn hand-btn-blue text-sm">👤 查看学生状态</button></div></div>
           </>
         ) : activeTab === "questions" ? (
-          pendingQuestions.length === 0 ? <div className="sticker sticker-white text-center py-12"><div className="text-4xl mb-3">🌿</div><p className="text-ink font-medium">没有待审核的问题</p><p className="text-ink-light text-sm mt-1">审核通过的问题才会开放认领。</p></div> :
+          pendingQuestions.length === 0 ? <div className="forest-empty"><span className="forest-v2-icon forest-icon-seed mx-auto mb-3" aria-hidden="true" /><p className="text-ink font-medium">没有待审核的问题</p><p className="text-ink-light text-sm mt-1">审核通过的问题才会开放认领。</p></div> :
           <div className="space-y-4">
-            {pendingQuestions.map((q) => <div key={q.id} className="sticker sticker-white"><div className="flex items-start justify-between gap-4 mb-3"><div><h3 className="font-bold text-ink">{q.title}</h3><p className="text-xs text-ink-light mt-1">{q.grade && `${q.grade}年级 · `}{q.topic || "未标知识点"}{q.confusionType && ` · 卡点：${q.confusionType}`}</p><p className="text-xs text-ink-light mt-1">提问人：{q.author?.name || "小朋友"}</p></div><div className="flex gap-2"><button onClick={() => handleQuestionReview(q.id, "approve")} className="hand-btn text-xs hand-btn-green">✅ 通过</button><button onClick={() => handleQuestionReview(q.id, "reject")} className="hand-btn text-xs hand-btn-pink">↩️ 补充</button></div></div>{q.imageUrl && <a href={q.imageUrl} target="_blank" rel="noopener noreferrer" className="text-crayon-blue text-sm underline">📷 查看题目图片</a>}{q.recognizedText && <p className="text-sm text-ink-light mt-2 whitespace-pre-wrap bg-paper rounded-xl p-3">{q.recognizedText}</p>}<p className="text-sm text-ink-light mt-2 whitespace-pre-wrap">{q.content}</p><p className="text-xs text-ink-light mt-3">{TEACHER_QUESTION_REVIEW_COPY.approveMessage} {TEACHER_QUESTION_REVIEW_COPY.rejectMessage}</p></div>)}
+            {pendingQuestions.map((q) => <div key={q.id} className="forest-card"><div className="flex items-start justify-between gap-4 mb-3"><div><h3 className="font-bold text-ink">{q.title}</h3><p className="text-xs text-ink-light mt-1">{q.grade && `${q.grade}年级 · `}{q.topic || "未标知识点"}{q.confusionType && ` · 卡点：${q.confusionType}`}</p><p className="text-xs text-ink-light mt-1">提问人：{q.author?.name || "小朋友"}</p></div><div className="flex gap-2"><button onClick={() => handleQuestionReview(q.id, "approve")} className="hand-btn text-xs hand-btn-green">✅ 通过</button><button onClick={() => handleQuestionReview(q.id, "reject")} className="hand-btn text-xs hand-btn-pink">↩️ 补充</button></div></div>{q.imageUrl && <a href={q.imageUrl} target="_blank" rel="noopener noreferrer" className="text-crayon-blue text-sm underline">📷 查看题目图片</a>}{q.recognizedText && <p className="text-sm text-ink-light mt-2 whitespace-pre-wrap forest-note-card p-3">{q.recognizedText}</p>}<p className="text-sm text-ink-light mt-2 whitespace-pre-wrap">{q.content}</p><p className="text-xs text-ink-light mt-3">{TEACHER_QUESTION_REVIEW_COPY.approveMessage} {TEACHER_QUESTION_REVIEW_COPY.rejectMessage}</p></div>)}
           </div>
         ) : activeTab === "answers" ? (
-          pendingAnswers.length === 0 ? <div className="sticker sticker-white text-center py-12"><div className="text-4xl mb-3">🎉</div><p className="text-ink font-medium">没有待审核的讲题</p><p className="text-ink-light text-sm mt-1">所有讲题都已处理完毕</p></div> :
+          pendingAnswers.length === 0 ? <div className="forest-empty"><span className="forest-v2-icon forest-icon-tree mx-auto mb-3" aria-hidden="true" /><p className="text-ink font-medium">没有待审核的讲题</p><p className="text-ink-light text-sm mt-1">所有讲题都已处理完毕</p></div> :
           <div className="space-y-4">
-            {pendingAnswers.map((answer) => <div key={answer.id} className="sticker sticker-white"><div className="flex items-start justify-between gap-4 mb-3"><div><h3 className="font-bold text-ink">{answer.question.title}</h3><p className="text-xs text-ink-light mt-1">讲师：{answer.lecturer.name || "小讲师"}{answer.lecturer.grade && ` · ${answer.lecturer.grade}年级`}</p></div><div className="flex gap-2"><button onClick={() => handleAnswerReview(answer.id, "approve")} className="hand-btn text-xs hand-btn-green">✅ 通过</button><button onClick={() => handleAnswerReview(answer.id, "reject")} className="hand-btn text-xs hand-btn-pink">↩️ 退回</button></div></div>{answer.videoUrl && <a href={answer.videoUrl} target="_blank" rel="noopener noreferrer" className="text-crayon-blue hover:underline text-sm">📹 查看视频</a>}{answer.description && <p className="text-sm text-ink-light mt-2">{answer.description}</p>}<p className="text-sm text-ink-light mt-2 p-3 bg-paper rounded-xl">题目：{answer.question.content}</p></div>)}
+            {pendingAnswers.map((answer) => <div key={answer.id} className="forest-card"><div className="flex items-start justify-between gap-4 mb-3"><div><h3 className="font-bold text-ink">{answer.question.title}</h3><p className="text-xs text-ink-light mt-1">讲师：{answer.lecturer.name || "小讲师"}{answer.lecturer.grade && ` · ${answer.lecturer.grade}年级`}</p></div><div className="flex gap-2"><button onClick={() => handleAnswerReview(answer.id, "approve")} className="hand-btn text-xs hand-btn-green">✅ 通过</button><button onClick={() => handleAnswerReview(answer.id, "reject")} className="hand-btn text-xs hand-btn-pink">↩️ 退回</button></div></div>{answer.videoUrl && <a href={answer.videoUrl} target="_blank" rel="noopener noreferrer" className="text-crayon-blue hover:underline text-sm">📹 查看视频</a>}{answer.description && <p className="text-sm text-ink-light mt-2">{answer.description}</p>}<p className="text-sm text-ink-light mt-2 p-3 forest-note-card">题目：{answer.question.content}</p></div>)}
           </div>
         ) : activeTab === "outcomes" ? (
           <div className="space-y-4">
-            <div className="sticker sticker-white">
+            <div className="forest-card">
               <h3 className="font-bold text-ink mb-2">🌳 成果审核与授权管理</h3>
               <p className="text-sm text-ink-light mb-3">进入成果广场必须同时满足：老师审核通过、孩子/家长授权公开。公开授权可撤回，撤回后作品仍保留为学习记录。</p>
               <div className="flex flex-wrap gap-2">
@@ -258,8 +258,8 @@ export default function TeacherPage() {
                 ))}
               </div>
             </div>
-            {outcomes.length === 0 ? <div className="sticker sticker-white text-center py-12"><div className="text-4xl mb-3">🌿</div><p className="text-ink font-medium">当前没有需要处理的成果</p><p className="text-ink-light text-sm mt-1">作品提交、讲解审核和公开授权会在这里形成闭环。</p></div> : outcomes.map((outcome) => (
-              <div key={`${outcome.sourceType}-${outcome.id}`} className="sticker sticker-white">
+            {outcomes.length === 0 ? <div className="forest-empty"><span className="forest-v2-icon forest-icon-seed mx-auto mb-3" aria-hidden="true" /><p className="text-ink font-medium">当前没有需要处理的成果</p><p className="text-ink-light text-sm mt-1">作品提交、讲解审核和公开授权会在这里形成闭环。</p></div> : outcomes.map((outcome) => (
+              <div key={`${outcome.sourceType}-${outcome.id}`} className="forest-card">
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div>
                     <p className="text-xs text-ink-light">{outcome.sourceType === "PROJECT_ARTIFACT" ? "项目作品" : "讲解成果"}{outcome.projectTitle && ` · ${outcome.projectTitle}`}{outcome.groupName && ` · ${outcome.groupName}`}</p>
@@ -273,18 +273,18 @@ export default function TeacherPage() {
                   </div>
                 </div>
                 {outcome.artifactUrl && <a href={outcome.artifactUrl} target="_blank" rel="noopener noreferrer" className="text-crayon-blue text-sm underline">🔗 查看作品链接</a>}
-                {outcome.description && <p className="text-sm text-ink-light mt-2 whitespace-pre-wrap bg-paper rounded-xl p-3">{outcome.description}</p>}
+                {outcome.description && <p className="text-sm text-ink-light mt-2 whitespace-pre-wrap forest-note-card p-3">{outcome.description}</p>}
                 <p className="text-xs text-ink-light mt-3">不展示排名、不公开成长能量；老师只确认是否适合被更多同学看见。</p>
               </div>
             ))}
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="sticker sticker-white">
+            <div className="forest-card">
               <h3 className="font-bold text-ink mb-2">{studentStatusCopy.heading}</h3>
               <p className="text-sm text-ink-light">{studentStatusCopy.helper}</p>
             </div>
-            {users.map((user) => <div key={user.id} className="sticker sticker-white flex items-center justify-between gap-4"><div><p className="font-bold text-ink">{user.name || "未命名"}</p><p className="text-xs text-ink-light">{user.phone} · {user.role}{user.grade && ` · ${user.grade}年级`}</p><p className="text-xs text-ink-light mt-1">成长能量：{user.growthEnergy ?? user.points}</p><p className="text-xs text-ink-light mt-1">当前状态：{user.isActive ? "基础参与已开放" : "基础参与已暂停"}</p></div>{user.role === "STUDENT" && <button onClick={() => handleActivate(user.id, !user.isActive)} className={`hand-btn text-xs ${user.isActive ? "hand-btn-pink" : "hand-btn-green"}`}>{user.isActive ? studentStatusCopy.deactivateLabel : studentStatusCopy.activateLabel}</button>}</div>)}
+            {users.map((user) => <div key={user.id} className="forest-card flex items-center justify-between gap-4"><div><p className="font-bold text-ink">{user.name || "未命名"}</p><p className="text-xs text-ink-light">{user.phone} · {user.role}{user.grade && ` · ${user.grade}年级`}</p><p className="text-xs text-ink-light mt-1">成长能量：{user.growthEnergy ?? user.points}</p><p className="text-xs text-ink-light mt-1">当前状态：{user.isActive ? "基础参与已开放" : "基础参与已暂停"}</p></div>{user.role === "STUDENT" && <button onClick={() => handleActivate(user.id, !user.isActive)} className={`hand-btn text-xs ${user.isActive ? "hand-btn-pink" : "hand-btn-green"}`}>{user.isActive ? studentStatusCopy.deactivateLabel : studentStatusCopy.activateLabel}</button>}</div>)}
           </div>
         )}
       </section>

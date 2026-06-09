@@ -1445,3 +1445,50 @@ p {
   display: none !important;
   background: none !important;
 }
+
+
+/* ==========================================
+   Stage1-F｜老师/管理员工作台 V2 视觉统一
+   目标：后台也使用 Morning Paper / Forest Ink / soft card 体系，避免回落旧 guardian/sticker 风格。
+   ========================================== */
+.forest-workspace-shell {
+  color: var(--v2-forest-ink);
+}
+.forest-workspace-content {
+  width: min(1320px, calc(100% - 32px));
+}
+.forest-workspace-hero {
+  border-radius: 46px;
+  background:
+    radial-gradient(circle at 88% 18%, rgba(255,209,102,.28), transparent 20%),
+    radial-gradient(circle at 18% 78%, rgba(126,200,95,.20), transparent 24%),
+    linear-gradient(180deg, rgba(255,254,246,.94), rgba(242,251,236,.84));
+}
+.forest-dashboard-card {
+  position: relative;
+  border: 1px solid rgba(33,72,58,.10);
+  border-radius: 28px;
+  background: rgba(255,254,249,.90);
+  box-shadow: var(--v2-soft-shadow);
+  overflow: hidden;
+  color: var(--v2-forest-ink);
+}
+.forest-dashboard-card::after {
+  content: "";
+  position: absolute;
+  width: 92px;
+  height: 92px;
+  right: -34px;
+  bottom: -36px;
+  border-radius: 999px;
+  background: rgba(126,200,95,.12);
+}
+.forest-workspace-tabs {
+  align-items: center;
+}
+.forest-workspace-tabs .hand-btn {
+  min-height: 40px;
+}
+.forest-workspace-panel {
+  margin-bottom: 24px;
+}

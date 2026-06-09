@@ -80,7 +80,6 @@ export default function Navbar() {
         </div>
 
         <div className="nav-actions">
-          <Link className="ask" href="/qa/ask">我要提问</Link>
           {status === "loading" ? (
             <span className="login muted">加载中...</span>
           ) : session?.user ? (
@@ -114,7 +113,6 @@ export default function Navbar() {
               </Link>
             )
           ))}
-          <Link href="/qa/ask" onClick={() => setMenuOpen(false)} className="mobile-ask">我要提问</Link>
         </div>
       )}
 
@@ -208,16 +206,6 @@ export default function Navbar() {
           gap: 12px;
           min-width: max-content;
         }
-        .ask {
-          background: #184638;
-          color: #fff;
-          padding: 12px 18px;
-          border-radius: 999px;
-          box-shadow: 0 14px 38px rgba(24, 70, 56, 0.12);
-          font-size: 14px;
-          font-weight: 950;
-          text-decoration: none;
-        }
         .login,
         .logout {
           border: 1px solid rgba(24, 70, 56, 0.12);
@@ -262,17 +250,9 @@ export default function Navbar() {
           font-weight: 850;
           color: #435f54;
         }
-        .mobile-menu .mobile-ask {
-          margin-top: 8px;
-          text-align: center;
-          color: #fff;
-          background: #f9733d;
-          border-radius: 999px;
-        }
         @media (max-width: 1100px) {
           .nav-inner { padding: 0 22px; }
           .forest-navlinks { display: none; }
-          .ask { display: none; }
           .menu-button { display: flex; }
           .mobile-menu { display: block; }
         }

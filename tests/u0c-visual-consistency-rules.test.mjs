@@ -28,26 +28,28 @@ test('U0-C deep routes share the forest shell and hero so clicking through does 
   }
 });
 
-test('U0-C teacher and admin routes use a restrained guardian workbench shell instead of the old playful-only body', () => {
+test('U0-C teacher and admin routes use the latest forest workspace shell instead of the old playful-only body', () => {
   for (const rel of workbenchPages) {
     const src = fs.readFileSync(path.join(root, rel), 'utf8');
     assert.match(src, /forest-page-shell/, `${rel} should keep the same global page background`);
-    assert.match(src, /guardian-workbench-shell/, `${rel} should use the restrained guardian workbench shell`);
-    assert.match(src, /guardian-workbench-hero/, `${rel} should use a professional guardian workbench hero`);
-    assert.match(src, /guardian-panel|guardian-card/, `${rel} should use professional panels/cards`);
+    assert.match(src, /forest-workspace-shell/, `${rel} should use the latest forest workspace shell`);
+    assert.match(src, /forest-page-hero|forest-workspace-hero/, `${rel} should use the V2 forest workspace hero`);
+    assert.match(src, /forest-panel|forest-card|forest-dashboard-card/, `${rel} should use V2 professional panels/cards`);
     assert.match(src, /守林人工作台/, `${rel} should name the back office metaphor as 守林人工作台`);
+    assert.doesNotMatch(src, /guardian-workbench-shell|guardian-workbench-hero|guardian-panel|guardian-card/, `${rel} should not keep old guardian style classes after Stage1-F visual refresh`);
   }
 });
 
-test('U0-C visual tokens define detail and guardian workbench treatments', () => {
+test('U0-C visual tokens define detail and forest workspace treatments', () => {
   const css = fs.readFileSync(path.join(root, 'app/globals.css'), 'utf8');
   for (const className of [
     'forest-detail-hero',
     'forest-login-card',
-    'guardian-workbench-shell',
-    'guardian-workbench-hero',
-    'guardian-panel',
-    'guardian-card',
+    'forest-workspace-shell',
+    'forest-workspace-hero',
+    'forest-workspace-panel',
+    'forest-dashboard-card',
+    'forest-workspace-tabs',
   ]) {
     assert.match(css, new RegExp(`\\.${className}\\b`), `globals.css should define .${className}`);
   }

@@ -140,9 +140,9 @@ export default function AdminPage() {
     }
   };
 
-  if (status === "loading") return <main className="forest-page-shell guardian-workbench-shell"><Navbar /><div className="text-center py-20 text-ink-light">加载中...</div></main>;
-  if (!session?.user) return <main className="forest-page-shell guardian-workbench-shell"><Navbar /><div className="text-center py-20 text-ink-light">请先登录</div></main>;
-  if (session.user.role !== "ADMIN") return <main className="forest-page-shell guardian-workbench-shell"><Navbar /><div className="text-center py-20"><div className="text-4xl mb-3">🚫</div><p className="text-ink font-medium">无权访问管理员工作台</p><p className="text-ink-light text-sm mt-1">老师工作台负责教学审核；项目包、付费权益和用户运营由管理员处理。</p></div></main>;
+  if (status === "loading") return <main className="forest-page-shell forest-workspace-shell"><Navbar /><div className="text-center py-20 text-ink-light">加载中...</div></main>;
+  if (!session?.user) return <main className="forest-page-shell forest-workspace-shell"><Navbar /><div className="text-center py-20 text-ink-light">请先登录</div></main>;
+  if (session.user.role !== "ADMIN") return <main className="forest-page-shell forest-workspace-shell"><Navbar /><div className="text-center py-20"><span className="forest-v2-icon forest-icon-question mx-auto mb-3" aria-hidden="true" /><p className="text-ink font-medium">无权访问管理员工作台</p><p className="text-ink-light text-sm mt-1">老师工作台负责教学审核；项目包、付费权益和用户运营由管理员处理。</p></div></main>;
 
   const countCards = [
     { label: "学习者", value: students.length, icon: "👧", color: "sticker-blue" },
@@ -155,31 +155,31 @@ export default function AdminPage() {
   ];
 
   return (
-    <main className="forest-page-shell guardian-workbench-shell">
+    <main className="forest-page-shell forest-workspace-shell">
       <Navbar />
-      <section className="forest-page-content guardian-workbench-shell" style={{ width: "min(1320px, calc(100% - 32px))" }}>
-        <div className="guardian-workbench-hero">
+      <section className="forest-page-content forest-workspace-content" style={{ width: "min(1320px, calc(100% - 32px))" }}>
+        <div className="forest-page-hero forest-workspace-hero">
           <span className="forest-page-eyebrow">守林人工作台｜管理员</span>
-          <h1 className="text-2xl font-bold text-ink handwritten-title mt-3">🛠️ 管理员工作台</h1>
-          <p className="text-ink-light text-sm mt-2">严格按三身份设计：学习者看个人成长护照，老师做教学审核，管理员管理全站数据库、项目包、付费与审计。</p>
+          <h1 className="forest-page-title">管理员工作台</h1>
+          <p className="forest-page-subtitle">严格按三身份设计：学习者看个人成长护照，老师做教学审核，管理员管理全站数据库、项目包、付费与审计。</p>
         </div>
 
-        <div className="grid md:grid-cols-3 lg:grid-cols-7 gap-4 mb-8 guardian-card">
-          {countCards.map((card) => <div key={card.label} className={`sticker ${card.color} text-center py-5`}><div className="text-2xl mb-1">{card.icon}</div><p className="text-2xl font-bold text-ink handwritten-title">{card.value}</p><p className="text-xs text-ink-light">{card.label}</p></div>)}
+        <div className="grid md:grid-cols-3 lg:grid-cols-7 gap-4 mb-8 forest-card-grid four">
+          {countCards.map((card) => <div key={card.label} className={`forest-dashboard-card ${card.color} text-center py-5`}><div className="text-2xl mb-1">{card.icon}</div><p className="text-2xl font-bold text-ink handwritten-title">{card.value}</p><p className="text-xs text-ink-light">{card.label}</p></div>)}
         </div>
-        {notice && <div className="sticker bg-crayon-green/20 mb-8 text-sm text-ink">{notice}</div>}
+        {notice && <div className="forest-note-card mb-8 text-sm text-ink">{notice}</div>}
 
-        <section className="guardian-panel mb-8">
+        <section className="forest-panel forest-workspace-panel mb-8">
           <h2 className="font-bold text-ink mb-3">🧭 后台模块总览</h2>
           <div className="grid md:grid-cols-3 gap-3">
-            {sections.map((section) => <div key={section.key} className="rounded-2xl bg-paper border border-ink/5 p-3"><p className="text-sm font-bold text-ink">{section.label}</p><p className="text-xs text-ink-light mt-1 leading-relaxed">{section.helper}</p></div>)}
+            {sections.map((section) => <div key={section.key} className="forest-info-card p-3"><p className="text-sm font-bold text-ink">{section.label}</p><p className="text-xs text-ink-light mt-1 leading-relaxed">{section.helper}</p></div>)}
           </div>
         </section>
 
         <ConsultationSettingsPanel config={consultationConfig} saving={saving} onSave={saveConsultationSetting} />
 
         <div className="grid lg:grid-cols-[360px_1fr] gap-6 mb-8">
-          <div className="sticker sticker-white">
+          <div className="forest-panel">
             <h2 className="font-bold text-ink mb-2">🎟️ 项目权限与项目包</h2>
             <p className="text-xs text-ink-light mb-4">5 次项目、20 周项目、指定项目等商业权益只在管理员后台开通。</p>
             <label className="block text-sm font-medium text-ink mb-1">选择学生</label>
@@ -198,10 +198,10 @@ export default function AdminPage() {
             <button onClick={openProjectAccess} disabled={saving || !selectedUserId} className="hand-btn hand-btn-yellow text-sm disabled:opacity-50">{saving ? "开通中..." : "确认开通项目权限"}</button>
           </div>
 
-          <div className="sticker sticker-white max-h-[560px] overflow-auto">
+          <div className="forest-panel max-h-[560px] overflow-auto">
             <h2 className="font-bold text-ink mb-3">👤 用户与权益数据库</h2>
             {loading ? <div className="text-center py-10 text-ink-light">加载中...</div> : users.map((user) => (
-              <div key={user.id} className="rounded-2xl bg-paper border border-ink/5 p-3 mb-3">
+              <div key={user.id} className="forest-info-card p-3 mb-3">
                 <div className="flex items-start justify-between gap-4">
                   <div><p className="font-bold text-ink">{user.name || "未命名"}</p><p className="text-xs text-ink-light">{user.phone || "未留手机"} · {user.role}{user.grade && ` · ${user.grade}年级`} · 基础参与：{user.isActive ? "已开放" : "已暂停"}</p></div>
                   <span className="text-xs px-2 py-1 rounded-full bg-white border border-ink/10">{user.projectAccesses?.length || 0} 条权益</span>
@@ -284,7 +284,7 @@ function ConsultationSettingsPanel({ config, saving, onSave }: { config: { setti
   };
 
   return (
-    <section className="sticker sticker-white mb-8">
+    <section className="forest-panel mb-8">
       <h2 className="font-bold text-ink mb-2">📱 企业微信/咨询入口配置</h2>
       <p className="text-xs text-ink-light mb-4 leading-relaxed">报名成功后展示真实二维码。可先配置全局入口；如某个项目需要不同老师，可选择项目保存项目级入口覆盖全局。</p>
       {localNotice && <div className="rounded-2xl bg-crayon-green/20 border border-ink/5 p-3 mb-4 text-xs text-ink">{localNotice}</div>}
@@ -313,7 +313,7 @@ function ConsultationSettingsPanel({ config, saving, onSave }: { config: { setti
           </label>
           <button onClick={() => onSave({ projectId: projectId || null, qrImageUrl, contactName, contactTitle, description, enabled })} disabled={saving || uploading || !qrImageUrl} className="hand-btn hand-btn-green text-xs disabled:opacity-50">{saving ? "保存中..." : uploading ? "上传中..." : "保存咨询入口"}</button>
         </div>
-        <div className="rounded-2xl bg-paper border border-ink/5 p-3 text-center">
+        <div className="forest-info-card p-3 text-center">
           <p className="text-xs text-ink-light mb-2">当前二维码预览</p>
           {qrImageUrl ? <img src={qrImageUrl} alt="企业微信咨询二维码" className="mx-auto h-40 w-40 rounded-2xl object-cover bg-white border border-ink/10" /> : <div className="mx-auto h-40 w-40 rounded-2xl bg-white border border-dashed border-ink/20 grid place-items-center text-xs text-ink-light">请先上传二维码</div>}
           <p className="mt-3 text-sm font-bold text-ink">{contactName}</p>
@@ -325,7 +325,7 @@ function ConsultationSettingsPanel({ config, saving, onSave }: { config: { setti
 }
 
 function DatabaseCard({ title, helper, children }: { title: string; helper: string; children: React.ReactNode }) {
-  return <div className="sticker sticker-white min-h-[280px]"><h2 className="font-bold text-ink mb-1">{title}</h2><p className="text-xs text-ink-light mb-4 leading-relaxed">{helper}</p><div className="space-y-3 max-h-80 overflow-auto">{children || <p className="text-sm text-ink-light">暂无数据</p>}</div></div>;
+  return <div className="forest-panel min-h-[280px]"><h2 className="font-bold text-ink mb-1">{title}</h2><p className="text-xs text-ink-light mb-4 leading-relaxed">{helper}</p><div className="space-y-3 max-h-80 overflow-auto">{children || <p className="text-sm text-ink-light">暂无数据</p>}</div></div>;
 }
 
 function RegistrationIntentRow({ intent, saving, onSave }: { intent: any; saving: boolean; onSave: (id: string, status: string, note: string, openProjectAccess?: boolean) => void }) {
@@ -343,7 +343,7 @@ function RegistrationIntentRow({ intent, saving, onSave }: { intent: any; saving
   }, [intent.id, intent.followUpStatus, intent.note]);
 
   return (
-    <div className="rounded-2xl bg-paper border border-ink/5 p-3">
+    <div className="forest-info-card p-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-sm font-bold text-ink truncate">{intent.childName || intent.user?.name || "未命名孩子"} · {intent.project?.title || "未关联项目"}</p>
@@ -371,5 +371,5 @@ function RegistrationIntentRow({ intent, saving, onSave }: { intent: any; saving
 }
 
 function Row({ title, meta, note }: { title: string; meta: string; note?: string }) {
-  return <div className="rounded-2xl bg-paper border border-ink/5 p-3"><p className="text-sm font-bold text-ink truncate">{title}</p><p className="text-xs text-ink-light mt-1">{meta}</p>{note && <p className="text-xs text-ink-light mt-1 line-clamp-2">{note}</p>}</div>;
+  return <div className="forest-info-card p-3"><p className="text-sm font-bold text-ink truncate">{title}</p><p className="text-xs text-ink-light mt-1">{meta}</p>{note && <p className="text-xs text-ink-light mt-1 line-clamp-2">{note}</p>}</div>;
 }
