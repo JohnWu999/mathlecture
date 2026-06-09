@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Navbar from "@/components/navbar";
 import { getHeatPrompt, getQuestionStatusBadge } from "@/lib/qa-ui-rules.mjs";
@@ -23,9 +22,7 @@ interface Question {
 }
 
 export default function QAPage() {
-  const { data: session } = useSession();
-  const router = useRouter();
-  const pathname = usePathname();
+  const { data: session, status } = useSession();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [listRule, setListRule] = useState("热度只帮助待讲题目排序，不是点赞榜，也不显示排名。");
@@ -44,7 +41,7 @@ export default function QAPage() {
 
   const handleHeat = async (questionId: string) => {
     if (!session?.user) {
-      router.push(`/login?callbackUrl=${encodeURIComponent(pathname || "/qa")}`);
+      setNotice("登录后加热度：我们会把这次互动记录到账号里，避免重复计数，也方便老师看见真实需求。");
       return;
     }
     try {
@@ -60,6 +57,9 @@ export default function QAPage() {
     }
   };
 
+  const isLoggedIn = Boolean(session?.user);
+  const loginToQaHref = "/math-young-lecturer/login?callbackUrl=/math-young-lecturer/qa";
+
   return (
     <main className="forest-page-shell">
       <Navbar />
@@ -74,11 +74,11 @@ export default function QAPage() {
             </p>
           </div>
           <div className="flex gap-3 flex-wrap">
-            <Link href="/qa/ask" className="hand-btn hand-btn-yellow">
-              我要提问
+            <Link href={isLoggedIn ? "/qa/ask" : "/math-young-lecturer/login?callbackUrl=/math-young-lecturer/qa/ask"} className="hand-btn hand-btn-yellow">
+              {isLoggedIn ? "我要提问" : "登录后提问"}
             </Link>
             <a href="#claimable" className="hand-btn hand-btn-green">
-              去认领一道题
+              {isLoggedIn ? "去认领一道题" : "登录后认领"}
             </a>
           </div>
         </div>
@@ -88,7 +88,12 @@ export default function QAPage() {
           <div>
             <p className="text-sm text-ink font-medium">温暖提示</p>
             <p className="text-sm text-ink-light mt-1">{listRule}</p>
-            <p className="text-xs text-ink-light mt-2">未审核问题不会公开；操作时需要登录，但浏览问题不需要。</p>
+            <p className="text-xs text-ink-light mt-2">公开浏览不需要登录；真实互动需要登录。提问、认领、加热度和讲解提交都会记录到账号，方便老师追踪、反馈和推送。</p>
+            {status !== "loading" && !isLoggedIn && (
+              <Link href={loginToQaHref} className="inline-block mt-3 text-xs text-crayon-blue underline">
+                登录后参与互动
+              </Link>
+            )}
           </div>
         </div>
         {notice && <div className="forest-note-card mb-6 text-sm text-ink">{notice}</div>}
@@ -129,9 +134,15 @@ export default function QAPage() {
                   </Link>
                   <div className="mt-3 flex items-center justify-between gap-3 flex-wrap border-t border-ink/10 pt-3">
                     <p className="text-xs text-ink-light max-w-xl">{heatPrompt.helper}</p>
-                    <button onClick={() => handleHeat(q.id)} className="hand-btn hand-btn-white text-xs">
-                      {heatPrompt.label}
-                    </button>
+                    {isLoggedIn ? (
+                      <button onClick={() => handleHeat(q.id)} className="hand-btn hand-btn-white text-xs">
+                        {heatPrompt.label}
+                      </button>
+                    ) : (
+                      <Link href={loginToQaHref} className="hand-btn hand-btn-white text-xs" aria-label="登录后加热度">
+                        登录后加热度
+                      </Link>
+                    )}
                   </div>
                 </article>
               );

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Navbar from "@/components/navbar";
 import {
@@ -47,9 +48,7 @@ interface QuestionDetail {
 
 export default function QuestionDetailPage() {
   const { id } = useParams();
-  const router = useRouter();
-  const pathname = usePathname();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [question, setQuestion] = useState<QuestionDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState(false);
@@ -83,7 +82,7 @@ export default function QuestionDetailPage() {
 
   const handleClaim = async () => {
     if (!session?.user) {
-      router.push(`/login?callbackUrl=${encodeURIComponent(pathname || `/qa/question/${id}`)}`);
+      setMessage("登录后认领这道题：老师需要知道是哪位小讲师负责讲解，才能记录72小时认领、审核和成长反馈。");
       return;
     }
     setClaiming(true);
@@ -101,7 +100,7 @@ export default function QuestionDetailPage() {
 
   const handleHeat = async () => {
     if (!session?.user) {
-      router.push(`/login?callbackUrl=${encodeURIComponent(pathname || `/qa/question/${id}`)}`);
+      setMessage("登录后加热度：热度会记录到账号，避免重复计数，也帮助老师看见真实需求。");
       return;
     }
     setHeating(true);
@@ -175,12 +174,27 @@ export default function QuestionDetailPage() {
   const statusBadge = getQuestionStatusBadge({ status: question.status, reviewStatus: question.reviewStatus || "APPROVED" });
   const heatPrompt = getHeatPrompt({ heatCount: question.heatCount || 0, hasHeated: false });
   const claimCopy = formatClaimDeadline({ claimExpiresAt: question.claimExpiresAt || undefined });
+  const isLoggedIn = Boolean(session?.user);
+  const loginToQuestionHref = `/math-young-lecturer/login?callbackUrl=/math-young-lecturer/qa/question/${id}`;
 
   return (
     <main className="forest-page-shell">
       <Navbar />
       <section className="forest-page-content forest-page-content-narrow">
         {message && <div className="forest-panel bg-crayon-green/20 mb-4 text-sm text-ink">{message}</div>}
+
+        <div className="forest-info-card mb-4">
+          <span className="forest-v2-icon forest-icon-note" aria-hidden="true" />
+          <div>
+            <p className="text-sm text-ink font-medium">公开浏览不需要登录</p>
+            <p className="text-xs text-ink-light mt-1">真实互动需要登录：加热度、认领、提交讲解、采纳讲解都会绑定账号，方便老师追踪进度、审核视频并把反馈准确推送给对应孩子。</p>
+            {status !== "loading" && !isLoggedIn && (
+              <Link href={loginToQuestionHref} className="inline-block mt-3 text-xs text-crayon-blue underline">
+                登录后参与互动
+              </Link>
+            )}
+          </div>
+        </div>
 
         <div className="forest-detail-hero">
           <div className="flex items-center gap-2 mb-3 flex-wrap">
@@ -196,7 +210,11 @@ export default function QuestionDetailPage() {
           <p className="text-xs text-ink-light mt-3">提问人：{question.isAnonymous ? "匿名小朋友" : question.author.name || "小朋友"}</p>
           <div className="mt-4 border-t border-ink/10 pt-3 flex items-center justify-between gap-3 flex-wrap">
             <p className="text-xs text-ink-light max-w-xl">{heatPrompt.helper}</p>
-            <button onClick={handleHeat} disabled={heating} className="hand-btn hand-btn-white text-xs disabled:opacity-50">🔥 {heating ? "记录中..." : heatPrompt.label}</button>
+            {isLoggedIn ? (
+              <button onClick={handleHeat} disabled={heating} className="hand-btn hand-btn-white text-xs disabled:opacity-50">🔥 {heating ? "记录中..." : heatPrompt.label}</button>
+            ) : (
+              <Link href={loginToQuestionHref} className="hand-btn hand-btn-white text-xs" aria-label="登录后加热度">🔥 登录后加热度</Link>
+            )}
           </div>
         </div>
 
@@ -204,7 +222,11 @@ export default function QuestionDetailPage() {
           <div className="sticker bg-crayon-yellow text-center mb-6">
             <p className="text-ink font-medium mb-1">🎯 这道题等待小讲师认领</p>
             <p className="text-xs text-ink-light mb-3">认领后有72小时上传讲解；如果超时，题目会重新开放。</p>
-            <button onClick={handleClaim} disabled={claiming} className="hand-btn bg-crayon-green text-ink disabled:opacity-50">{claiming ? "认领中..." : "🙋 认领这道题"}</button>
+            {isLoggedIn ? (
+              <button onClick={handleClaim} disabled={claiming} className="hand-btn bg-crayon-green text-ink disabled:opacity-50">{claiming ? "认领中..." : "🙋 认领这道题"}</button>
+            ) : (
+              <Link href={loginToQuestionHref} className="hand-btn bg-crayon-green text-ink">🙋 登录后认领这道题</Link>
+            )}
           </div>
         )}
 
@@ -245,6 +267,14 @@ export default function QuestionDetailPage() {
               </div>
               <button type="submit" disabled={submitting} className="hand-btn w-full bg-white text-ink disabled:opacity-50">{uploadingVideo ? "上传讲题视频中..." : submitting ? "提交中..." : "✅ 提交讲题视频，等待老师审核"}</button>
             </form>
+          </div>
+        )}
+
+        {!isLoggedIn && (
+          <div className="sticker bg-crayon-blue/20 mb-6">
+            <h3 className="font-bold text-ink mb-1">🎤 登录后提交讲解</h3>
+            <p className="text-xs text-ink-light mb-3">讲题视频需要绑定小讲师账号，老师审核后才能把成长反馈记录到正确的成长护照里。</p>
+            <Link href={loginToQuestionHref} className="hand-btn hand-btn-white text-xs">登录后提交讲解</Link>
           </div>
         )}
 
