@@ -4,14 +4,13 @@ import Link from "next/link";
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { getPersonalCenterHrefForRole, getVisibleWorkspaceNavForRole } from "@/lib/role-access-boundary-rules.mjs";
+import { getPersonalCenterHrefForRole } from "@/lib/role-access-boundary-rules.mjs";
 import { PUBLIC_PROFILE_HREF } from "@/lib/public-entry-hrefs.mjs";
 
-const mainLinks = [
+const baseLinks = [
   { href: "/qa", label: "你问我答" },
   { href: "/projects", label: "项目营" },
   { href: "/hall", label: "成果广场" },
-  { href: "/profile", label: "个人中心", publicHref: PUBLIC_PROFILE_HREF },
 ];
 
 function LogoMark() {
@@ -35,9 +34,12 @@ export default function Navbar() {
   const { data: session, status } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
-  const workspaceLinks = getVisibleWorkspaceNavForRole(session?.user?.role);
   const personalCenterHref = getPersonalCenterHrefForRole(session?.user?.role);
-  const links = [...mainLinks, ...workspaceLinks];
+  const personalCenterPublicHref = personalCenterHref === "/profile" ? PUBLIC_PROFILE_HREF : undefined;
+  const links = [
+    ...baseLinks,
+    { label: "个人中心", href: personalCenterHref, publicHref: personalCenterPublicHref },
+  ];
   const isActive = (href: string) => pathname === href || pathname?.startsWith(`${href}/`);
 
   return (
@@ -63,7 +65,7 @@ export default function Navbar() {
         </div>
 
         <div className="mobile-quick-links" aria-label="手机分页导航">
-          {mainLinks.map((link, index) => (
+          {links.map((link, index) => (
             <span className="mobile-quick-item" key={link.href}>
               {link.publicHref ? (
                 <a href={link.publicHref} className={isActive(link.href) ? "active" : ""}>
@@ -74,7 +76,7 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               )}
-              {index < mainLinks.length - 1 && <span className="mobile-separator" aria-hidden="true">｜</span>}
+              {index < links.length - 1 && <span className="mobile-separator" aria-hidden="true">｜</span>}
             </span>
           ))}
         </div>

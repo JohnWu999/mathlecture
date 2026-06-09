@@ -37,10 +37,10 @@ test('workspace pages require their matching role and cannot be used as identity
   assert.equal(canAccessWorkspacePath('ADMIN', '/admin'), true);
 });
 
-test('navbar exposes only the current role workspace, not cross-role switch entries', () => {
-  assert.deepEqual(getVisibleWorkspaceNavForRole('STUDENT'), [{ label: '个人中心', href: '/profile' }]);
-  assert.deepEqual(getVisibleWorkspaceNavForRole('TEACHER'), [{ label: '老师工作台', href: '/teacher' }]);
-  assert.deepEqual(getVisibleWorkspaceNavForRole('ADMIN'), [{ label: '管理员后台', href: '/admin' }]);
+test('navbar does not append role workspace entries because personal center is the only identity entrance', () => {
+  assert.deepEqual(getVisibleWorkspaceNavForRole('STUDENT'), []);
+  assert.deepEqual(getVisibleWorkspaceNavForRole('TEACHER'), []);
+  assert.deepEqual(getVisibleWorkspaceNavForRole('ADMIN'), []);
 });
 
 test('operation APIs are role separated: teacher APIs are not admin identity switching channels', () => {
