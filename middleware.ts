@@ -11,7 +11,7 @@ import {
 } from "./lib/role-access-boundary-rules";
 
 const BASE_PATH = "/math-young-lecturer";
-const NO_STORE_PAGE_PATHS = new Set(["/", "/qa", "/projects", "/hall", "/login", "/profile"]);
+const NO_STORE_PAGE_PATHS = new Set(["/", "/qa", "/projects", "/hall", "/login", "/profile", "/teacher", "/admin"]);
 const NO_STORE_CACHE_CONTROL = "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
 
 function stripBasePath(pathname: string) {
@@ -99,7 +99,7 @@ export async function middleware(req: NextRequest) {
   Object.entries(headers).forEach(([key, value]) => {
     response.headers.set(key, value);
   });
-  if (NO_STORE_PAGE_PATHS.has(normalizedPath)) {
+  if (NO_STORE_PAGE_PATHS.has(normalizedPath) || normalizedPath.startsWith("/groups/")) {
     response.headers.set("Cache-Control", NO_STORE_CACHE_CONTROL);
     response.headers.set("Pragma", "no-cache");
     response.headers.set("Expires", "0");

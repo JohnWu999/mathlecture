@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import Navbar from "@/components/navbar";
 import { getProjectAccessPackageOptions } from "@/lib/admin-teacher-workspace-rules.mjs";
@@ -38,10 +38,28 @@ export default function AdminPage() {
   const [selectedWorkbenchSection, setSelectedWorkbenchSection] = useState("projects");
   const [selectedCountCard, setSelectedCountCard] = useState("项目");
   const [consultationConfig, setConsultationConfig] = useState<{ settings?: any[]; projects?: any[] }>({});
+  const countDetailRef = useRef<HTMLDivElement | null>(null);
+  const moduleDetailRef = useRef<HTMLDivElement | null>(null);
 
   const options = useMemo(() => getProjectAccessPackageOptions(), []);
   const sections = useMemo(() => getAdminDataWorkbenchSections(), []);
   const students = users.filter((user) => user.role === "STUDENT");
+
+  const handleSelectCountCard = (label: string) => {
+    setSelectedCountCard(label);
+    window.requestAnimationFrame(() => {
+      countDetailRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      countDetailRef.current?.focus();
+    });
+  };
+
+  const handleSelectWorkbenchSection = (key: string) => {
+    setSelectedWorkbenchSection(key);
+    window.requestAnimationFrame(() => {
+      moduleDetailRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      moduleDetailRef.current?.focus();
+    });
+  };
 
   useEffect(() => {
     if (status !== "authenticated" || session?.user?.role !== "ADMIN") return;
@@ -175,9 +193,10 @@ export default function AdminPage() {
         </div>
 
         <div className="grid md:grid-cols-3 lg:grid-cols-7 gap-4 mb-8 forest-card-grid four">
-          {countCards.map((card) => <button type="button" key={card.label} onClick={() => setSelectedCountCard(card.label)} className={`forest-dashboard-card ${card.color} text-center py-5 ${selectedCountCard === card.label ? "ring-2 ring-ink/30" : ""}`}><div className="text-2xl mb-1">{card.icon}</div><p className="text-2xl font-bold text-ink handwritten-title">{card.value}</p><p className="text-xs text-ink-light">{card.label}</p><p className="text-[11px] text-crayon-blue mt-1">查看具体内容</p></button>)}
+          {countCards.map((card) => <button type="button" key={card.label} aria-expanded={selectedCountCard === card.label} aria-controls="admin-count-detail" onClick={() => handleSelectCountCard(card.label)} className={`forest-dashboard-card ${card.color} text-center py-5 ${selectedCountCard === card.label ? "ring-2 ring-ink/30" : ""}`}><div className="text-2xl mb-1">{card.icon}</div><p className="text-2xl font-bold text-ink handwritten-title">{card.value}</p><p className="text-xs text-ink-light">{card.label}</p><p className="text-[11px] text-crayon-blue mt-1">查看具体内容</p></button>)}
         </div>
-        <section className="forest-panel forest-workspace-panel mb-8">
+        <section id="admin-count-detail" ref={countDetailRef} tabIndex={-1} className="forest-panel forest-workspace-panel mb-8">
+          <p className="text-xs text-crayon-blue mb-1">已展开：{selectedCount.label}</p>
           <h2 className="font-bold text-ink mb-3">数据明细 · {selectedCount.label}</h2>
           <div className="space-y-2 text-sm text-ink-light">{selectedCount.details.length > 0 ? selectedCount.details.map((item, index) => <p key={index} className="forest-info-card p-2">{item}</p>) : <p>暂无具体内容。</p>}</div>
         </section>
@@ -186,9 +205,10 @@ export default function AdminPage() {
         <section className="forest-panel forest-workspace-panel mb-8">
           <h2 className="font-bold text-ink mb-3">🧭 后台模块总览</h2>
           <div className="grid md:grid-cols-3 gap-3">
-            {sections.map((section) => <button type="button" onClick={() => setSelectedWorkbenchSection(section.key)} key={section.key} className={`forest-info-card p-3 text-left ${selectedWorkbenchSection === section.key ? "ring-2 ring-ink/25" : ""}`}><p className="text-sm font-bold text-ink">{section.label}</p><p className="text-xs text-ink-light mt-1 leading-relaxed">{section.helper}</p><p className="text-[11px] text-crayon-blue mt-2">查看具体内容</p></button>)}
+            {sections.map((section) => <button type="button" aria-expanded={selectedWorkbenchSection === section.key} aria-controls="admin-module-detail" onClick={() => handleSelectWorkbenchSection(section.key)} key={section.key} className={`forest-info-card p-3 text-left ${selectedWorkbenchSection === section.key ? "ring-2 ring-ink/25" : ""}`}><p className="text-sm font-bold text-ink">{section.label}</p><p className="text-xs text-ink-light mt-1 leading-relaxed">{section.helper}</p><p className="text-[11px] text-crayon-blue mt-2">查看具体内容</p></button>)}
           </div>
-          <div className="forest-info-card p-3 mt-4">
+          <div id="admin-module-detail" ref={moduleDetailRef} tabIndex={-1} className="forest-info-card p-3 mt-4">
+            <p className="text-xs text-crayon-blue mb-1">已展开：{selectedSection?.label}</p>
             <h3 className="text-sm font-bold text-ink mb-2">模块明细 · {selectedSection?.label}</h3>
             <div className="space-y-2 text-xs text-ink-light">{selectedSectionItems.length > 0 ? selectedSectionItems.map((item: string, index: number) => <p key={index} className="rounded-xl bg-white/70 px-3 py-2">{item}</p>) : <p>暂无模块数据。</p>}</div>
           </div>

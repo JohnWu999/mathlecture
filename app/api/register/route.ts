@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
   try {
-    const { name, phone, password, role, grade, region } = await req.json();
+    const { name, phone, password, role, grade, region, province, city } = await req.json();
 
     if (!phone || !password) {
       return NextResponse.json(
@@ -33,21 +33,24 @@ export async function POST(req: Request) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const normalizedRole = role || "STUDENT";
+    const normalizedGrade = grade === "K" || grade === "大班" ? 0 : grade ? parseInt(grade) : null;
+    const normalizedRegion = [province, city].filter(Boolean).join(" ") || region || null;
 
     const user = await prisma.user.create({
       data: {
         name: name || "小讲师",
         phone,
         password: hashedPassword,
-        role: role || "STUDENT",
-        grade: grade ? parseInt(grade) : null,
-        region: region || null,
-        isActive: role === "TEACHER" || role === "ADMIN", // 老师/管理员默认开放
+        role: normalizedRole,
+        grade: normalizedGrade,
+        region: normalizedRegion,
+        isActive: true, // 新学员默认开放你问我答基础参与；免费项目按满员自动成组，老师只查看状态
       },
     });
 
     return NextResponse.json(
-      { message: "注册成功，请等待老师开放权限后登录", userId: user.id },
+      { message: "注册成功，已自动开放你问我答基础参与", userId: user.id },
       { status: 201 }
     );
   } catch (error) {

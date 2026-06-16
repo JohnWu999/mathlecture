@@ -7,6 +7,7 @@ import Link from "next/link";
 import Navbar from "@/components/navbar";
 import { getPostLoginRedirectPath } from "@/lib/login-redirect-rules";
 import { PUBLIC_PROFILE_HREF } from "@/lib/public-entry-hrefs.mjs";
+import { CHINA_PROVINCE_CITY_OPTIONS, getCitiesForProvince } from "@/lib/china-regions.mjs";
 
 async function waitForPostLoginSession() {
   for (let attempt = 0; attempt < 5; attempt += 1) {
@@ -23,7 +24,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [grade, setGrade] = useState("");
-  const [region, setRegion] = useState("海岸城");
+  const [province, setProvince] = useState("广东省");
+  const [city, setCity] = useState("深圳市");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(false);
@@ -70,11 +72,11 @@ export default function LoginPage() {
     }
 
     try {
-      const res = await fetch("/math-young-lecturer/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, password, grade, region }),
-      });
+          const res = await fetch("/math-young-lecturer/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, phone, password, grade, province, city }),
+          });
 
       const data = await res.json();
 
@@ -84,7 +86,7 @@ export default function LoginPage() {
         return;
       }
 
-      setNotice("注册成功！请等待老师开放权限后登录");
+          setNotice("注册成功！已自动开放你问我答基础参与。免费项目满人数即可报名加入，老师工作台只查看学习状态。");
       setMode("login");
       setLoading(false);
     } catch {
@@ -170,26 +172,43 @@ export default function LoginPage() {
                     onChange={(e) => setGrade(e.target.value)}
                     className="w-full hand-input"
                     required
-                  >
-                    <option value="">选择年级</option>
-                    <option value="1">一年级</option>
-                    <option value="2">二年级</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-ink-light mb-1">
-                    地域</label>
-                  <select
-                    value={region}
-                    onChange={(e) => setRegion(e.target.value)}
-                    className="w-full hand-input"
-                  >
-                    <option value="海岸城">海岸城</option>
-                    <option value="八达岭">八达岭</option>
-                    <option value="后海">后海</option>
-                  </select>
-                </div>
-              </div>
+                      >
+                        <option value="">选择年级</option>
+                        <option value="K">大班</option>
+                        <option value="1">一年级</option>
+                        <option value="2">二年级</option>
+                        <option value="3">三年级</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-ink-light mb-1">
+                        省份</label>
+                      <select
+                        value={province}
+                        onChange={(e) => {
+                          const nextProvince = e.target.value;
+                          setProvince(nextProvince);
+                          setCity(getCitiesForProvince(nextProvince)[0] || "");
+                        }}
+                        className="w-full hand-input"
+                        required
+                      >
+                        {CHINA_PROVINCE_CITY_OPTIONS.map((item) => <option key={item.province} value={item.province}>{item.province}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-ink-light mb-1">
+                      城市</label>
+                    <select
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      className="w-full hand-input"
+                      required
+                    >
+                      {getCitiesForProvince(province).map((cityName) => <option key={cityName} value={cityName}>{cityName}</option>)}
+                    </select>
+                  </div>
             </>
           )}
 

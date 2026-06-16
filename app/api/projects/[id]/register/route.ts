@@ -28,17 +28,18 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       return NextResponse.json({ error: "你已经提交过该项目报名意向，老师会根据项目节奏继续跟进。" }, { status: 409 });
     }
 
+    const isFreeProject = project.projectType === "FREE" || (project.price || 0) === 0;
     const registration = await prisma.projectRegistration.create({
       data: {
         userId: session.user.id,
         projectId: params.id,
-        status: intent.status,
+        status: isFreeProject ? "CONFIRMED" : intent.status,
         childName: intent.childName,
         grade: intent.grade,
         packageName: intent.packageName,
         contact: intent.contact,
         note: intent.note,
-        followUpStatus: intent.followUpStatus,
+        followUpStatus: isFreeProject ? "CONFIRMED" : intent.followUpStatus,
         teacherWechatShown: true,
       },
     });
@@ -51,9 +52,11 @@ export async function POST(req: Request, { params }: { params: { id: string } })
 
     return NextResponse.json({
       registration,
-      childMessage: consultation
-        ? "报名意向已提交。请扫码添加项目咨询老师，人工确认项目节奏、名额和服务内容。"
-        : "报名意向已提交。老师会人工确认项目节奏、名额和服务内容。",
+      childMessage: isFreeProject
+        ? "报名成功。免费项目满人数即可成组，老师工作台只查看学习状态和项目过程。"
+        : consultation
+          ? "报名意向已提交。请扫码添加项目咨询老师，人工确认项目节奏、名额和服务内容。"
+          : "报名意向已提交。老师会人工确认项目节奏、名额和服务内容。",
       consultation,
       enterpriseWechat: consultation?.description || "报名意向已记录，管理员会在后台跟进状态。",
     }, { status: 201 });

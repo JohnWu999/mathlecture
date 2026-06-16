@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import Navbar from "@/components/navbar";
 import { TEACHER_QUESTION_REVIEW_COPY } from "@/lib/qa-ui-rules.mjs";
@@ -78,6 +78,15 @@ type TeacherNotice = {
   type: "success" | "error" | "info";
 } | null;
 
+function normalizeReviewAssetUrl(url?: string | null) {
+  const value = String(url || "").trim();
+  if (!value) return "";
+  if (/^https?:\/\//.test(value)) return value;
+  if (value.startsWith("/math-young-lecturer/")) return value;
+  if (value.startsWith("/")) return `/math-young-lecturer${value}`;
+  return value;
+}
+
 export default function TeacherPage() {
   const { data: session } = useSession();
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
@@ -94,9 +103,18 @@ export default function TeacherPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"dashboard" | "questions" | "answers" | "outcomes" | "users">("dashboard");
   const [notice, setNotice] = useState<TeacherNotice>(null);
+  const dashboardDetailRef = useRef<HTMLDivElement | null>(null);
 
   const showTeacherNotice = (message: string, type: TeacherNotice["type"] = "success") => {
     setNotice({ message, type });
+  };
+
+  const handleSelectDashboardCard = (label: string) => {
+    setSelectedDashboardCard(label);
+    window.requestAnimationFrame(() => {
+      dashboardDetailRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      dashboardDetailRef.current?.focus();
+    });
   };
 
   const isTeacher = session?.user?.role === "TEACHER";
@@ -285,9 +303,9 @@ export default function TeacherPage() {
         {loading ? <div className="text-center py-12 text-ink-light">加载中...</div> : activeTab === "dashboard" ? (
           <>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 forest-card-grid three">
-              {dashboardCards.map((card) => <button type="button" key={card.label} onClick={() => setSelectedDashboardCard(card.label)} className={`forest-dashboard-card ${card.color} text-center py-5 ${selectedDashboardCard === card.label ? "ring-2 ring-ink/30" : ""}`}><div className="text-2xl mb-1">{card.icon}</div><p className="text-2xl font-bold text-ink handwritten-title">{card.value}</p><p className="text-xs text-ink-light">{card.label}</p><p className="text-[11px] text-crayon-blue mt-1">查看明细</p></button>)}
+              {dashboardCards.map((card) => <button type="button" key={card.label} aria-expanded={selectedDashboardCard === card.label} aria-controls="teacher-dashboard-detail" onClick={() => handleSelectDashboardCard(card.label)} className={`forest-dashboard-card ${card.color} text-center py-5 ${selectedDashboardCard === card.label ? "ring-2 ring-ink/30" : ""}`}><div className="text-2xl mb-1">{card.icon}</div><p className="text-2xl font-bold text-ink handwritten-title">{card.value}</p><p className="text-xs text-ink-light">{card.label}</p><p className="text-[11px] text-crayon-blue mt-1">查看明细</p></button>)}
             </div>
-            <div className="forest-panel forest-workspace-panel mb-4"><h3 className="font-bold text-ink mb-3">数据明细 · {selectedDashboard.label}</h3><div className="space-y-2 text-sm text-ink-light">{selectedDashboard.details.length > 0 ? selectedDashboard.details.map((item, index) => <p key={index} className="forest-info-card p-2">{item}</p>) : <p>暂无可展开的数据。</p>}</div></div>
+            <div id="teacher-dashboard-detail" ref={dashboardDetailRef} tabIndex={-1} className="forest-panel forest-workspace-panel mb-4"><p className="text-xs text-crayon-blue mb-1">已展开：{selectedDashboard.label}</p><h3 className="font-bold text-ink mb-3">数据明细 · {selectedDashboard.label}</h3><div className="space-y-2 text-sm text-ink-light">{selectedDashboard.details.length > 0 ? selectedDashboard.details.map((item, index) => <p key={index} className="forest-info-card p-2">{item}</p>) : <p>暂无可展开的数据。</p>}</div></div>
             <div className="forest-panel forest-workspace-panel"><h3 className="font-bold text-ink mb-3">⚡ 快速操作</h3><div className="flex flex-wrap gap-3"><button onClick={() => setActiveTab("questions")} className="hand-btn hand-btn-yellow text-sm">🌱 去审核问题</button><button onClick={() => setActiveTab("answers")} className="hand-btn hand-btn-green text-sm">✅ 去审核讲题</button><button onClick={() => setActiveTab("outcomes")} className="hand-btn hand-btn-yellow text-sm">🌳 去成果审核</button><button onClick={() => setActiveTab("users")} className="hand-btn hand-btn-blue text-sm">👤 查看学生状态</button></div></div>
           </>
         ) : activeTab === "questions" ? (
@@ -298,7 +316,7 @@ export default function TeacherPage() {
         ) : activeTab === "answers" ? (
           <div className="space-y-4">
             <div className="flex gap-2 flex-wrap"><button onClick={() => setAnswerView("pending")} className={`hand-btn text-xs ${answerView === "pending" ? "hand-btn-yellow" : "hand-btn-white"}`}>待审核讲题</button><button onClick={() => setAnswerView("approved")} className={`hand-btn text-xs ${answerView === "approved" ? "hand-btn-yellow" : "hand-btn-white"}`}>已通过讲题</button></div>
-            {visibleAnswers.length === 0 ? <div className="forest-empty"><span className="forest-v2-icon forest-icon-tree mx-auto mb-3" aria-hidden="true" /><p className="text-ink font-medium">{answerView === "approved" ? "还没有已通过讲题" : "没有待审核的讲题"}</p><p className="text-ink-light text-sm mt-1">审核通过后会在已通过讲题归档中保留。</p></div> : visibleAnswers.map((answer) => <div key={answer.id} className="forest-card"><div className="flex items-start justify-between gap-4 mb-3"><div><h3 className="font-bold text-ink">{answer.question.title}</h3><p className="text-xs text-ink-light mt-1">讲师：{answer.lecturer.name || "小讲师"}{answer.lecturer.grade && ` · ${answer.lecturer.grade}年级`}</p></div><div className="flex gap-2">{answerView === "pending" ? <><button onClick={() => handleAnswerReview(answer.id, "approve")} className="hand-btn text-xs hand-btn-green">✅ 通过</button><button onClick={() => handleAnswerReview(answer.id, "reject")} className="hand-btn text-xs hand-btn-pink">↩️ 退回</button></> : <span className="hand-badge hand-badge-green text-xs">已通过</span>}</div></div>{answer.videoUrl && <a href={answer.videoUrl} target="_blank" rel="noopener noreferrer" className="text-crayon-blue hover:underline text-sm">📹 查看视频</a>}{answer.description && <p className="text-sm text-ink-light mt-2">{answer.description}</p>}<p className="text-sm text-ink-light mt-2 p-3 forest-note-card">题目：{answer.question.content}</p></div>)}
+            {visibleAnswers.length === 0 ? <div className="forest-empty"><span className="forest-v2-icon forest-icon-tree mx-auto mb-3" aria-hidden="true" /><p className="text-ink font-medium">{answerView === "approved" ? "还没有已通过讲题" : "没有待审核的讲题"}</p><p className="text-ink-light text-sm mt-1">审核通过后会在已通过讲题归档中保留。</p></div> : visibleAnswers.map((answer) => <div key={answer.id} className="forest-card"><div className="flex items-start justify-between gap-4 mb-3"><div><h3 className="font-bold text-ink">{answer.question.title}</h3><p className="text-xs text-ink-light mt-1">讲师：{answer.lecturer.name || "小讲师"}{answer.lecturer.grade && ` · ${answer.lecturer.grade}年级`}</p></div><div className="flex gap-2">{answerView === "pending" ? <><button onClick={() => handleAnswerReview(answer.id, "approve")} className="hand-btn text-xs hand-btn-green">✅ 通过</button><button onClick={() => handleAnswerReview(answer.id, "reject")} className="hand-btn text-xs hand-btn-pink">↩️ 退回</button></> : <span className="hand-badge hand-badge-green text-xs">已通过</span>}</div></div>{answer.videoUrl && <div className="space-y-1"><a href={normalizeReviewAssetUrl(answer.videoUrl)} target="_blank" rel="noopener noreferrer" className="text-crayon-blue hover:underline text-sm">📹 查看视频</a><p className="text-[11px] text-ink-light">无法打开时请复制链接到浏览器：{normalizeReviewAssetUrl(answer.videoUrl)}</p></div>}{answer.description && <p className="text-sm text-ink-light mt-2">{answer.description}</p>}<p className="text-sm text-ink-light mt-2 p-3 forest-note-card">题目：{answer.question.content}</p></div>)}
           </div>
         ) : activeTab === "outcomes" ? (
           <div className="space-y-4">
@@ -325,7 +343,7 @@ export default function TeacherPage() {
                     {outcomeView === "public" && <button onClick={() => handleOutcomeWithdraw(outcome)} className="hand-btn text-xs hand-btn-pink">↩️ 撤回公开授权</button>}
                   </div>
                 </div>
-                {outcome.artifactUrl && <a href={outcome.artifactUrl} target="_blank" rel="noopener noreferrer" className="text-crayon-blue text-sm underline">🔗 查看作品链接</a>}
+                {outcome.artifactUrl && <div className="space-y-1"><a href={normalizeReviewAssetUrl(outcome.artifactUrl)} target="_blank" rel="noopener noreferrer" className="text-crayon-blue text-sm underline">🔗 查看作品链接</a><p className="text-[11px] text-ink-light">无法打开时请复制链接到浏览器：{normalizeReviewAssetUrl(outcome.artifactUrl)}</p></div>}
                 {outcome.description && <p className="text-sm text-ink-light mt-2 whitespace-pre-wrap forest-note-card p-3">{outcome.description}</p>}
                 <p className="text-xs text-ink-light mt-3">不展示排名、不公开成长能量；老师只确认是否适合被更多同学看见。</p>
               </div>

@@ -186,9 +186,9 @@ export default function ProjectDetailPage() {
           )}
           <div className="mb-4 mx-auto max-w-2xl rounded-2xl bg-white/75 border border-ink/10 p-4 text-left">
             <p className="text-sm font-bold text-ink">公开浏览不需要登录</p>
-            <p className="text-xs text-ink-light mt-1 leading-relaxed">
-              项目介绍、适合年级、学习目标、体验说明可以直接浏览；报名和加入项目需要登录，因为项目权益、作品提交和老师反馈都要记录到孩子账号，方便运营追踪和成长档案沉淀。
-            </p>
+                <p className="text-xs text-ink-light mt-1 leading-relaxed">
+                  项目介绍、适合年级、学习目标、体验说明可以直接浏览；报名和加入项目需要登录，因为项目权益、作品提交和老师反馈都要记录到孩子账号，方便运营追踪和成长档案沉淀。免费项目满人数即可成组，老师工作台只查看学习状态，不再做人工作业式审核。
+                </p>
           </div>
           {status === "loading" && (
             <div className="max-w-2xl mx-auto rounded-2xl bg-white/80 border border-ink/10 p-4 text-sm text-ink-light">正在确认登录状态...</div>

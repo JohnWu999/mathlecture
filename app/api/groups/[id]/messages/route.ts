@@ -11,6 +11,23 @@ type SessionUser = {
   role?: string | null;
 };
 
+function deriveLearnerProjectStartDate(access: any) {
+  return access.membership?.joinedAt
+    || access.activeProjectAccess?.validFrom
+    || access.activeProjectAccess?.createdAt
+    || access.projectRegistration?.createdAt
+    || access.group.createdAt;
+}
+
+function deriveCurrentProjectDay(startDate: Date, durationDays = 1) {
+  const start = new Date(startDate);
+  start.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const elapsedDays = Math.floor((today.getTime() - start.getTime()) / (24 * 60 * 60 * 1000)) + 1;
+  return Math.min(Math.max(elapsedDays, 1), Math.max(Number(durationDays) || 1, 1));
+}
+
 async function assertGroupAccess(groupId: string, sessionUser: SessionUser) {
   const group = await prisma.group.findUnique({
     where: { id: groupId },
@@ -38,18 +55,10 @@ async function assertGroupAccess(groupId: string, sessionUser: SessionUser) {
     return { error: "小组不存在", status: 404 as const };
   }
 
-  if (sessionUser.role === "TEACHER" || sessionUser.role === "ADMIN") {
-    return { group };
-  }
-
   const membership = await prisma.groupMember.findFirst({
     where: { groupId, userId: sessionUser.id },
-    select: { id: true },
+    select: { id: true, joinedAt: true },
   });
-  if (membership) {
-    return { group };
-  }
-
   const activeProjectAccess = await prisma.userProjectAccess.findFirst({
     where: {
       userId: sessionUser.id,
@@ -59,10 +68,20 @@ async function assertGroupAccess(groupId: string, sessionUser: SessionUser) {
         { projectId: null },
       ],
     },
-    select: { id: true },
+    select: { id: true, validFrom: true, createdAt: true },
+    orderBy: { validFrom: "desc" },
   });
-  if (activeProjectAccess) {
-    return { group };
+  const projectRegistration = await prisma.projectRegistration.findUnique({
+    where: { userId_projectId: { userId: sessionUser.id, projectId: group.projectId } },
+    select: { id: true, createdAt: true },
+  });
+
+  if (sessionUser.role === "TEACHER" || sessionUser.role === "ADMIN") {
+    return { group, membership, activeProjectAccess, projectRegistration };
+  }
+
+  if (membership || activeProjectAccess || projectRegistration) {
+    return { group, membership, activeProjectAccess, projectRegistration };
   }
 
   return { error: "无权访问这个小组协作空间", status: 403 as const };
@@ -84,8 +103,9 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ error: access.error }, { status: access.status });
     }
 
-    const startDate = access.group.createdAt;
+    const startDate = deriveLearnerProjectStartDate(access);
     const deadline = new Date(startDate.getTime() + Math.max(access.group.project.durationDays || 1, 1) * 24 * 60 * 60 * 1000);
+    const dayProgress = deriveCurrentProjectDay(startDate, access.group.project.durationDays || 1);
 
     const messages = await prisma.message.findMany({
       where: { groupId: params.id },
@@ -96,7 +116,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       take: 100,
     });
 
-    return NextResponse.json({ group: { ...access.group, startDate, deadline }, messages });
+    return NextResponse.json({ group: { ...access.group, startDate, deadline, dayProgress }, messages });
   } catch (error) {
     console.error("获取小组协作空间失败:", error);
     return NextResponse.json({ error: "获取失败" }, { status: 500 });
