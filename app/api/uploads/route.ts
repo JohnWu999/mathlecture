@@ -9,7 +9,7 @@ import { assertUploadAllowed, buildUploadPublicUrl, sanitizeUploadFilename } fro
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const ALLOWED_KINDS = new Set(["question-image", "answer-video", "project-artifact", "consultation-qr"]);
+const ALLOWED_KINDS = new Set(["avatar", "question-image", "answer-video", "project-artifact", "consultation-qr"]);
 
 function getUploadRoot() {
   return process.env.UPLOAD_DIR || path.join(process.cwd(), "public", "uploads");
@@ -28,6 +28,9 @@ export async function POST(req: Request) {
 
     if (!ALLOWED_KINDS.has(kind)) {
       return NextResponse.json({ error: "未知上传类型" }, { status: 400 });
+    }
+    if (kind === "avatar" && session.user.role !== "STUDENT") {
+      return NextResponse.json({ error: "只有学习者可以上传头像" }, { status: 403 });
     }
     if (kind === "consultation-qr" && session.user.role !== "ADMIN") {
       return NextResponse.json({ error: "只有管理员可以上传咨询二维码" }, { status: 403 });

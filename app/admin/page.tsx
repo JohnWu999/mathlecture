@@ -35,6 +35,8 @@ export default function AdminPage() {
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState("");
+  const [selectedWorkbenchSection, setSelectedWorkbenchSection] = useState("projects");
+  const [selectedCountCard, setSelectedCountCard] = useState("项目");
   const [consultationConfig, setConsultationConfig] = useState<{ settings?: any[]; projects?: any[] }>({});
 
   const options = useMemo(() => getProjectAccessPackageOptions(), []);
@@ -145,14 +147,22 @@ export default function AdminPage() {
   if (session.user.role !== "ADMIN") return <main className="forest-page-shell forest-workspace-shell"><Navbar /><div className="text-center py-20"><span className="forest-v2-icon forest-icon-question mx-auto mb-3" aria-hidden="true" /><p className="text-ink font-medium">无权访问管理员工作台</p><p className="text-ink-light text-sm mt-1">老师工作台负责教学审核；项目包、付费权益和用户运营由管理员处理。</p></div></main>;
 
   const countCards = [
-    { label: "学习者", value: students.length, icon: "👧", color: "sticker-blue" },
-    { label: "老师/管理员", value: users.filter((u) => u.role !== "STUDENT").length, icon: "👩‍🏫", color: "sticker-green" },
-    { label: "项目", value: workbench.counts?.projects ?? 0, icon: "🎯", color: "sticker-yellow" },
-    { label: "问题", value: workbench.counts?.questions ?? 0, icon: "🙋", color: "sticker-pink" },
-    { label: "视频", value: workbench.counts?.lectureVideos ?? 0, icon: "🎤", color: "sticker-blue" },
-    { label: "作品", value: workbench.counts?.projectArtifacts ?? 0, icon: "🧩", color: "sticker-green" },
-    { label: "报名意向", value: workbench.counts?.registrationIntents ?? 0, icon: "📮", color: "sticker-yellow" },
+    { label: "学习者", value: students.length, icon: "👧", color: "sticker-blue", details: students.slice(0, 8).map((u) => `${u.name || "未命名"} · ${u.phone || "未留手机"}`) },
+    { label: "老师/管理员", value: users.filter((u) => u.role !== "STUDENT").length, icon: "👩‍🏫", color: "sticker-green", details: users.filter((u) => u.role !== "STUDENT").slice(0, 8).map((u) => `${u.name || "未命名"} · ${u.role}`) },
+    { label: "项目", value: workbench.counts?.projects ?? 0, icon: "🎯", color: "sticker-yellow", details: (workbench.projects || []).slice(0, 8).map((p) => `${p.title} · ${p.status}`) },
+    { label: "问题", value: workbench.counts?.questions ?? 0, icon: "🙋", color: "sticker-pink", details: (workbench.questions || []).slice(0, 8).map((q) => `${q.title} · ${q.reviewStatus}/${q.status}`) },
+    { label: "视频", value: workbench.counts?.lectureVideos ?? 0, icon: "🎤", color: "sticker-blue", details: (workbench.lectureVideos || []).slice(0, 8).map((a) => `${a.question?.title || "讲题"} · ${a.status}/${a.reviewStatus}`) },
+    { label: "作品", value: workbench.counts?.projectArtifacts ?? 0, icon: "🧩", color: "sticker-green", details: (workbench.projectArtifacts || []).slice(0, 8).map((item) => `${item.title} · ${item.reviewStatus}/${item.shareScope}`) },
+    { label: "报名意向", value: workbench.counts?.registrationIntents ?? 0, icon: "📮", color: "sticker-yellow", details: (workbench.registrationIntents || []).slice(0, 8).map((r) => `${r.childName || r.user?.name || "未命名"} · ${r.project?.title || "未关联项目"}`) },
   ];
+  const selectedCount = countCards.find((card) => card.label === selectedCountCard) || countCards[2];
+  const selectedSection = sections.find((section) => section.key === selectedWorkbenchSection) || sections[0];
+  const selectedSectionItems = (() => {
+    const key = selectedWorkbenchSection;
+    const dataKey = key === "answers" ? "lectureVideos" : key === "artifacts" ? "projectArtifacts" : key === "registrations" ? "registrationIntents" : key;
+    const rows = Array.isArray((workbench as any)[dataKey]) ? (workbench as any)[dataKey] : [];
+    return rows.slice(0, 8).map((item: any) => item.title || item.question?.title || item.childName || item.action || item.recordType || item.user?.name || "未命名记录");
+  })();
 
   return (
     <main className="forest-page-shell forest-workspace-shell">
@@ -165,14 +175,22 @@ export default function AdminPage() {
         </div>
 
         <div className="grid md:grid-cols-3 lg:grid-cols-7 gap-4 mb-8 forest-card-grid four">
-          {countCards.map((card) => <div key={card.label} className={`forest-dashboard-card ${card.color} text-center py-5`}><div className="text-2xl mb-1">{card.icon}</div><p className="text-2xl font-bold text-ink handwritten-title">{card.value}</p><p className="text-xs text-ink-light">{card.label}</p></div>)}
+          {countCards.map((card) => <button type="button" key={card.label} onClick={() => setSelectedCountCard(card.label)} className={`forest-dashboard-card ${card.color} text-center py-5 ${selectedCountCard === card.label ? "ring-2 ring-ink/30" : ""}`}><div className="text-2xl mb-1">{card.icon}</div><p className="text-2xl font-bold text-ink handwritten-title">{card.value}</p><p className="text-xs text-ink-light">{card.label}</p><p className="text-[11px] text-crayon-blue mt-1">查看具体内容</p></button>)}
         </div>
+        <section className="forest-panel forest-workspace-panel mb-8">
+          <h2 className="font-bold text-ink mb-3">数据明细 · {selectedCount.label}</h2>
+          <div className="space-y-2 text-sm text-ink-light">{selectedCount.details.length > 0 ? selectedCount.details.map((item, index) => <p key={index} className="forest-info-card p-2">{item}</p>) : <p>暂无具体内容。</p>}</div>
+        </section>
         {notice && <div className="forest-note-card mb-8 text-sm text-ink">{notice}</div>}
 
         <section className="forest-panel forest-workspace-panel mb-8">
           <h2 className="font-bold text-ink mb-3">🧭 后台模块总览</h2>
           <div className="grid md:grid-cols-3 gap-3">
-            {sections.map((section) => <div key={section.key} className="forest-info-card p-3"><p className="text-sm font-bold text-ink">{section.label}</p><p className="text-xs text-ink-light mt-1 leading-relaxed">{section.helper}</p></div>)}
+            {sections.map((section) => <button type="button" onClick={() => setSelectedWorkbenchSection(section.key)} key={section.key} className={`forest-info-card p-3 text-left ${selectedWorkbenchSection === section.key ? "ring-2 ring-ink/25" : ""}`}><p className="text-sm font-bold text-ink">{section.label}</p><p className="text-xs text-ink-light mt-1 leading-relaxed">{section.helper}</p><p className="text-[11px] text-crayon-blue mt-2">查看具体内容</p></button>)}
+          </div>
+          <div className="forest-info-card p-3 mt-4">
+            <h3 className="text-sm font-bold text-ink mb-2">模块明细 · {selectedSection?.label}</h3>
+            <div className="space-y-2 text-xs text-ink-light">{selectedSectionItems.length > 0 ? selectedSectionItems.map((item: string, index: number) => <p key={index} className="rounded-xl bg-white/70 px-3 py-2">{item}</p>) : <p>暂无模块数据。</p>}</div>
           </div>
         </section>
 

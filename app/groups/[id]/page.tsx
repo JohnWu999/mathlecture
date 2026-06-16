@@ -36,6 +36,9 @@ interface GroupInfo {
     knowledgeTags: string[];
     projectType: "FREE" | "PAID";
   };
+  startDate?: string;
+  deadline?: string;
+  members?: { id: string; joinedAt: string; user: { id: string; name: string | null; grade: number | null; region: string | null; role: string } }[];
   _count: { members: number };
 }
 
@@ -134,6 +137,8 @@ export default function GroupPage() {
   };
 
   const isMyMessage = (msg: Message) => msg.author.name === session?.user?.name;
+  const groupStartText = group?.startDate ? new Date(group.startDate).toLocaleDateString() : "待老师确认";
+  const groupDeadlineText = group?.deadline ? new Date(group.deadline).toLocaleDateString() : "待老师确认";
 
   return (
     <main className="forest-page-shell flex flex-col">
@@ -146,6 +151,8 @@ export default function GroupPage() {
           <div className="flex flex-wrap justify-center gap-2 mt-3 text-xs">
             <span className="px-3 py-1 rounded-full bg-white/70">{group?.name || "小组"}</span>
             <span className="px-3 py-1 rounded-full bg-white/70">{group?._count.members || 0} 位成员</span>
+            <span className="px-3 py-1 rounded-full bg-white/70">开始时间：{groupStartText}</span>
+            <span className="px-3 py-1 rounded-full bg-white/70">截止时间：{groupDeadlineText}</span>
             <span className="px-3 py-1 rounded-full bg-white/70">Day {group?.dayProgress || 1} / {group?.project.durationDays || 5}</span>
           </div>
         </div>
@@ -153,7 +160,15 @@ export default function GroupPage() {
         <div className="grid lg:grid-cols-[0.95fr_1.05fr] gap-5">
           <aside className="space-y-5">
             <div className="forest-card">
+              <h2 className="font-bold text-ink mb-3">🧑‍🤝‍🧑 成员名单</h2>
+              <div className="space-y-2">
+                {(group?.members || []).length > 0 ? group?.members?.map((member) => <p key={member.id} className="rounded-2xl bg-white/70 px-3 py-2 text-xs text-ink-light"><strong className="text-ink">{member.user.name || "小伙伴"}</strong>{member.user.grade ? ` · ${member.user.grade}年级` : ""}{member.user.region ? ` · ${member.user.region}` : ""}</p>) : <p className="text-xs text-ink-light">暂无成员名单，老师确认分组后会显示。</p>}
+              </div>
+            </div>
+
+            <div className="forest-card">
               <h2 className="font-bold text-ink mb-3">🗂️ 项目任务卡</h2>
+              <p className="text-xs text-ink-light mb-3">每天根据项目开始时间和当前 Day 更新任务卡；老师可按小组进度调整 Day，截止时间用于提醒收尾，不做排名。</p>
               <div className="space-y-2">
                 {taskCards.map((card) => (
                   <div key={card.day} className={`rounded-2xl p-3 border ${card.status === "active" ? "bg-crayon-yellow/35 border-ink/20" : "bg-parchment/60 border-ink/10"}`}>

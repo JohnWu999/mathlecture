@@ -19,14 +19,35 @@ export async function GET() {
   if (auth) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   try {
-    const [totalUsers, totalQuestions, totalAnswers, totalProjects, pendingAnswers, totalRegistrations] = await Promise.all([
+    const [totalUsers, totalQuestions, totalAnswers, totalProjects, pendingAnswers, totalRegistrations, recentQuestions, recentAnswers, pendingQuestions] = await Promise.all([
       prisma.user.count(),
       prisma.question.count(),
       prisma.answer.count(),
       prisma.project.count(),
       prisma.answer.count({ where: { status: "PENDING" } }),
       prisma.projectRegistration.count(),
+      prisma.question.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 8,
+        select: { id: true, title: true, content: true, grade: true, topic: true, reviewStatus: true, status: true, author: { select: { name: true } } },
+      }),
+      prisma.answer.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 8,
+        select: { id: true, videoUrl: true, description: true, status: true, reviewStatus: true, lecturer: { select: { name: true, grade: true } }, question: { select: { title: true, content: true } } },
+      }),
+      prisma.question.findMany({
+        where: { reviewStatus: "PENDING" },
+        orderBy: { createdAt: "desc" },
+        take: 8,
+        select: { id: true, title: true, author: { select: { name: true } } },
+      }),
     ]);
+
+    const pendingReviewItems = [
+      ...pendingQuestions.map((item) => ({ id: item.id, type: "待审核问题", title: item.title, owner: item.author?.name || null })),
+      ...recentAnswers.filter((item) => item.reviewStatus === "PENDING" || item.status === "PENDING").map((item) => ({ id: item.id, type: "待审核讲题", title: item.question?.title || "讲题视频", owner: item.lecturer?.name || null })),
+    ].slice(0, 8);
 
     return NextResponse.json({
       totalUsers,
@@ -35,6 +56,9 @@ export async function GET() {
       totalProjects,
       pendingAnswers,
       totalRegistrations,
+      recentQuestions,
+      recentAnswers,
+      pendingReviewItems,
     });
   } catch (error) {
     console.error("获取看板数据失败:", error);

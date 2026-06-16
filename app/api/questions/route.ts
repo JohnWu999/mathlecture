@@ -35,6 +35,8 @@ export async function GET(req: Request) {
       id: true,
       title: true,
       content: true,
+      recognizedText: true,
+      imageUrl: true,
       grade: true,
       topic: true,
       confusionType: true,

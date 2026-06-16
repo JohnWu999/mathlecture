@@ -29,6 +29,7 @@ export async function GET() {
         lecturerLevel: true,
         explorerLevel: true,
         learnerIntro: true,
+        avatar: true,
         role: true,
         isActive: true,
         createdAt: true,
@@ -139,6 +140,35 @@ export async function GET() {
   } catch (error) {
     console.error("获取个人资料失败:", error);
     return NextResponse.json({ error: "获取失败" }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "请先登录" }, { status: 401 });
+  }
+  if (session.user.role !== "STUDENT") {
+    return NextResponse.json({ error: "该接口只对学习者账号开放" }, { status: 403 });
+  }
+
+  try {
+    const body = await req.json().catch(() => ({}));
+    const avatar = typeof body?.avatar === "string" ? body.avatar.trim() : "";
+    if (!avatar.startsWith("/math-young-lecturer/uploads/avatar/")) {
+      return NextResponse.json({ error: "请先上传真实头像图片" }, { status: 400 });
+    }
+
+    const user = await prisma.user.update({
+      where: { id: session.user.id },
+      data: { avatar },
+      select: { id: true, avatar: true },
+    });
+
+    return NextResponse.json({ user, message: "头像已更新" });
+  } catch (error) {
+    console.error("更新头像失败:", error);
+    return NextResponse.json({ error: "头像保存失败" }, { status: 500 });
   }
 }
 

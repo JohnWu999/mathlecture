@@ -212,19 +212,19 @@ export default function ProjectDetailPage() {
             <>
               <form onSubmit={handleRegister} className="max-w-2xl mx-auto text-left space-y-3">
                 <div className="grid sm:grid-cols-2 gap-3">
-                  <input value={childName} onChange={(e) => setChildName(e.target.value)} required placeholder="孩子昵称" className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none" />
-                  <input value={grade} onChange={(e) => setGrade(e.target.value)} required type="number" min="1" max="3" placeholder="年级，如 3" className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none" />
+                  <input value={childName} onChange={(e) => setChildName(e.target.value)} required placeholder="孩子昵称" className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white text-ink focus:border-crayon-green focus:outline-none" />
+                  <input value={grade} onChange={(e) => setGrade(e.target.value)} required type="number" min="1" max="3" placeholder="年级，如 3" className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white text-ink focus:border-crayon-green focus:outline-none" />
                 </div>
                 <div className="grid sm:grid-cols-2 gap-3">
-                  <select value={packageName} onChange={(e) => setPackageName(e.target.value)} className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none">
+                  <select value={packageName} onChange={(e) => setPackageName(e.target.value)} className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white text-ink focus:border-crayon-green focus:outline-none">
                     <option>项目报名意向</option>
                     <option>5 次项目包</option>
                     <option>20 周项目包</option>
                     <option>先咨询再决定</option>
                   </select>
-                  <input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="联系方式（可选）" className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none" />
+                  <input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="联系方式（可选）" className="px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white text-ink focus:border-crayon-green focus:outline-none" />
                 </div>
-                <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder="想让老师了解的情况（可选）" className="w-full px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white focus:border-crayon-green focus:outline-none resize-none" />
+                <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder="想让老师了解的情况（可选）" className="w-full px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-white text-ink focus:border-crayon-green focus:outline-none resize-none" />
                 <div className="text-center">
                   <button type="submit" disabled={registering} className="hand-btn bg-white text-ink disabled:opacity-50">
                     {registering ? "提交中..." : detail.enrollment.cta}

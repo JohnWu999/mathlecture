@@ -14,6 +14,9 @@ interface DashboardData {
   totalProjects: number;
   pendingAnswers: number;
   totalRegistrations: number;
+  recentQuestions?: PendingQuestion[];
+  recentAnswers?: PendingAnswer[];
+  pendingReviewItems?: { id: string; title: string; type: string; owner?: string | null }[];
 }
 
 interface PendingAnswer {
@@ -23,6 +26,8 @@ interface PendingAnswer {
   createdAt: string;
   lecturer: { name: string | null; grade: number | null };
   question: { title: string; content: string };
+  status?: string;
+  reviewStatus?: string;
 }
 
 interface PendingQuestion {
@@ -35,6 +40,8 @@ interface PendingQuestion {
   topic: string | null;
   confusionType?: string | null;
   author: { name: string | null; region?: string | null };
+  status?: string;
+  reviewStatus?: string;
 }
 
 interface OutcomeItem {
@@ -75,7 +82,12 @@ export default function TeacherPage() {
   const { data: session } = useSession();
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [pendingAnswers, setPendingAnswers] = useState<PendingAnswer[]>([]);
+  const [approvedAnswers, setApprovedAnswers] = useState<PendingAnswer[]>([]);
+  const [answerView, setAnswerView] = useState<"pending" | "approved">("pending");
   const [pendingQuestions, setPendingQuestions] = useState<PendingQuestion[]>([]);
+  const [approvedQuestions, setApprovedQuestions] = useState<PendingQuestion[]>([]);
+  const [questionView, setQuestionView] = useState<"pending" | "approved">("pending");
+  const [selectedDashboardCard, setSelectedDashboardCard] = useState("总问题");
   const [outcomes, setOutcomes] = useState<OutcomeItem[]>([]);
   const [outcomeView, setOutcomeView] = useState<"pending" | "public" | "withdrawn">("pending");
   const [users, setUsers] = useState<UserItem[]>([]);
@@ -101,14 +113,18 @@ export default function TeacherPage() {
     setLoading(true);
     Promise.all([
       fetch("/math-young-lecturer/api/teacher/dashboard").then((r) => r.json()),
-      fetch("/math-young-lecturer/api/teacher/answers").then((r) => r.json()),
+      fetch("/math-young-lecturer/api/teacher/answers?view=pending").then((r) => r.json()),
+      fetch("/math-young-lecturer/api/teacher/answers?view=approved").then((r) => r.json()),
       fetch("/math-young-lecturer/api/questions?status=OPEN&reviewStatus=PENDING").then((r) => r.json()),
+      fetch("/math-young-lecturer/api/questions?status=OPEN&reviewStatus=APPROVED").then((r) => r.json()),
       fetch(`/math-young-lecturer/api/teacher/outcomes?view=${outcomeView}`).then((r) => r.json()),
       fetch("/math-young-lecturer/api/teacher/users").then((r) => r.json()),
-    ]).then(([dashData, answersData, questionsData, outcomesData, usersData]) => {
+    ]).then(([dashData, answersData, approvedAnswersData, questionsData, approvedQuestionsData, outcomesData, usersData]) => {
       setDashboard(dashData);
       setPendingAnswers(Array.isArray(answersData) ? answersData : []);
+      setApprovedAnswers(Array.isArray(approvedAnswersData) ? approvedAnswersData : []);
       setPendingQuestions(Array.isArray(questionsData) ? questionsData : questionsData.questions || []);
+      setApprovedQuestions(Array.isArray(approvedQuestionsData) ? approvedQuestionsData : approvedQuestionsData.questions || []);
       setOutcomes(Array.isArray(outcomesData) ? outcomesData : outcomesData.outcomes || []);
       setUsers(Array.isArray(usersData) ? usersData : []);
       setLoading(false);
@@ -124,8 +140,14 @@ export default function TeacherPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "操作失败");
-      setPendingQuestions((prev) => prev.filter((q) => q.id !== id));
-      showTeacherNotice(action === "approve" ? data.growthEnergy?.userMessage || TEACHER_QUESTION_REVIEW_COPY.approveMessage : data.reviewNote || TEACHER_QUESTION_REVIEW_COPY.rejectMessage);
+      setPendingQuestions((prev) => {
+        const reviewed = prev.find((q) => q.id === id);
+        if (action === "approve" && reviewed) {
+          setApprovedQuestions((prev) => [{ ...reviewed, reviewStatus: "APPROVED" }, ...prev]);
+        }
+        return prev.filter((q) => q.id !== id);
+      });
+      showTeacherNotice(action === "approve" ? data.growthEnergy?.userMessage || "已通过问题，已移入已通过问题归档。" : data.reviewNote || TEACHER_QUESTION_REVIEW_COPY.rejectMessage);
     } catch (e: any) {
       showTeacherNotice(e.message || "操作失败", "error");
     }
@@ -140,8 +162,14 @@ export default function TeacherPage() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "操作失败");
-      setPendingAnswers((prev) => prev.filter((a) => a.id !== id));
-      showTeacherNotice(action === "approve" ? data.growthEnergy?.userMessage || "已通过，孩子会收到私密讲解成长能量。" : "已退回修改");
+      setPendingAnswers((prev) => {
+        const reviewed = prev.find((a) => a.id === id);
+        if (action === "approve" && reviewed) {
+          setApprovedAnswers((prevApproved) => [{ ...reviewed, status: "APPROVED", reviewStatus: "APPROVED" }, ...prevApproved]);
+        }
+        return prev.filter((a) => a.id !== id);
+      });
+      showTeacherNotice(action === "approve" ? data.growthEnergy?.userMessage || "已通过讲题，已移入已通过讲题归档。" : "已退回修改");
     } catch (e: any) {
       showTeacherNotice(e.message || "操作失败", "error");
     }
@@ -208,6 +236,17 @@ export default function TeacherPage() {
   const inactiveUsers = users.filter((u) => !u.isActive && u.role === "STUDENT");
   const outcomeTabs = getTeacherOutcomeReviewTabs();
   const studentStatusCopy = getTeacherStudentStatusCopy();
+  const visibleQuestions = questionView === "approved" ? approvedQuestions : pendingQuestions;
+  const visibleAnswers = answerView === "approved" ? approvedAnswers : pendingAnswers;
+  const dashboardCards = [
+    { key: "users", label: "总用户", value: dashboard?.totalUsers || 0, icon: "👤", color: "sticker-blue", details: users.slice(0, 8).map((u) => `${u.name || "未命名"} · ${u.role}`) },
+    { key: "questions", label: "总问题", value: dashboard?.totalQuestions || 0, icon: "🙋", color: "sticker-green", details: (dashboard?.recentQuestions || approvedQuestions || []).slice(0, 8).map((q) => `${q.title} · ${q.reviewStatus || "待审核"}`) },
+    { key: "answers", label: "总讲题", value: dashboard?.totalAnswers || 0, icon: "🎤", color: "sticker-yellow", details: (dashboard?.recentAnswers || approvedAnswers || []).slice(0, 8).map((a) => `${a.question?.title || "讲题"} · ${a.reviewStatus || a.status || "待审核"}`) },
+    { key: "pending", label: "待处理", value: (dashboard?.pendingAnswers || 0) + pendingQuestions.length, icon: "⏳", color: "sticker-pink", details: (dashboard?.pendingReviewItems || []).slice(0, 8).map((item) => `${item.type} · ${item.title}`) },
+    { key: "projects", label: "项目数", value: dashboard?.totalProjects || 0, icon: "🎯", color: "sticker-orange", details: ["项目总数来自当前项目库，点击后台项目数据库可看更多。"] },
+    { key: "registrations", label: "报名人数", value: dashboard?.totalRegistrations || 0, icon: "📖", color: "sticker-white", details: ["报名人数来自项目报名意向和确认记录。"] },
+  ];
+  const selectedDashboard = dashboardCards.find((card) => card.label === selectedDashboardCard) || dashboardCards[1];
 
   if (!session?.user) return <main className="forest-page-shell forest-workspace-shell"><Navbar /><div className="text-center py-20"><p className="text-ink-light">请先登录</p></div></main>;
   if (!isTeacher) return <main className="forest-page-shell forest-workspace-shell"><Navbar /><div className="text-center py-20"><span className="forest-v2-icon forest-icon-question mx-auto mb-3" aria-hidden="true" /><p className="text-ink font-medium">无权访问</p><p className="text-ink-light text-sm mt-1">该页面仅对老师开放</p></div></main>;
@@ -246,26 +285,20 @@ export default function TeacherPage() {
         {loading ? <div className="text-center py-12 text-ink-light">加载中...</div> : activeTab === "dashboard" ? (
           <>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 forest-card-grid three">
-              {[
-                { label: "总用户", value: dashboard?.totalUsers || 0, icon: "👤", color: "sticker-blue" },
-                { label: "总问题", value: dashboard?.totalQuestions || 0, icon: "🙋", color: "sticker-green" },
-                { label: "总讲题", value: dashboard?.totalAnswers || 0, icon: "🎤", color: "sticker-yellow" },
-                { label: "待处理", value: (dashboard?.pendingAnswers || 0) + pendingQuestions.length, icon: "⏳", color: "sticker-pink" },
-                { label: "项目数", value: dashboard?.totalProjects || 0, icon: "🎯", color: "sticker-orange" },
-                { label: "报名人数", value: dashboard?.totalRegistrations || 0, icon: "📖", color: "sticker-white" },
-              ].map((card) => <div key={card.label} className={`forest-dashboard-card ${card.color} text-center py-5`}><div className="text-2xl mb-1">{card.icon}</div><p className="text-2xl font-bold text-ink handwritten-title">{card.value}</p><p className="text-xs text-ink-light">{card.label}</p></div>)}
+              {dashboardCards.map((card) => <button type="button" key={card.label} onClick={() => setSelectedDashboardCard(card.label)} className={`forest-dashboard-card ${card.color} text-center py-5 ${selectedDashboardCard === card.label ? "ring-2 ring-ink/30" : ""}`}><div className="text-2xl mb-1">{card.icon}</div><p className="text-2xl font-bold text-ink handwritten-title">{card.value}</p><p className="text-xs text-ink-light">{card.label}</p><p className="text-[11px] text-crayon-blue mt-1">查看明细</p></button>)}
             </div>
+            <div className="forest-panel forest-workspace-panel mb-4"><h3 className="font-bold text-ink mb-3">数据明细 · {selectedDashboard.label}</h3><div className="space-y-2 text-sm text-ink-light">{selectedDashboard.details.length > 0 ? selectedDashboard.details.map((item, index) => <p key={index} className="forest-info-card p-2">{item}</p>) : <p>暂无可展开的数据。</p>}</div></div>
             <div className="forest-panel forest-workspace-panel"><h3 className="font-bold text-ink mb-3">⚡ 快速操作</h3><div className="flex flex-wrap gap-3"><button onClick={() => setActiveTab("questions")} className="hand-btn hand-btn-yellow text-sm">🌱 去审核问题</button><button onClick={() => setActiveTab("answers")} className="hand-btn hand-btn-green text-sm">✅ 去审核讲题</button><button onClick={() => setActiveTab("outcomes")} className="hand-btn hand-btn-yellow text-sm">🌳 去成果审核</button><button onClick={() => setActiveTab("users")} className="hand-btn hand-btn-blue text-sm">👤 查看学生状态</button></div></div>
           </>
         ) : activeTab === "questions" ? (
-          pendingQuestions.length === 0 ? <div className="forest-empty"><span className="forest-v2-icon forest-icon-seed mx-auto mb-3" aria-hidden="true" /><p className="text-ink font-medium">没有待审核的问题</p><p className="text-ink-light text-sm mt-1">审核通过的问题才会开放认领。</p></div> :
           <div className="space-y-4">
-            {pendingQuestions.map((q) => <div key={q.id} className="forest-card"><div className="flex items-start justify-between gap-4 mb-3"><div><h3 className="font-bold text-ink">{q.title}</h3><p className="text-xs text-ink-light mt-1">{q.grade && `${q.grade}年级 · `}{q.topic || "未标知识点"}{q.confusionType && ` · 卡点：${q.confusionType}`}</p><p className="text-xs text-ink-light mt-1">提问人：{q.author?.name || "小朋友"}</p></div><div className="flex gap-2"><button onClick={() => handleQuestionReview(q.id, "approve")} className="hand-btn text-xs hand-btn-green">✅ 通过</button><button onClick={() => handleQuestionReview(q.id, "reject")} className="hand-btn text-xs hand-btn-pink">↩️ 补充</button></div></div>{q.imageUrl && <a href={q.imageUrl} target="_blank" rel="noopener noreferrer" className="text-crayon-blue text-sm underline">📷 查看题目图片</a>}{q.recognizedText && <p className="text-sm text-ink-light mt-2 whitespace-pre-wrap forest-note-card p-3">{q.recognizedText}</p>}<p className="text-sm text-ink-light mt-2 whitespace-pre-wrap">{q.content}</p><p className="text-xs text-ink-light mt-3">{TEACHER_QUESTION_REVIEW_COPY.approveMessage} {TEACHER_QUESTION_REVIEW_COPY.rejectMessage}</p></div>)}
+            <div className="flex gap-2 flex-wrap"><button onClick={() => setQuestionView("pending")} className={`hand-btn text-xs ${questionView === "pending" ? "hand-btn-yellow" : "hand-btn-white"}`}>待审核问题</button><button onClick={() => setQuestionView("approved")} className={`hand-btn text-xs ${questionView === "approved" ? "hand-btn-yellow" : "hand-btn-white"}`}>已通过问题</button></div>
+            {visibleQuestions.length === 0 ? <div className="forest-empty"><span className="forest-v2-icon forest-icon-seed mx-auto mb-3" aria-hidden="true" /><p className="text-ink font-medium">{questionView === "approved" ? "还没有已通过问题" : "没有待审核的问题"}</p><p className="text-ink-light text-sm mt-1">审核通过的问题会在已通过问题归档里保留。</p></div> : visibleQuestions.map((q) => <div key={q.id} className="forest-card"><div className="flex items-start justify-between gap-4 mb-3"><div><h3 className="font-bold text-ink">{q.title}</h3><p className="text-xs text-ink-light mt-1">{q.grade && `${q.grade}年级 · `}{q.topic || "未标知识点"}{q.confusionType && ` · 卡点：${q.confusionType}`}</p><p className="text-xs text-ink-light mt-1">提问人：{q.author?.name || "小朋友"}</p></div><div className="flex gap-2">{questionView === "pending" ? <><button onClick={() => handleQuestionReview(q.id, "approve")} className="hand-btn text-xs hand-btn-green">✅ 通过</button><button onClick={() => handleQuestionReview(q.id, "reject")} className="hand-btn text-xs hand-btn-pink">↩️ 补充</button></> : <span className="hand-badge hand-badge-green text-xs">已通过</span>}</div></div>{q.imageUrl && <a href={q.imageUrl} target="_blank" rel="noopener noreferrer" className="text-crayon-blue text-sm underline">📷 查看题目图片</a>}{q.recognizedText && <p className="text-sm text-ink-light mt-2 whitespace-pre-wrap forest-note-card p-3">{q.recognizedText}</p>}<p className="text-sm text-ink-light mt-2 whitespace-pre-wrap">{q.content}</p><p className="text-xs text-ink-light mt-3">{TEACHER_QUESTION_REVIEW_COPY.approveMessage} {TEACHER_QUESTION_REVIEW_COPY.rejectMessage}</p></div>)}
           </div>
         ) : activeTab === "answers" ? (
-          pendingAnswers.length === 0 ? <div className="forest-empty"><span className="forest-v2-icon forest-icon-tree mx-auto mb-3" aria-hidden="true" /><p className="text-ink font-medium">没有待审核的讲题</p><p className="text-ink-light text-sm mt-1">所有讲题都已处理完毕</p></div> :
           <div className="space-y-4">
-            {pendingAnswers.map((answer) => <div key={answer.id} className="forest-card"><div className="flex items-start justify-between gap-4 mb-3"><div><h3 className="font-bold text-ink">{answer.question.title}</h3><p className="text-xs text-ink-light mt-1">讲师：{answer.lecturer.name || "小讲师"}{answer.lecturer.grade && ` · ${answer.lecturer.grade}年级`}</p></div><div className="flex gap-2"><button onClick={() => handleAnswerReview(answer.id, "approve")} className="hand-btn text-xs hand-btn-green">✅ 通过</button><button onClick={() => handleAnswerReview(answer.id, "reject")} className="hand-btn text-xs hand-btn-pink">↩️ 退回</button></div></div>{answer.videoUrl && <a href={answer.videoUrl} target="_blank" rel="noopener noreferrer" className="text-crayon-blue hover:underline text-sm">📹 查看视频</a>}{answer.description && <p className="text-sm text-ink-light mt-2">{answer.description}</p>}<p className="text-sm text-ink-light mt-2 p-3 forest-note-card">题目：{answer.question.content}</p></div>)}
+            <div className="flex gap-2 flex-wrap"><button onClick={() => setAnswerView("pending")} className={`hand-btn text-xs ${answerView === "pending" ? "hand-btn-yellow" : "hand-btn-white"}`}>待审核讲题</button><button onClick={() => setAnswerView("approved")} className={`hand-btn text-xs ${answerView === "approved" ? "hand-btn-yellow" : "hand-btn-white"}`}>已通过讲题</button></div>
+            {visibleAnswers.length === 0 ? <div className="forest-empty"><span className="forest-v2-icon forest-icon-tree mx-auto mb-3" aria-hidden="true" /><p className="text-ink font-medium">{answerView === "approved" ? "还没有已通过讲题" : "没有待审核的讲题"}</p><p className="text-ink-light text-sm mt-1">审核通过后会在已通过讲题归档中保留。</p></div> : visibleAnswers.map((answer) => <div key={answer.id} className="forest-card"><div className="flex items-start justify-between gap-4 mb-3"><div><h3 className="font-bold text-ink">{answer.question.title}</h3><p className="text-xs text-ink-light mt-1">讲师：{answer.lecturer.name || "小讲师"}{answer.lecturer.grade && ` · ${answer.lecturer.grade}年级`}</p></div><div className="flex gap-2">{answerView === "pending" ? <><button onClick={() => handleAnswerReview(answer.id, "approve")} className="hand-btn text-xs hand-btn-green">✅ 通过</button><button onClick={() => handleAnswerReview(answer.id, "reject")} className="hand-btn text-xs hand-btn-pink">↩️ 退回</button></> : <span className="hand-badge hand-badge-green text-xs">已通过</span>}</div></div>{answer.videoUrl && <a href={answer.videoUrl} target="_blank" rel="noopener noreferrer" className="text-crayon-blue hover:underline text-sm">📹 查看视频</a>}{answer.description && <p className="text-sm text-ink-light mt-2">{answer.description}</p>}<p className="text-sm text-ink-light mt-2 p-3 forest-note-card">题目：{answer.question.content}</p></div>)}
           </div>
         ) : activeTab === "outcomes" ? (
           <div className="space-y-4">

@@ -48,6 +48,7 @@ interface ProfileData {
     lecturerLevel?: number;
     explorerLevel?: number;
     learnerIntro?: string | null;
+    avatar?: string | null;
     role: string;
     isActive: boolean;
     createdAt: string;
@@ -72,6 +73,8 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [profileError, setProfileError] = useState<string | null>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarNotice, setAvatarNotice] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === "loading") {
@@ -103,6 +106,33 @@ export default function ProfilePage() {
         setLoading(false);
       });
   }, [session, status]);
+
+  const handleAvatarUpload = async (file?: File | null) => {
+    if (!file) return;
+    setAvatarUploading(true);
+    setAvatarNotice(null);
+    try {
+      const form = new FormData();
+      form.append("kind", "avatar");
+      form.append("file", file);
+      const uploadRes = await fetch("/math-young-lecturer/api/uploads", { method: "POST", body: form });
+      const uploadData = await uploadRes.json().catch(() => ({}));
+      if (!uploadRes.ok) throw new Error(uploadData.error || "头像上传失败");
+      const saveRes = await fetch("/math-young-lecturer/api/user/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ avatar: uploadData.url }),
+      });
+      const saveData = await saveRes.json().catch(() => ({}));
+      if (!saveRes.ok) throw new Error(saveData.error || "头像保存失败");
+      setProfile((prev) => prev ? { ...prev, user: { ...prev.user, avatar: saveData.user?.avatar || uploadData.url } } : prev);
+      setAvatarNotice(saveData.message || "头像已更新");
+    } catch (error: any) {
+      setAvatarNotice(error.message || "头像上传失败");
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
 
   if (status === "loading") {
     return <main className="forest-page-shell"><Navbar /><div className="text-center py-20 text-ink-light">正在确认登录状态...</div></main>;
@@ -180,9 +210,16 @@ export default function ProfilePage() {
       <section className="forest-page-content">
         <div className="forest-page-hero overflow-hidden relative">
           <div className="absolute -right-8 -top-10 text-8xl opacity-20">∞</div>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 relative z-10">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 relative z-10">
             <div className="flex items-center gap-4">
-              <span className="forest-v2-icon forest-icon-passport !w-20 !h-20" aria-hidden="true" />
+              <div className="text-center">
+                {user.avatar ? <img src={user.avatar} alt="学习者头像" className="w-20 h-20 rounded-3xl object-cover bg-white border border-ink/10" /> : <span className="forest-v2-icon forest-icon-passport !w-20 !h-20" aria-hidden="true" />}
+                <label className="mt-2 inline-flex cursor-pointer text-[11px] text-crayon-blue underline">
+                  {avatarUploading ? "上传中..." : "上传头像"}
+                  <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" disabled={avatarUploading} onChange={(e) => handleAvatarUpload(e.target.files?.[0])} />
+                </label>
+                {avatarNotice && <p className="mt-1 max-w-[110px] text-[11px] text-ink-light">{avatarNotice}</p>}
+              </div>
               <div>
                 <p className="forest-page-eyebrow">成长护照 · 我的成长护照</p>
                 <h1 className="forest-page-title handwritten-title">{user.name || "小朋友"}</h1>
@@ -234,11 +271,10 @@ export default function ProfilePage() {
           </section>
 
           <section className="forest-note-card bg-crayon-yellow/30">
-            <h2 className="font-bold text-ink mb-3">给孩子和家长看的说明</h2>
-            <div className="space-y-3 text-sm text-ink-light leading-relaxed">
-              <p><strong className="text-ink">孩子：</strong>{safetyCopy.child}</p>
-              <p><strong className="text-ink">家长：</strong>{safetyCopy.parent}</p>
-              <p><strong className="text-ink">老师：</strong>{safetyCopy.teacher}</p>
+            <h2 className="font-bold text-ink mb-3">成长护照说明</h2>
+            <div className="space-y-2 text-sm text-ink-light leading-relaxed">
+              <p>{safetyCopy.child}</p>
+              <p>{safetyCopy.parent}</p>
             </div>
           </section>
         </div>
@@ -252,7 +288,7 @@ export default function ProfilePage() {
             {identityCards.map((card) => (
               <div key={card.type} className={`forest-card ${card.colorClass}`}>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="text-4xl">{card.icon}</div>
+                  <span className={`forest-v2-icon ${card.iconClass} !w-14 !h-14`} aria-hidden="true" />
                   <div className="text-lg tracking-widest text-ink">{card.stars}</div>
                 </div>
                 <h3 className="font-bold text-ink">{card.label}</h3>

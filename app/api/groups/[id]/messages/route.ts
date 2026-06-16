@@ -24,8 +24,14 @@ async function assertGroupAccess(groupId: string, sessionUser: SessionUser) {
           projectType: true,
         },
       },
-      _count: { select: { members: true } },
-    },
+          members: {
+            include: {
+              user: { select: { id: true, name: true, grade: true, region: true, role: true } },
+            },
+            orderBy: { joinedAt: "asc" },
+          },
+          _count: { select: { members: true } },
+        },
   });
 
   if (!group) {
@@ -78,6 +84,9 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ error: access.error }, { status: access.status });
     }
 
+    const startDate = access.group.createdAt;
+    const deadline = new Date(startDate.getTime() + Math.max(access.group.project.durationDays || 1, 1) * 24 * 60 * 60 * 1000);
+
     const messages = await prisma.message.findMany({
       where: { groupId: params.id },
       orderBy: { createdAt: "asc" },
@@ -87,7 +96,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       take: 100,
     });
 
-    return NextResponse.json({ group: access.group, messages });
+    return NextResponse.json({ group: { ...access.group, startDate, deadline }, messages });
   } catch (error) {
     console.error("获取小组协作空间失败:", error);
     return NextResponse.json({ error: "获取失败" }, { status: 500 });

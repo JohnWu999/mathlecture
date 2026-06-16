@@ -211,9 +211,9 @@ export default function AskPage() {
                 }}
                 className="w-full px-4 py-2.5 rounded-xl border-2 border-ink/15 bg-paper focus:border-crayon-green focus:outline-none"
               />
-              {imageFile && <p className="text-xs text-ink-light mt-1">已选择：{imageFile.name}，提交时会先上传照片。</p>}
+              {imageFile && <p className="text-xs text-ink-light mt-1">已选择：{imageFile.name}，提交时会先上传照片。当前内测先手动补充题目文字，OCR 自动识别会作为下一批接入。</p>}
               {imageUrl && <p className="text-xs text-ink-light mt-1">照片已上传：{imageUrl}</p>}
-              <p className="text-xs text-ink-light mt-1">拍照上传是为了让小讲师看清题目，不会公开未审核内容。</p>
+              <p className="text-xs text-ink-light mt-1">拍照上传是为了让小讲师看清题目，不会公开未审核内容；如果识别不准，请在下方手动补充。</p>
             </div>
 
             <div>

@@ -14,17 +14,23 @@ async function checkTeacherAuth() {
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: Request) {
   const auth = await checkTeacherAuth();
   if (auth) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
+  const { searchParams } = new URL(req.url);
+  const view = searchParams.get("view") || "pending";
+  const where = view === "approved"
+    ? { status: "APPROVED" as const, reviewStatus: "APPROVED" as const, videoUrl: { not: "" } }
+    : {
+        status: "PENDING" as const,
+        reviewStatus: "PENDING" as const,
+        videoUrl: { not: "" },
+      };
+
   try {
     const answers = await prisma.answer.findMany({
-      where: {
-        status: "PENDING",
-        reviewStatus: "PENDING",
-        videoUrl: { not: "" },
-      },
+      where,
       orderBy: { createdAt: "desc" },
       include: {
         lecturer: { select: { name: true, grade: true } },
